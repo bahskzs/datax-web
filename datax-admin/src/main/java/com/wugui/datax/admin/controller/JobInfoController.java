@@ -8,7 +8,10 @@ import com.wugui.datax.admin.core.thread.JobTriggerPoolHelper;
 import com.wugui.datax.admin.core.trigger.TriggerTypeEnum;
 import com.wugui.datax.admin.core.util.I18nUtil;
 import com.wugui.datax.admin.dto.DataXBatchJsonBuildDto;
+import com.wugui.datax.admin.dto.DatasourceDTO;
+import com.wugui.datax.admin.dto.MultiJobsDTO;
 import com.wugui.datax.admin.dto.TriggerJobDto;
+import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.entity.JobInfo;
 import com.wugui.datax.admin.service.JobService;
 import io.swagger.annotations.Api;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,6 +64,51 @@ public class JobInfoController extends BaseController{
         return jobService.add(jobInfo);
     }
 
+     /**
+      * @author: bahsk
+      * @date: 2021-10-14 9:54
+      * @description: 复制任务
+      * @params:
+      * @return:
+      */
+    @PostMapping("/copy/{id}")
+    @ApiOperation("复制任务")
+    public ReturnT<String> copy(@PathVariable(value = "id") Integer jobId,@RequestBody JobDatasource datasource) {
+        return jobService.copy(jobId,datasource.getId());
+    }
+     /**
+      * @author: bahsk
+      * @date: 2021-10-14 10:58
+      * @description: 传入数据源列表，批量复制任务
+      * @params:
+      * @return:
+      */
+    @PostMapping("/copy/batch/{id}")
+    @ApiOperation("批量复制任务")
+    public ReturnT<String> copyBatch(@PathVariable(value = "id") Integer jobId,@RequestBody List<JobDatasource> dsList) {
+        return jobService.batchCopy(jobId,dsList);
+    }
+
+    @PostMapping("/copy/ds/{id}")
+    @ApiOperation("批量复制任务")
+    public ReturnT<String> batchDSCopy(@PathVariable(value = "id") Integer jobId,@RequestBody List<DatasourceDTO> dsList) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        return jobService.batchDSCopy(jobId,dsList);
+    }
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-19 17:22
+      * @description:  TODO 批量复制任务组
+      * @params:
+      * @return:
+      */
+    @PostMapping("/copy/jobs")
+    @ApiOperation("批量复制任务组")
+    public ReturnT<String> batchJobCopy(@RequestBody MultiJobsDTO jobs) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        return jobService.batchJobCopy(jobs);
+    }
+
+
     @PostMapping("/update")
     @ApiOperation("更新任务")
     public ReturnT<String> update(HttpServletRequest request,@RequestBody JobInfo jobInfo) {
@@ -83,6 +132,23 @@ public class JobInfoController extends BaseController{
     @ApiOperation("开启任务")
     public ReturnT<String> start(int id) {
         return jobService.start(id);
+    }
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-20 11:10
+      * @description: 批量执行任务
+      * @params:
+      * @return:
+      */
+    @PostMapping("/trigger/batch")
+    @ApiOperation("批量执行任务")
+    public ReturnT<String> startBatch(@RequestBody List<TriggerJobDto> triggerJobDtos){
+        String executorParam = "";
+        for (TriggerJobDto dto : triggerJobDtos) {
+            JobTriggerPoolHelper.trigger(dto.getJobId(), TriggerTypeEnum.MANUAL, -1, null, executorParam);
+        }
+        return ReturnT.SUCCESS;
     }
 
     @PostMapping(value = "/trigger")

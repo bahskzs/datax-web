@@ -153,7 +153,8 @@ public class BaseForm {
         Page page = new Page();
         //如果无current，默认返回1000条数据
         page.setCurrent(this.getPageNo());
-        page.setSize(this.getPageSize());
+//        page.setSize(this.getPageSize());
+        page.setSize(1500);
         if (ObjectUtil.isNotNull(this.get("ifCount"))) {
             page.setSearchCount(BooleanUtil.toBoolean(this.getString("ifCount")));
         } else {

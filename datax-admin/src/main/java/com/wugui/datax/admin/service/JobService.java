@@ -3,10 +3,14 @@ package com.wugui.datax.admin.service;
 
 import com.wugui.datatx.core.biz.model.ReturnT;
 import com.wugui.datax.admin.dto.DataXBatchJsonBuildDto;
+import com.wugui.datax.admin.dto.DatasourceDTO;
+import com.wugui.datax.admin.dto.MultiJobsDTO;
 import com.wugui.datax.admin.dto.TaskScheduleDto;
+import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.entity.JobInfo;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +45,14 @@ public interface JobService {
     ReturnT<String> add(JobInfo jobInfo);
 
     /**
+     * copy job
+     *
+     * @param jobId,datasourceId
+     * @return
+     */
+    ReturnT<String> copy(Integer jobId, Long datasourceId);
+
+    /**
      * update job
      *
      * @param jobInfo
@@ -64,6 +76,16 @@ public interface JobService {
      * @return
      */
     ReturnT<String> start(int id);
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-15 16:21
+      * @description: 批量执行任务
+      * @params:
+      * @return:
+      */
+    ReturnT<String> start(List<Integer> ids);
+
 
     /**
      * stop job
@@ -93,4 +115,31 @@ public interface JobService {
      * @return
      */
     ReturnT<String> batchAdd(DataXBatchJsonBuildDto dto) throws IOException;
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-14 10:39
+      * @description: batch copy
+      * @params:  jobId,dsList
+      * @return:
+      */
+    ReturnT<String> batchCopy(Integer jobId, List<JobDatasource> dsList);
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-14 17:18
+      * @description: TODO... 批量复制并替换数据源
+      * @params:
+      * @return:
+      */
+    ReturnT<String> batchDSCopy(Integer jobId, List<DatasourceDTO> dsList) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException;
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-20 8:39
+      * @description: TODO 批量复制任务组
+      * @params:
+      * @return:
+      */
+     ReturnT<String> batchJobCopy(MultiJobsDTO jobs) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException;
 }

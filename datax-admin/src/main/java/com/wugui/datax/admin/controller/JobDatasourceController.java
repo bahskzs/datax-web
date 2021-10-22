@@ -3,6 +3,7 @@ package com.wugui.datax.admin.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wugui.datax.admin.core.util.LocalCacheUtil;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.JobDatasourceService;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * jdbc数据源配置控制器层
@@ -86,6 +89,12 @@ public class JobDatasourceController extends BaseController {
     @PostMapping
     public R<Boolean> insert(@RequestBody JobDatasource entity) {
         return success(this.jobJdbcDatasourceService.save(entity));
+    }
+
+    @ApiOperation("新增批量数据链接")
+    @PostMapping("/batch")
+    public  R<Boolean> insertAll(@RequestBody List<JobDatasource> datasourceList) {
+        return success(this.jobJdbcDatasourceService.saveBatch(datasourceList));
     }
 
     /**

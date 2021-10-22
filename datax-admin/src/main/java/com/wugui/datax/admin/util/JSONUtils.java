@@ -2,6 +2,11 @@ package com.wugui.datax.admin.util;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * DataX JSON 用户名密码解密
@@ -73,4 +78,72 @@ public class JSONUtils {
         json.put("job", job);
         return json.toJSONString();
     }
+
+
+
+    //TODO.. 增加方法 传入数据源
+     /**
+      * @author: bahsk
+      * @date: 2021-10-14 16:49
+      * @description: 批量更换数据源
+      * @params:
+      * @return:
+      */
+    public static String changeJsonDSs(String jsonStr, List<Map<String,String>> dsList) {
+        JSONObject json = JSONObject.parseObject(jsonStr);
+        JSONObject job = json.getJSONObject("job");
+        JSONArray contents = job.getJSONArray("content");
+
+        for (int i = 0; i < contents.size(); i++) {
+            String contentStr = contents.getString(i);
+            Object obj = contents.get(i);
+                ((JSONObject) obj).put("reader", changeDS(contentStr, "reader", (HashMap<String, String>) dsList.get(0)));
+                ((JSONObject) obj).put("writer", changeDS(contentStr, "writer", (HashMap<String, String>) dsList.get(1)));
+        }
+        job.put("content", contents);
+        json.put("job", job);
+        return json.toJSONString();
+    }
+
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-14 15:44
+      * @description: 替换数据源
+      * @params:
+      * @return:
+      */
+    public static JSONObject changeDS(String content, String key, Map<String,String> dbParams) {
+        JSONObject keyObj = JSONObject.parseObject(JSONObject.parseObject(content).getString(key));
+        JSONObject params = JSONObject.parseObject(keyObj.getString("parameter"));
+
+        String dUsername = dbParams.get("jdbcUsername");
+        String dPassword = dbParams.get("jdbcPassword");
+        String dJdbcUrl = dbParams.get("jdbcUrl");
+
+        JSONArray connection = params.getJSONArray("connection");
+        JSONObject object = (JSONObject) connection.get(0);
+
+        String username = dUsername == null ? params.getString("username") : dUsername;
+        String password = dPassword == null ? params.getString("password") : dPassword;
+        String jdbcUrl = dJdbcUrl == null ? object.getString("jdbcUrl") : dJdbcUrl;
+
+        String[] arr = new String[1];
+        arr[0] = jdbcUrl;
+
+        if("reader".equals(key)) {
+            ((JSONObject) connection.get(0)).put("jdbcUrl",arr);
+        }else {
+            ((JSONObject) connection.get(0)).put("jdbcUrl",jdbcUrl);
+        }
+
+
+        params.put("username", username);
+        params.put("password", password);
+        params.put("connection", connection);
+        keyObj.put("parameter", params);
+        return keyObj;
+    }
+
+
 }

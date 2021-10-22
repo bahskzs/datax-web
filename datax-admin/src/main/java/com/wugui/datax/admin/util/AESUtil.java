@@ -100,11 +100,15 @@ public class AESUtil {
     }
 
     public static void main(String[] args) {
-        String message = "root";
+        String message = "YTHZW_FJ_2019";
+        System.out.println("message" + message);
         String ciphertext = encrypt(message);
 
         System.out.println("加密后密文为: " + ciphertext);
         System.out.println("解密后明文为:" + decrypt(ciphertext));
+
+        String pwd = AESUtil.decrypt("bZW7pXAJ1NlX1QBTbKc46g==");
+        System.out.println(pwd);
     }
 
 }

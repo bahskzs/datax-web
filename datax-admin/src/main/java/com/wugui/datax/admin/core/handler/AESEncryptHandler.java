@@ -1,6 +1,7 @@
 package com.wugui.datax.admin.core.handler;
 
 import com.wugui.datax.admin.util.AESUtil;
+import groovy.util.logging.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
@@ -16,6 +17,7 @@ import java.sql.SQLException;
  * @date 20-03-17  下午5:38
  */
 @MappedTypes({String.class})
+@Slf4j
 public class AESEncryptHandler extends BaseTypeHandler<String> {
 
 

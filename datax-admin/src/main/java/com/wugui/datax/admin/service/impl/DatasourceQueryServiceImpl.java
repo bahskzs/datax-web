@@ -112,4 +112,6 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         BaseQueryTool queryTool = QueryToolFactory.getByDbType(jdbcDatasource);
         return queryTool.getColumnsByQuerySql(querySql);
     }
+
+
 }

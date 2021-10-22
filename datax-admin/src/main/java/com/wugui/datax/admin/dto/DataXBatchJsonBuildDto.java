@@ -29,4 +29,10 @@ public class DataXBatchJsonBuildDto implements Serializable {
     private RdbmsReaderDto rdbmsReader;
 
     private RdbmsWriterDto rdbmsWriter;
+    /*
+     * 2021-10-14
+     * bahskzs
+     * 是否需要数据源:需要则往job_desc中添加数据源的名称
+     * */
+    private boolean requireDSName;
 }

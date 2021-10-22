@@ -1,5 +1,6 @@
 package com.wugui.datax.admin.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.wugui.datatx.core.biz.model.ReturnT;
 import com.wugui.datatx.core.enums.ExecutorBlockStrategyEnum;
 import com.wugui.datatx.core.glue.GlueTypeEnum;
@@ -8,25 +9,27 @@ import com.wugui.datax.admin.core.cron.CronExpression;
 import com.wugui.datax.admin.core.route.ExecutorRouteStrategyEnum;
 import com.wugui.datax.admin.core.thread.JobScheduleHelper;
 import com.wugui.datax.admin.core.util.I18nUtil;
-import com.wugui.datax.admin.dto.DataXBatchJsonBuildDto;
-import com.wugui.datax.admin.dto.DataXJsonBuildDto;
-import com.wugui.datax.admin.entity.JobGroup;
-import com.wugui.datax.admin.entity.JobInfo;
-import com.wugui.datax.admin.entity.JobLogReport;
-import com.wugui.datax.admin.entity.JobTemplate;
+import com.wugui.datax.admin.dto.*;
+import com.wugui.datax.admin.entity.*;
 import com.wugui.datax.admin.mapper.*;
 import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.service.DataxJsonService;
+import com.wugui.datax.admin.service.JobDatasourceService;
 import com.wugui.datax.admin.service.JobService;
+import com.wugui.datax.admin.util.CopyUtil;
 import com.wugui.datax.admin.util.DateFormatUtils;
+import com.wugui.datax.admin.util.JSONUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
@@ -56,6 +59,11 @@ public class JobServiceImpl implements JobService {
     private JobTemplateMapper jobTemplateMapper;
     @Resource
     private DataxJsonService dataxJsonService;
+    @Resource
+    private JobDatasourceService jobDatasourceService;
+    @Resource
+    private JobDatasourceMapper jobDatasourceMapper;
+
 
     @Override
     public Map<String, Object> pageList(int start, int length, int jobGroup, int triggerStatus, String jobDesc, String glueType, int userId, Integer[] projectIds) {
@@ -72,6 +80,7 @@ public class JobServiceImpl implements JobService {
         return maps;
     }
 
+    @Override
     public List<JobInfo> list() {
         return jobInfoMapper.findAll();
     }
@@ -156,6 +165,119 @@ public class JobServiceImpl implements JobService {
 
         return new ReturnT<>(String.valueOf(jobInfo.getId()));
     }
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-14 9:36
+      * @description: 简单拷贝任务
+      * @params: jobId,datasourceId
+      * @return:
+      */
+    @Override
+    public ReturnT<String> copy(Integer jobId, Long datasourceId) {
+        JobInfo jobInfo = jobInfoMapper.loadById(jobId);
+        JobDatasource datasource = jobDatasourceService.getById(datasourceId);
+        jobInfo.setJobDesc(datasource.getDatasourceName() +"-"+ jobInfo.getJobDesc());
+        jobInfo.setId(0);
+        return add(jobInfo);
+    }
+
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-14 10:44
+      * @description: 批量复制任务
+      * @params:  dsList
+      * @return:
+      */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ReturnT<String> batchCopy(Integer jobId, List<JobDatasource> dsList) {
+        JobInfo jobInfo = jobInfoMapper.loadById(jobId);
+        String jobDesc = jobInfo.getJobDesc();
+        String jobJson = jobInfo.getJobJson();
+        String json = JSONUtils.changeJson(jobJson, 0);
+
+        for(JobDatasource ds : dsList) {
+            JobDatasource datasource = jobDatasourceMapper.selectById(ds.getId());
+            jobInfo.setJobDesc(datasource.getDatasourceName() +"-"+ jobDesc);
+            jobInfo.setId(0);
+            add(jobInfo);
+        }
+        return new ReturnT<>(String.valueOf(jobId + "复制成功"));
+    }
+
+    //
+     /**
+      * @author: bahsk
+      * @date: 2021-10-14 17:19
+      * @description:  TODO 批量拷贝,替换数据源版本
+      * @params:
+      * @return:
+      */
+    @Override
+    public ReturnT<String> batchDSCopy(Integer jobId, List<DatasourceDTO> dsList) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        //1.查询被复制的任务的信息
+        JobInfo jobInfo = jobInfoMapper.loadById(jobId);
+        //拿到原始流程的名称
+        String sourceJobDesc = jobInfo.getJobDesc();
+        //拿到原始的jobJosn
+        String jobJson = jobInfo.getJobJson();
+
+        //2.读取出 dsList(每一个map都是需要替换的reader和writer对应的数据源),并查询出数据源对应的账号,密码,url,构造成
+        //List<Map<String,String>> dsList size =2 0是reader的hashmap  1是writer的hashmap
+        for(DatasourceDTO datasourceDTO : dsList) {
+            //1.需要改造jobinfo的名字
+
+
+
+            //2.构造新的job_json
+
+
+            JobDatasource source = jobDatasourceMapper.selectById(Integer.valueOf(datasourceDTO.getSource()));
+            JobDatasourceDTO sourceDS = CopyUtil.copy(source,JobDatasourceDTO.class);
+            String jobDesc = source.getDatasourceName() + "-" + sourceJobDesc;
+
+            JobDatasource targetSource = jobDatasourceMapper.selectById(Integer.valueOf(datasourceDTO.getTargetSource()));
+            JobDatasourceDTO targetDS = CopyUtil.copy(targetSource,JobDatasourceDTO.class);
+
+            List<Map<String,String>> dbParamsList = new ArrayList<Map<String,String>>();
+            dbParamsList.add(org.apache.commons.beanutils.BeanUtils.describe(sourceDS));
+            dbParamsList.add(org.apache.commons.beanutils.BeanUtils.describe(targetSource));
+
+            //改造数据源--修改的是jobJson
+            String json = JSONUtils.changeJsonDSs(jobJson, dbParamsList);
+
+            logger.info("json",json);
+            jobInfo.setJobJson(json);
+            jobInfo.setJobDesc(jobDesc);
+            //3.调用新增方法
+            add(jobInfo);
+
+        }
+
+        return new ReturnT<>("success");
+    }
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-20 10:25
+      * @description: 批量执行任务组替换
+      * @params:
+      * @return:
+      */
+    @Override
+    public ReturnT<String> batchJobCopy(MultiJobsDTO jobs) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        List<Integer> jobList = jobs.getJobs();
+        List<DatasourceDTO> dsList = jobs.getDsList();
+
+        for(Integer jobId : jobList) {
+            batchDSCopy(jobId, dsList);
+        }
+        return new ReturnT<>("success");
+    }
+
 
     private boolean isNumeric(String str) {
         try {
@@ -307,6 +429,22 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    public ReturnT<String> start(List<Integer> ids) {
+
+        if(ids.size() > 5) {
+            throw new IllegalArgumentException("参数不合法");
+        }else {
+            for(Integer id : ids) {
+                start(id);
+            }
+            return ReturnT.SUCCESS;
+        }
+
+
+    }
+
+
+    @Override
     public ReturnT<String> stop(int id) {
         JobInfo jobInfo = jobInfoMapper.loadById(id);
 
@@ -452,7 +590,16 @@ public class JobServiceImpl implements JobService {
             JobInfo jobInfo = new JobInfo();
             BeanUtils.copyProperties(jobTemplate, jobInfo);
             jobInfo.setJobJson(json);
-            jobInfo.setJobDesc(rdTables.get(i));
+
+            //TODO.. 批量构建的任务带入数据源
+            JobDatasource datasource = jobDatasourceService.getById(dto.getReaderDatasourceId());
+            String jobDesc = rdTables.get(i);
+            jobInfo.setJobDesc(datasource.getDatasourceName() + "-" + jobDesc);
+//            if(dto.isRequireDSName()) {
+//                jobInfo.setJobDesc(datasource.getDatasourceName() + "-" + jobDesc);
+//            }else {
+//                jobInfo.setJobDesc(jobDesc);
+//            }
             jobInfo.setAddTime(new Date());
             jobInfo.setUpdateTime(new Date());
             jobInfo.setGlueUpdatetime(new Date());
