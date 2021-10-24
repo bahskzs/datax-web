@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wugui.datax.admin.core.util.LocalCacheUtil;
+import com.wugui.datax.admin.dto.DatasourceDTO;
+import com.wugui.datax.admin.dto.DatasourceGroupDTO;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.JobDatasourceService;
 import io.swagger.annotations.Api;
@@ -66,6 +68,21 @@ public class JobDatasourceController extends BaseController {
     public R<List<JobDatasource>> selectAllDatasource() {
         return success(this.jobJdbcDatasourceService.selectAllDatasource());
     }
+
+
+     /**
+      * @author: bahsk
+      * @date: 2021/10/23 16:48
+      * @description: TODO 获取数据源 根据检索条件返回source Target /项目定制
+      * @params:
+      * @return:
+      */
+     @ApiOperation("查询返回指定数据源和目标数据源[项目定制]")
+     @GetMapping("/search")
+     public R<DatasourceGroupDTO> selectDatasourceByWords(@RequestParam(required = true) String words, @RequestParam(required = true) Integer year) {
+         return success(this.jobJdbcDatasourceService.selectDatasourceByWords(words, year));
+     }
+
 
     /**
      * 通过主键查询单条数据

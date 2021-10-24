@@ -1,6 +1,8 @@
 package com.wugui.datax.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.wugui.datax.admin.dto.DatasourceDTO;
+import com.wugui.datax.admin.dto.DatasourceGroupDTO;
 import com.wugui.datax.admin.entity.JobDatasource;
 
 import java.io.IOException;
@@ -33,4 +35,13 @@ public interface JobDatasourceService extends IService<JobDatasource> {
      * @return
      */
     List<JobDatasource> selectAllDatasource();
+
+     /**
+      * @author: bahsk
+      * @date: 2021/10/23 16:53
+      * @description: 项目定制接口,传入参数  构造source,target
+      * @params:
+      * @return:
+      */
+     DatasourceGroupDTO selectDatasourceByWords(String words, Integer year);
 }

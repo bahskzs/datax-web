@@ -1,16 +1,14 @@
 package com.wugui.datax.admin.controller;
 
 
+import com.baomidou.mybatisplus.extension.api.R;
 import com.wugui.datatx.core.biz.model.ReturnT;
 import com.wugui.datatx.core.util.DateUtil;
 import com.wugui.datax.admin.core.cron.CronExpression;
 import com.wugui.datax.admin.core.thread.JobTriggerPoolHelper;
 import com.wugui.datax.admin.core.trigger.TriggerTypeEnum;
 import com.wugui.datax.admin.core.util.I18nUtil;
-import com.wugui.datax.admin.dto.DataXBatchJsonBuildDto;
-import com.wugui.datax.admin.dto.DatasourceDTO;
-import com.wugui.datax.admin.dto.MultiJobsDTO;
-import com.wugui.datax.admin.dto.TriggerJobDto;
+import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.entity.JobInfo;
 import com.wugui.datax.admin.service.JobService;
@@ -56,6 +54,13 @@ public class JobInfoController extends BaseController{
     public ReturnT<List<JobInfo>> list(){
         return new ReturnT<>(jobService.list());
     }
+
+    @GetMapping("/search")
+    @ApiOperation("查询指定任务列表")
+    public ReturnT<TriggerJobGroupDTO> searchList(@RequestParam(required = true) String words, @RequestParam(required = false,defaultValue = "") String year){
+        return new ReturnT<>(jobService.searchList(words,year));
+    }
+
 
     @PostMapping("/add")
     @ApiOperation("添加任务")

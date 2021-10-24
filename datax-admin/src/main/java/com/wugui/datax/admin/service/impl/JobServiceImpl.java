@@ -1,6 +1,7 @@
 package com.wugui.datax.admin.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wugui.datatx.core.biz.model.ReturnT;
 import com.wugui.datatx.core.enums.ExecutorBlockStrategyEnum;
 import com.wugui.datatx.core.glue.GlueTypeEnum;
@@ -276,6 +277,44 @@ public class JobServiceImpl implements JobService {
             batchDSCopy(jobId, dsList);
         }
         return new ReturnT<>("success");
+    }
+
+    /**
+     * @author: bahsk
+     * @date: 2021/10/24 11:50
+     * @description: 项目定制接口 根据查询参数返回指定任务组
+     * @params:
+     * @return:
+     */
+    @Override
+    public TriggerJobGroupDTO searchList(String words, String year) {
+
+        QueryWrapper<JobInfo> queryWrapper = new QueryWrapper<>();
+
+        queryWrapper.select("id","job_desc")
+                .like("job_desc", words)
+                .like("job_desc", year)
+                .orderByAsc("job_desc");
+
+        List<JobInfo> jobInfoList = this.jobInfoMapper.selectList(queryWrapper);
+
+        List<TriggerJobRespDTO> jobRespDTOList = new ArrayList<>();
+
+        for(JobInfo jobInfo : jobInfoList) {
+            TriggerJobRespDTO triggerJobRespDTO = TriggerJobRespDTO.builder()
+                    .jobId(jobInfo.getId())
+                    .jobDesc(jobInfo.getJobDesc())
+                    .executorParam("")
+                    .build();
+            jobRespDTOList.add(triggerJobRespDTO);
+        }
+
+        TriggerJobGroupDTO jobGroupDTOs = TriggerJobGroupDTO.builder()
+                .triggerJobDto(CopyUtil.copyList(jobRespDTOList,TriggerJobDto.class))
+                .triggerJobRespDTO(jobRespDTOList)
+                .build();
+
+        return jobGroupDTOs;
     }
 
 

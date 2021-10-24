@@ -2,12 +2,10 @@ package com.wugui.datax.admin.service;
 
 
 import com.wugui.datatx.core.biz.model.ReturnT;
-import com.wugui.datax.admin.dto.DataXBatchJsonBuildDto;
-import com.wugui.datax.admin.dto.DatasourceDTO;
-import com.wugui.datax.admin.dto.MultiJobsDTO;
-import com.wugui.datax.admin.dto.TaskScheduleDto;
+import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.entity.JobInfo;
+import io.swagger.models.auth.In;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -128,7 +126,7 @@ public interface JobService {
      /**
       * @author: bahsk
       * @date: 2021-10-14 17:18
-      * @description: TODO... 批量复制并替换数据源
+      * @description: 项目定制接口 批量复制并替换数据源
       * @params:
       * @return:
       */
@@ -137,9 +135,18 @@ public interface JobService {
      /**
       * @author: bahsk
       * @date: 2021-10-20 8:39
-      * @description: TODO 批量复制任务组
+      * @description: 项目定制接口 批量复制任务组
       * @params:
       * @return:
       */
      ReturnT<String> batchJobCopy(MultiJobsDTO jobs) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException;
+
+      /**
+       * @author: bahsk
+       * @date: 2021/10/24 11:50
+       * @description: 项目定制接口 根据查询参数返回指定任务组
+       * @params:
+       * @return:
+       */
+      TriggerJobGroupDTO searchList(String words, String year);
 }

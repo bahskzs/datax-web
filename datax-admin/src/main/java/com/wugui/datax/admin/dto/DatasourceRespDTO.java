@@ -1,6 +1,5 @@
 package com.wugui.datax.admin.dto;
 
-import com.wugui.datax.admin.entity.JobDatasource;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,12 +16,13 @@ import lombok.NoArgsConstructor;
  @NoArgsConstructor
  @AllArgsConstructor
  @Builder
-public class DatasourceDTO {
+public class DatasourceRespDTO {
 
-     /* 来源库id */
      private String source;
 
-    /* 目标库id */
+     private String sourceName;
+
      private String targetSource;
 
+     private String targetSourceName;
 }

@@ -24,7 +24,7 @@ public class JobInfo {
 	@ApiModelProperty("任务执行CRON表达式")
 	private String jobCron;
 
-	@ApiModelProperty("排序")
+	@ApiModelProperty("任务描述")
 	private String jobDesc;
 
 	private Date addTime;
