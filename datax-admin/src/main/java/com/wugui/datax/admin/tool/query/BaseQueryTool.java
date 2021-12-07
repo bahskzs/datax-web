@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.wugui.datatx.core.util.Constants;
 import com.wugui.datax.admin.core.util.LocalCacheUtil;
+import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.tool.database.ColumnInfo;
 import com.wugui.datax.admin.tool.database.DasColumn;
@@ -327,6 +328,96 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             JdbcUtils.close(stmt);
         }
         return res;
+    }
+
+    /**
+     * @param datasource
+     * @param tableName
+     * @author: bahsk
+     * @date: 2021-10-27 10:58
+     * @description: [项目定制]根据数据源id和表名获取所有字段明细
+     * @params:
+     * @return:
+     */
+    public List<ColumnDetailsRespDTO> getColumnsDetails(String tableName, String datasource) {
+
+        List<ColumnDetailsRespDTO> res = Lists.newArrayList();
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            //获取查询指定表所有字段的sql语句
+            String querySql = sqlBuilder.getSQLQueryFields(tableName);
+            logger.info("querySql: {}", querySql);
+
+            //获取所有字段
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(querySql);
+            ResultSetMetaData metaData = rs.getMetaData();
+
+            int columnCount = metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+
+                String columnName = metaData.getColumnName(i);
+                ColumnDetailsRespDTO build = ColumnDetailsRespDTO
+                        .builder()
+                        .column(columnName)
+                        .columnType(metaData.getColumnTypeName(i))
+                        .columnLength(metaData.getPrecision(i))
+                        .build();
+                if (JdbcConstants.HIVE.equals(datasource)) {
+                    if (columnName.contains(Constants.SPLIT_POINT)) {
+                        build.setColumn(i - 1 + Constants.SPLIT_SCOLON + columnName.substring(columnName.indexOf(Constants.SPLIT_POINT) + 1) + Constants.SPLIT_SCOLON + metaData.getColumnTypeName(i));
+
+                    } else {
+                        build.setColumn(i - 1 + Constants.SPLIT_SCOLON + columnName + Constants.SPLIT_SCOLON + metaData.getColumnTypeName(i));
+                    }
+                }
+                res.add(build);
+
+            }
+        } catch (SQLException e) {
+            logger.error("[getColumnNames Exception] --> "
+                    + "the exception message is:" + e.getMessage());
+        } finally {
+            JdbcUtils.close(rs);
+            JdbcUtils.close(stmt);
+        }
+        return res;
+    }
+
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-27 11:50
+      * @description:
+      * @params:
+      * @return:
+      */
+    public List<DasColumn> getDasColumn(String tableName, String datasource) {
+
+        List<ColumnDetailsRespDTO> res = Lists.newArrayList();
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            //获取查询指定表所有字段的sql语句
+            String querySql = sqlBuilder.getSQLQueryFields(tableName);
+            logger.info("querySql: {}", querySql);
+
+            //获取所有字段
+            stmt = connection.createStatement();
+            rs = stmt.executeQuery(querySql);
+            ResultSetMetaData metaData = rs.getMetaData();
+
+            return buildDasColumn(tableName, metaData);
+
+        } catch (SQLException e) {
+            logger.error("[getColumnNames Exception] --> "
+                    + "the exception message is:" + e.getMessage());
+        } finally {
+            JdbcUtils.close(rs);
+            JdbcUtils.close(stmt);
+        }
+        return  null;
     }
 
     @Override

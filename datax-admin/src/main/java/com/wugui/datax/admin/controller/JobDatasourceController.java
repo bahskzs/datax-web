@@ -3,22 +3,21 @@ package com.wugui.datax.admin.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.api.R;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wugui.datax.admin.core.util.LocalCacheUtil;
-import com.wugui.datax.admin.dto.DatasourceDTO;
-import com.wugui.datax.admin.dto.DatasourceGroupDTO;
+import com.wugui.datax.admin.dto.DatasourceGroupRespDTO;
+import com.wugui.datax.admin.dto.JobDatasourceRespDTO;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.JobDatasourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,15 +47,18 @@ public class JobDatasourceController extends BaseController {
     @ApiOperation("分页查询所有数据")
     @ApiImplicitParams(
             {@ApiImplicitParam(paramType = "query", dataType = "String", name = "current", value = "当前页", defaultValue = "1", required = true),
-                    @ApiImplicitParam(paramType = "query", dataType = "String", name = "size", value = "一页大小", defaultValue = "10", required = true),
+                    @ApiImplicitParam(paramType = "query", dataType = "String", name = "size", value = "一页大小", defaultValue = "20", required = true),
                     @ApiImplicitParam(paramType = "query", dataType = "Boolean", name = "ifCount", value = "是否查询总数", defaultValue = "true"),
                     @ApiImplicitParam(paramType = "query", dataType = "String", name = "ascs", value = "升序字段，多个用逗号分隔"),
                     @ApiImplicitParam(paramType = "query", dataType = "String", name = "descs", value = "降序字段，多个用逗号分隔")
             })
     public R<IPage<JobDatasource>> selectAll() {
         BaseForm form = new BaseForm();
+        int size = jobJdbcDatasourceService.selectAllDatasource().size();
         QueryWrapper<JobDatasource> query = (QueryWrapper<JobDatasource>) form.pageQueryWrapperCustom(form.getParameters(), new QueryWrapper<JobDatasource>());
-        return success(jobJdbcDatasourceService.page(form.getPlusPagingQueryEntity(), query));
+        return success(jobJdbcDatasourceService.page(form.getPlusPagingQueryEntity(true,size), query));
+
+
     }
 
     /**
@@ -73,13 +75,13 @@ public class JobDatasourceController extends BaseController {
      /**
       * @author: bahsk
       * @date: 2021/10/23 16:48
-      * @description: TODO 获取数据源 根据检索条件返回source Target /项目定制
+      * @description: 获取数据源 根据检索条件返回source Target /项目定制
       * @params:
       * @return:
       */
-     @ApiOperation("查询返回指定数据源和目标数据源[项目定制]")
+     @ApiOperation("[项目定制]查询返回指定数据源和目标数据源")
      @GetMapping("/search")
-     public R<DatasourceGroupDTO> selectDatasourceByWords(@RequestParam(required = true) String words, @RequestParam(required = true) Integer year) {
+     public R<DatasourceGroupRespDTO> selectDatasourceByWords(@RequestParam(required = true) String words, @RequestParam(required = true) Integer year) {
          return success(this.jobJdbcDatasourceService.selectDatasourceByWords(words, year));
      }
 
@@ -108,7 +110,14 @@ public class JobDatasourceController extends BaseController {
         return success(this.jobJdbcDatasourceService.save(entity));
     }
 
-    @ApiOperation("新增批量数据链接")
+     /**
+      * @author: bahsk
+      * @date: 2021-10-28 8:42
+      * @description: [项目定制]新增批量数据链接
+      * @params:
+      * @return:
+      */
+    @ApiOperation("[项目定制]新增批量数据链接")
     @PostMapping("/batch")
     public  R<Boolean> insertAll(@RequestBody List<JobDatasource> datasourceList) {
         return success(this.jobJdbcDatasourceService.saveBatch(datasourceList));
@@ -134,6 +143,19 @@ public class JobDatasourceController extends BaseController {
         return success(this.jobJdbcDatasourceService.updateById(entity));
     }
 
+     /**
+      * @author: bahsk
+      * @date: 2021-11-01 10:11
+      * @description: [项目定制]批量修改数据源
+      * @params:
+      * @return:
+      */
+     @PutMapping("/updateList")
+     @ApiOperation("[项目定制]批量修改数据源")
+     public R<Boolean> updateBatch(@RequestBody List<JobDatasourceRespDTO> jobDatasourceRespDTOList) {
+         return success(this.jobJdbcDatasourceService.updateBatch(jobDatasourceRespDTOList));
+     }
+
     /**
      * 删除数据
      *
@@ -156,4 +178,6 @@ public class JobDatasourceController extends BaseController {
     public R<Boolean> dataSourceTest (@RequestBody JobDatasource jobJdbcDatasource) throws IOException {
         return success(jobJdbcDatasourceService.dataSourceTest(jobJdbcDatasource));
     }
+
+
 }

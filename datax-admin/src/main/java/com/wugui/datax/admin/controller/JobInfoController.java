@@ -11,9 +11,12 @@ import com.wugui.datax.admin.core.util.I18nUtil;
 import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.entity.JobInfo;
+import com.wugui.datax.admin.service.JobDatasourceService;
 import com.wugui.datax.admin.service.JobService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.var;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -21,10 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * index controller
@@ -38,6 +38,9 @@ public class JobInfoController extends BaseController{
 
     @Resource
     private JobService jobService;
+
+    @Resource
+    private JobDatasourceService jobDatasourceService;
 
 
     @GetMapping("/pageList")
@@ -55,8 +58,15 @@ public class JobInfoController extends BaseController{
         return new ReturnT<>(jobService.list());
     }
 
+     /**
+      * @author: bahsk
+      * @date: 2021-10-27 9:22
+      * @description:
+      * @params:
+      * @return:
+      */
     @GetMapping("/search")
-    @ApiOperation("查询指定任务列表")
+    @ApiOperation("[项目定制]查询指定任务列表")
     public ReturnT<TriggerJobGroupDTO> searchList(@RequestParam(required = true) String words, @RequestParam(required = false,defaultValue = "") String year){
         return new ReturnT<>(jobService.searchList(words,year));
     }
@@ -77,7 +87,7 @@ public class JobInfoController extends BaseController{
       * @return:
       */
     @PostMapping("/copy/{id}")
-    @ApiOperation("复制任务")
+    @ApiOperation("[项目定制]复制任务(不替换数据源)")
     public ReturnT<String> copy(@PathVariable(value = "id") Integer jobId,@RequestBody JobDatasource datasource) {
         return jobService.copy(jobId,datasource.getId());
     }
@@ -89,13 +99,13 @@ public class JobInfoController extends BaseController{
       * @return:
       */
     @PostMapping("/copy/batch/{id}")
-    @ApiOperation("批量复制任务")
+    @ApiOperation("[项目定制]批量复制任务(不替换数据源)")
     public ReturnT<String> copyBatch(@PathVariable(value = "id") Integer jobId,@RequestBody List<JobDatasource> dsList) {
         return jobService.batchCopy(jobId,dsList);
     }
 
     @PostMapping("/copy/ds/{id}")
-    @ApiOperation("批量复制任务")
+    @ApiOperation("[项目定制]批量复制任务")
     public ReturnT<String> batchDSCopy(@PathVariable(value = "id") Integer jobId,@RequestBody List<DatasourceDTO> dsList) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         return jobService.batchDSCopy(jobId,dsList);
     }
@@ -103,12 +113,12 @@ public class JobInfoController extends BaseController{
      /**
       * @author: bahsk
       * @date: 2021-10-19 17:22
-      * @description:  TODO 批量复制任务组
+      * @description:  项目定制 批量复制任务组
       * @params:
       * @return:
       */
     @PostMapping("/copy/jobs")
-    @ApiOperation("批量复制任务组")
+    @ApiOperation("[项目定制]批量复制任务组")
     public ReturnT<String> batchJobCopy(@RequestBody MultiJobsDTO jobs) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         return jobService.batchJobCopy(jobs);
     }
@@ -142,12 +152,12 @@ public class JobInfoController extends BaseController{
      /**
       * @author: bahsk
       * @date: 2021-10-20 11:10
-      * @description: 批量执行任务
+      * @description: 项目定制批量执行任务
       * @params:
       * @return:
       */
     @PostMapping("/trigger/batch")
-    @ApiOperation("批量执行任务")
+    @ApiOperation("[项目定制]批量执行任务")
     public ReturnT<String> startBatch(@RequestBody List<TriggerJobDto> triggerJobDtos){
         String executorParam = "";
         for (TriggerJobDto dto : triggerJobDtos) {
@@ -197,4 +207,42 @@ public class JobInfoController extends BaseController{
         }
         return jobService.batchAdd(dto);
     }
+
+    @GetMapping("/bulidBatchAdd")
+    @ApiOperation("[项目定制]构建批量创建任务")
+    public ReturnT<CusDataXBatchJsonBuildDTO> bulidBatchAdd(@RequestParam(required = true) String words,
+                                                         @RequestParam(required = true) Integer year,
+                                                         @RequestParam(required = true) String tableName) {
+        DatasourceGroupRespDTO datasourceGroupRespDTO = this.jobDatasourceService.selectDatasourceByWords(words, year);
+        List<DatasourceDTO> datasourceDTOList = datasourceGroupRespDTO.getDatasourceDTOList();
+        DatasourceDTO datasourceDTO = datasourceDTOList.get(0);
+
+        String[] tables = tableName.split(",");
+        CusDataXBatchJsonBuildDTO build = CusDataXBatchJsonBuildDTO.builder()
+                .readerDatasourceId(Long.valueOf(datasourceDTO.getSource()))
+                .requireDSName(true)
+                .writerDatasourceId(Long.valueOf(datasourceDTO.getTargetSource()))
+                .readerTables(Arrays.asList(tables))
+                .writerTables(Arrays.asList(tables))
+                .rdbmsReader(new RdbmsReaderDto())
+                .rdbmsWriter(new RdbmsWriterDto())
+                .build();
+
+        return new ReturnT<>(build);
+    }
+
+     /**
+      * @author: bahsk
+      * @date: 2021-11-01 15:24
+      * @description: TODO [项目定制]批量替换json串数据连接
+      * @params:
+      * @return:
+      */
+     @PutMapping("/batchUpdate/datasource")
+     @ApiOperation("批量替换数据源")
+     public ReturnT<String> batchUpdate(@RequestBody List<JobDatasourceRespDTO> jobDatasourceRespDTOList) {
+         return  jobService.batchUpdate(jobDatasourceRespDTOList);
+     }
+
+
 }

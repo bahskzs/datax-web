@@ -1,5 +1,8 @@
 package com.wugui.datax.admin.service;
 
+import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.tool.database.DasColumn;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
@@ -59,4 +62,13 @@ public interface DatasourceQueryService {
      * @return
      */
     List<String> getTableSchema(Long id);
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-27 10:58
+      * @description: [项目定制]根据数据源id和表名获取所有字段明细
+      * @params:
+      * @return:
+      */
+     List<ColumnDetailsRespDTO> getColumnsDetails(Long datasourceId, String tableName) throws IOException;
 }

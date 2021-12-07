@@ -11,6 +11,7 @@ import com.wugui.datax.admin.entity.JobInfo;
 import com.wugui.datax.admin.entity.JobLog;
 import com.wugui.datax.admin.mapper.JobInfoMapper;
 import com.wugui.datax.admin.mapper.JobLogMapper;
+import com.wugui.datax.admin.service.JobLogSnapshotService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
@@ -36,6 +37,10 @@ public class JobLogController {
     public JobInfoMapper jobInfoMapper;
     @Resource
     public JobLogMapper jobLogMapper;
+
+    @Resource
+    public JobLogSnapshotService jobLogSnapshotService;
+
 
     @GetMapping("/pageList")
     @ApiOperation("运行日志列表")
@@ -129,6 +134,9 @@ public class JobLogController {
     @PostMapping("/clearLog")
     @ApiOperation("清理日志")
     public ReturnT<String> clearLog(int jobGroup, int jobId, int type) {
+
+        //TODO 清理日志之需要先快照
+        jobLogSnapshotService.genLogsSnapshot();
 
         Date clearBeforeTime = null;
         int clearBeforeNum = 0;

@@ -2,9 +2,12 @@ package com.wugui.datax.admin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.wugui.datatx.core.biz.model.ReturnT;
+import com.wugui.datax.admin.core.util.LocalCacheUtil;
 import com.wugui.datax.admin.dto.DatasourceDTO;
-import com.wugui.datax.admin.dto.DatasourceGroupDTO;
+import com.wugui.datax.admin.dto.DatasourceGroupRespDTO;
 import com.wugui.datax.admin.dto.DatasourceRespDTO;
+import com.wugui.datax.admin.dto.JobDatasourceRespDTO;
 import com.wugui.datax.admin.mapper.JobDatasourceMapper;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.JobDatasourceService;
@@ -15,6 +18,7 @@ import com.wugui.datax.admin.tool.query.QueryToolFactory;
 import com.wugui.datax.admin.util.AESUtil;
 import com.wugui.datax.admin.util.CopyUtil;
 import com.wugui.datax.admin.util.JdbcConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +31,7 @@ import java.util.List;
  * Created by jingwk on 2020/01/30
  */
 @Service
-@Transactional(readOnly = true)
+//@Transactional(readOnly = true)
 public class JobDatasourceServiceImpl extends ServiceImpl<JobDatasourceMapper, JobDatasource> implements JobDatasourceService {
 
     @Resource
@@ -74,7 +78,7 @@ public class JobDatasourceServiceImpl extends ServiceImpl<JobDatasourceMapper, J
      * @return:
      */
     @Override
-    public DatasourceGroupDTO selectDatasourceByWords(String words, Integer year) {
+    public DatasourceGroupRespDTO selectDatasourceByWords(String words, Integer year) {
 
         QueryWrapper<JobDatasource> sourceQueryWrapper = new QueryWrapper<>();
         QueryWrapper<JobDatasource> targetQueryWrapper = new QueryWrapper<>();
@@ -97,7 +101,6 @@ public class JobDatasourceServiceImpl extends ServiceImpl<JobDatasourceMapper, J
         List<DatasourceRespDTO> datasourceRespDTOS = new ArrayList<>();
 
         for (int i = 0; i < sourceList.size(); i++) {
-
             JobDatasource source = sourceList.get(i);
             JobDatasource target = targetList.get(i);
 
@@ -110,12 +113,45 @@ public class JobDatasourceServiceImpl extends ServiceImpl<JobDatasourceMapper, J
             datasourceRespDTOS.add(datasourceRespDTO);
         }
         List<DatasourceDTO> datasourceDTOS = CopyUtil.copyList(datasourceRespDTOS, DatasourceDTO.class);
-        DatasourceGroupDTO build = DatasourceGroupDTO.builder()
+        DatasourceGroupRespDTO build = DatasourceGroupRespDTO.builder()
                 .datasourceDTOList(datasourceDTOS)
                 .datasourceRespDTOList(datasourceRespDTOS)
                 .build();
 
         return build;
     }
+
+    /**
+     * @param jobDatasourceRespDTOList
+     * @author: bahsk
+     * @date: 2021-11-01 10:24
+     * @description: [项目定制]批量修改数据源
+     * @params:
+     * @return:
+     */
+    @Override
+    public Boolean updateBatch(List<JobDatasourceRespDTO> jobDatasourceRespDTOList) {
+
+        for(JobDatasourceRespDTO entity : jobDatasourceRespDTOList) {
+            JobDatasource d = this.getById(entity.getId());
+            if(StringUtils.isNotBlank(d.getDatasourceName())) {
+                // 1.清除缓存
+                LocalCacheUtil.remove(d.getDatasourceName());
+            }
+
+            // 2.批量修改
+            if (null != d.getJdbcUsername() && entity.getJdbcUsername().equals(d.getJdbcUsername())) {
+                entity.setJdbcUsername(null);
+            }
+            if (null != entity.getJdbcPassword() && entity.getJdbcPassword().equals(d.getJdbcPassword())) {
+                entity.setJdbcPassword(null);
+            }
+            JobDatasource copy = CopyUtil.copy(entity, JobDatasource.class);
+            this.updateById(copy);
+        }
+        return true;
+    }
+
+
 
 }

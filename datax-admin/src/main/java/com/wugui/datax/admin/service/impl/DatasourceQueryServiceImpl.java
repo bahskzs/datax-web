@@ -2,9 +2,11 @@ package com.wugui.datax.admin.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.google.common.collect.Lists;
+import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.service.JobDatasourceService;
+import com.wugui.datax.admin.tool.database.DasColumn;
 import com.wugui.datax.admin.tool.query.*;
 import com.wugui.datax.admin.util.JdbcConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +71,31 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         }
         BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
         return qTool.getTableSchema();
+    }
+
+    /**
+     * @param datasourceId
+     * @param tableName
+     * @author: bahsk
+     * @date: 2021-10-27 10:58
+     * @description: [项目定制]根据数据源id和表名获取所有字段明细/仅限
+     * @params:
+     * @return:
+     */
+    @Override
+    public List<ColumnDetailsRespDTO> getColumnsDetails(Long datasourceId, String tableName) throws IOException {
+        //获取数据源对象
+        JobDatasource datasource = jobDatasourceService.getById(datasourceId);
+        //queryTool组装
+        if (ObjectUtil.isNull(datasource)) {
+            return Lists.newArrayList();
+        }
+        if (JdbcConstants.ORACLE.equals(datasource.getDatasource())) {
+            BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
+            return queryTool.getColumnsDetails(tableName, datasource.getDatasource());
+        } else {
+            return null;
+        }
     }
 
     @Override

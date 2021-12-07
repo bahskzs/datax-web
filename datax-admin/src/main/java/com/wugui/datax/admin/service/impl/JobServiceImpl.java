@@ -1,6 +1,6 @@
 package com.wugui.datax.admin.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wugui.datatx.core.biz.model.ReturnT;
 import com.wugui.datatx.core.enums.ExecutorBlockStrategyEnum;
@@ -20,13 +20,13 @@ import com.wugui.datax.admin.service.JobService;
 import com.wugui.datax.admin.util.CopyUtil;
 import com.wugui.datax.admin.util.DateFormatUtils;
 import com.wugui.datax.admin.util.JSONUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -41,8 +41,9 @@ import java.util.*;
  * @author xuxueli 2016-5-28 15:30:33
  */
 @Service
+@Slf4j
 public class JobServiceImpl implements JobService {
-    private static Logger logger = LoggerFactory.getLogger(JobServiceImpl.class);
+//    private static Logger logger = LoggerFactory.getLogger(JobServiceImpl.class);
 
     @Resource
     private JobGroupMapper jobGroupMapper;
@@ -75,9 +76,12 @@ public class JobServiceImpl implements JobService {
 
         // package result
         Map<String, Object> maps = new HashMap<>();
-        maps.put("recordsTotal", list_count);        // 总记录数
-        maps.put("recordsFiltered", list_count);    // 过滤后的总记录数
-        maps.put("data", list);                    // 分页列表
+        // 总记录数
+        maps.put("recordsTotal", list_count);
+        // 过滤后的总记录数
+        maps.put("recordsFiltered", list_count);
+        // 分页列表
+        maps.put("data", list);
         return maps;
     }
 
@@ -168,7 +172,7 @@ public class JobServiceImpl implements JobService {
     }
 
      /**
-      * @author: bahsk
+      * @author: bahskzs
       * @date: 2021-10-14 9:36
       * @description: 简单拷贝任务
       * @params: jobId,datasourceId
@@ -178,7 +182,7 @@ public class JobServiceImpl implements JobService {
     public ReturnT<String> copy(Integer jobId, Long datasourceId) {
         JobInfo jobInfo = jobInfoMapper.loadById(jobId);
         JobDatasource datasource = jobDatasourceService.getById(datasourceId);
-        jobInfo.setJobDesc(datasource.getDatasourceName() +"-"+ jobInfo.getJobDesc());
+        jobInfo.setJobDesc(datasource.getDatasourceName() +"~"+ jobInfo.getJobDesc());
         jobInfo.setId(0);
         return add(jobInfo);
     }
@@ -201,7 +205,7 @@ public class JobServiceImpl implements JobService {
 
         for(JobDatasource ds : dsList) {
             JobDatasource datasource = jobDatasourceMapper.selectById(ds.getId());
-            jobInfo.setJobDesc(datasource.getDatasourceName() +"-"+ jobDesc);
+            jobInfo.setJobDesc(datasource.getDatasourceName() +"~"+ jobDesc);
             jobInfo.setId(0);
             add(jobInfo);
         }
@@ -212,7 +216,7 @@ public class JobServiceImpl implements JobService {
      /**
       * @author: bahsk
       * @date: 2021-10-14 17:19
-      * @description:  TODO 批量拷贝,替换数据源版本
+      * @description:  项目定制批量拷贝,替换数据源版本
       * @params:
       * @return:
       */
@@ -230,33 +234,36 @@ public class JobServiceImpl implements JobService {
         for(DatasourceDTO datasourceDTO : dsList) {
             //1.需要改造jobinfo的名字
 
-
-
             //2.构造新的job_json
-
 
             JobDatasource source = jobDatasourceMapper.selectById(Integer.valueOf(datasourceDTO.getSource()));
             JobDatasourceDTO sourceDS = CopyUtil.copy(source,JobDatasourceDTO.class);
-            String jobDesc = source.getDatasourceName() + "-" + sourceJobDesc;
+            String[] sourceJobDescArray = sourceJobDesc.split("~");
+
+            if(sourceJobDescArray.length > 1) {
+                sourceJobDesc = sourceJobDescArray[1];
+            }
+
+            String jobDesc = source.getDatasourceName() + "~" + sourceJobDesc;
 
             JobDatasource targetSource = jobDatasourceMapper.selectById(Integer.valueOf(datasourceDTO.getTargetSource()));
             JobDatasourceDTO targetDS = CopyUtil.copy(targetSource,JobDatasourceDTO.class);
 
             List<Map<String,String>> dbParamsList = new ArrayList<Map<String,String>>();
             dbParamsList.add(org.apache.commons.beanutils.BeanUtils.describe(sourceDS));
-            dbParamsList.add(org.apache.commons.beanutils.BeanUtils.describe(targetSource));
+            dbParamsList.add(org.apache.commons.beanutils.BeanUtils.describe(targetDS));
 
             //改造数据源--修改的是jobJson
             String json = JSONUtils.changeJsonDSs(jobJson, dbParamsList);
 
-            logger.info("json",json);
+            log.info("json",json);
             jobInfo.setJobJson(json);
             jobInfo.setJobDesc(jobDesc);
+            jobInfo.setLastHandleCode(0);
             //3.调用新增方法
             add(jobInfo);
 
         }
-
         return new ReturnT<>("success");
     }
 
@@ -315,6 +322,92 @@ public class JobServiceImpl implements JobService {
                 .build();
 
         return jobGroupDTOs;
+    }
+
+    /**
+     * @param jobDatasourceRespDTOList
+     * @author: bahsk
+     * @date: 2021-11-01 16:55
+     * @description: TODO 项目定制接口, 批量修改任务json串中数据源 目前写入params的工具类还是有点问题
+     * @params:
+     * @return:
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ReturnT<String> batchUpdate(List<JobDatasourceRespDTO> jobDatasourceRespDTOList) {
+        // 1. 查询传入list对应的JobDatasource含名称,用户名,密码,url
+        List<JobDatasource> jobDatasources = new ArrayList<>();
+        for(JobDatasourceRespDTO jobDatasourceRespDTO : jobDatasourceRespDTOList) {
+            jobDatasources.add(jobDatasourceService.getById(jobDatasourceRespDTO.getId()));
+        }
+
+        Map<Long,List<JobInfo>> dataSourceAndJobMap = new HashMap<>();
+        Map<Long,JobDatasourceRespDTO> datasourceRespDTOMap = new HashMap<>();
+
+        // 2. 根据数据源的名称匹配相应的jobInfo并构造相应的数据
+        for(JobDatasource jobDatasource : jobDatasources) {
+            String sourceName = jobDatasource.getDatasourceName().substring(3,jobDatasource.getDatasourceName().length());
+            // 3.将sourceName 和 jobInfo的job_desc进行模糊匹配筛选出第一批需要修改的任务
+            QueryWrapper<JobInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.select("id","job_desc","job_json")
+                    .like("job_desc", sourceName);
+            Long datasourceId = jobDatasource.getId();
+
+            JobDatasourceRespDTO build = JobDatasourceRespDTO.builder()
+                    .id(jobDatasource.getId())
+                    .jdbcUrl(jobDatasource.getJdbcUrl())
+                    .jdbcUsername(jobDatasource.getJdbcUsername())
+                    .jdbcPassword(jobDatasource.getJdbcPassword())
+                    .build();
+            datasourceRespDTOMap.put(datasourceId,build);
+            dataSourceAndJobMap.put(datasourceId,this.jobInfoMapper.selectList(queryWrapper));
+        }
+
+        // 4.比对jobInfo的username ,jdbcUrl 和JobDatasource中的是否一致? 是--> 替换密码
+        dataSourceAndJobMap.forEach((key, value) -> {
+            List<JobInfo> jobInfos = dataSourceAndJobMap.get(key);
+            JobDatasourceRespDTO jobDatasourceRespDTO = datasourceRespDTOMap.get(key);
+            for (JobInfo jobInfo : jobInfos) {
+                //比较数据源是和Reader中的一致还是writer中的一致
+                String json = diffPassword(jobDatasourceRespDTO, jobInfo, "reader");
+                if(StringUtils.isBlank(json)) {
+                    json = diffPassword(jobDatasourceRespDTO, jobInfo, "writer");
+                }
+                //获取任务信息，替换密码
+                JobInfo job = jobInfoMapper.loadById(jobInfo.getId());
+                job.setJobJson(json);
+                jobInfoMapper.update(job);
+            }
+        });
+
+        return new ReturnT<>("success");
+    }
+
+     /**
+      * @author: bahsk
+      * @date: 2021-11-03 8:47
+      * @description: 比较传入的数据源和jobinfo中的数据源是否是一个
+      * @params:
+      * @return:
+      */
+    private String diffPassword(JobDatasourceRespDTO jobDatasourceRespDTO, JobInfo jobInfo,String source) {
+
+        //取出指定reader 或者 writer 的parameter
+        Map<String,String> param = JSONUtils.getDBParameter(source,jobInfo.getJobJson());
+
+        //判断传入的username和jdbcUrl是否一致
+        if(StringUtils.equals(jobDatasourceRespDTO.getJdbcUsername(),param.get("username"))
+                && StringUtils.equals(jobDatasourceRespDTO.getJdbcUrl(),param.get("jdbcUrl"))) {
+
+            //如果数据连接和用户名相同,那么就替换密码
+            param.put("password",jobDatasourceRespDTO.getJdbcPassword());
+
+            //将替换后的param传入并得到替换后的json串
+            String json = JSONUtils.modifyPassword(param,source,jobInfo.getJobJson());
+
+            return json;
+        }
+        return null;
     }
 
 
@@ -402,7 +495,7 @@ public class JobServiceImpl implements JobService {
                 }
                 nextTriggerTime = nextValidTime.getTime();
             } catch (ParseException e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
                 return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("jobinfo_field_cron_invalid") + " | " + e.getMessage());
             }
         }
@@ -454,7 +547,7 @@ public class JobServiceImpl implements JobService {
             }
             nextTriggerTime = nextValidTime.getTime();
         } catch (ParseException e) {
-            logger.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
             return new ReturnT<String>(ReturnT.FAIL_CODE, I18nUtil.getString("jobinfo_field_cron_invalid") + " | " + e.getMessage());
         }
 
@@ -630,15 +723,10 @@ public class JobServiceImpl implements JobService {
             BeanUtils.copyProperties(jobTemplate, jobInfo);
             jobInfo.setJobJson(json);
 
-            //TODO.. 批量构建的任务带入数据源
+            //批量构建的任务带入数据源
             JobDatasource datasource = jobDatasourceService.getById(dto.getReaderDatasourceId());
             String jobDesc = rdTables.get(i);
-            jobInfo.setJobDesc(datasource.getDatasourceName() + "-" + jobDesc);
-//            if(dto.isRequireDSName()) {
-//                jobInfo.setJobDesc(datasource.getDatasourceName() + "-" + jobDesc);
-//            }else {
-//                jobInfo.setJobDesc(jobDesc);
-//            }
+            jobInfo.setJobDesc(datasource.getDatasourceName() + "~" + jobDesc);
             jobInfo.setAddTime(new Date());
             jobInfo.setUpdateTime(new Date());
             jobInfo.setGlueUpdatetime(new Date());
@@ -646,4 +734,6 @@ public class JobServiceImpl implements JobService {
         }
         return ReturnT.SUCCESS;
     }
+
+
 }

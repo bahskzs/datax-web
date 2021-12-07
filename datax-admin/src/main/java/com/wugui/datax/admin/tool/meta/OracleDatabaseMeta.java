@@ -50,7 +50,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     @Override
     public String getSQLQueryTables(String... tableSchema) {
-        return "select table_name from dba_tables where owner='" + tableSchema[0] + "'";
+        return "select OBJECT_NAME as table_name from all_objects where owner='" + tableSchema[0] + "'";
     }
 
     @Override

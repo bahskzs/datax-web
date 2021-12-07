@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.JobLogSnapshotMapper">
+  <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.JobLogSnapshot">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="job_group" jdbcType="INTEGER" property="jobGroup" />
+    <result column="job_id" jdbcType="INTEGER" property="jobId" />
+    <result column="job_desc" jdbcType="VARCHAR" property="jobDesc" />
+    <result column="executor_address" jdbcType="VARCHAR" property="executorAddress" />
+    <result column="executor_handler" jdbcType="VARCHAR" property="executorHandler" />
+    <result column="executor_param" jdbcType="VARCHAR" property="executorParam" />
+    <result column="executor_sharding_param" jdbcType="VARCHAR" property="executorShardingParam" />
+    <result column="executor_fail_retry_count" jdbcType="INTEGER" property="executorFailRetryCount" />
+    <result column="trigger_time" jdbcType="TIMESTAMP" property="triggerTime" />
+    <result column="trigger_code" jdbcType="INTEGER" property="triggerCode" />
+    <result column="trigger_msg" jdbcType="VARCHAR" property="triggerMsg" />
+    <result column="handle_time" jdbcType="TIMESTAMP" property="handleTime" />
+    <result column="handle_code" jdbcType="INTEGER" property="handleCode" />
+    <result column="handle_msg" jdbcType="VARCHAR" property="handleMsg" />
+    <result column="alarm_status" jdbcType="TINYINT" property="alarmStatus" />
+    <result column="process_id" jdbcType="VARCHAR" property="processId" />
+    <result column="max_id" jdbcType="BIGINT" property="maxId" />
+    <result column="snapshot_time" jdbcType="DATE" property="snapshotTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, job_group, job_id, job_desc, executor_address, executor_handler, executor_param,
+    executor_sharding_param, executor_fail_retry_count, trigger_time, trigger_code, trigger_msg,
+    handle_time, handle_code, handle_msg, alarm_status, process_id, max_id, snapshot_time
+  </sql>
+  <select id="selectByExample" parameterType="com.wugui.datax.admin.entity.JobLogSnapshotExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from job_log_snapshot
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <delete id="deleteByExample" parameterType="com.wugui.datax.admin.entity.JobLogSnapshotExample">
+    delete from job_log_snapshot
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.wugui.datax.admin.entity.JobLogSnapshot">
+    insert into job_log_snapshot (id, job_group, job_id,
+      job_desc, executor_address, executor_handler,
+      executor_param, executor_sharding_param, executor_fail_retry_count,
+      trigger_time, trigger_code, trigger_msg,
+      handle_time, handle_code, handle_msg,
+      alarm_status, process_id, max_id,
+      snapshot_time)
+    values (#{id,jdbcType=BIGINT}, #{jobGroup,jdbcType=INTEGER}, #{jobId,jdbcType=INTEGER},
+      #{jobDesc,jdbcType=VARCHAR}, #{executorAddress,jdbcType=VARCHAR}, #{executorHandler,jdbcType=VARCHAR},
+      #{executorParam,jdbcType=VARCHAR}, #{executorShardingParam,jdbcType=VARCHAR}, #{executorFailRetryCount,jdbcType=INTEGER},
+      #{triggerTime,jdbcType=TIMESTAMP}, #{triggerCode,jdbcType=INTEGER}, #{triggerMsg,jdbcType=VARCHAR},
+      #{handleTime,jdbcType=TIMESTAMP}, #{handleCode,jdbcType=INTEGER}, #{handleMsg,jdbcType=VARCHAR},
+      #{alarmStatus,jdbcType=TINYINT}, #{processId,jdbcType=VARCHAR}, #{maxId,jdbcType=BIGINT},
+      #{snapshotTime,jdbcType=DATE})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wugui.datax.admin.entity.JobLogSnapshot">
+    insert into job_log_snapshot
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="jobGroup != null">
+        job_group,
+      </if>
+      <if test="jobId != null">
+        job_id,
+      </if>
+      <if test="jobDesc != null">
+        job_desc,
+      </if>
+      <if test="executorAddress != null">
+        executor_address,
+      </if>
+      <if test="executorHandler != null">
+        executor_handler,
+      </if>
+      <if test="executorParam != null">
+        executor_param,
+      </if>
+      <if test="executorShardingParam != null">
+        executor_sharding_param,
+      </if>
+      <if test="executorFailRetryCount != null">
+        executor_fail_retry_count,
+      </if>
+      <if test="triggerTime != null">
+        trigger_time,
+      </if>
+      <if test="triggerCode != null">
+        trigger_code,
+      </if>
+      <if test="triggerMsg != null">
+        trigger_msg,
+      </if>
+      <if test="handleTime != null">
+        handle_time,
+      </if>
+      <if test="handleCode != null">
+        handle_code,
+      </if>
+      <if test="handleMsg != null">
+        handle_msg,
+      </if>
+      <if test="alarmStatus != null">
+        alarm_status,
+      </if>
+      <if test="processId != null">
+        process_id,
+      </if>
+      <if test="maxId != null">
+        max_id,
+      </if>
+      <if test="snapshotTime != null">
+        snapshot_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="jobGroup != null">
+        #{jobGroup,jdbcType=INTEGER},
+      </if>
+      <if test="jobId != null">
+        #{jobId,jdbcType=INTEGER},
+      </if>
+      <if test="jobDesc != null">
+        #{jobDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="executorAddress != null">
+        #{executorAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="executorHandler != null">
+        #{executorHandler,jdbcType=VARCHAR},
+      </if>
+      <if test="executorParam != null">
+        #{executorParam,jdbcType=VARCHAR},
+      </if>
+      <if test="executorShardingParam != null">
+        #{executorShardingParam,jdbcType=VARCHAR},
+      </if>
+      <if test="executorFailRetryCount != null">
+        #{executorFailRetryCount,jdbcType=INTEGER},
+      </if>
+      <if test="triggerTime != null">
+        #{triggerTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="triggerCode != null">
+        #{triggerCode,jdbcType=INTEGER},
+      </if>
+      <if test="triggerMsg != null">
+        #{triggerMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="handleTime != null">
+        #{handleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="handleCode != null">
+        #{handleCode,jdbcType=INTEGER},
+      </if>
+      <if test="handleMsg != null">
+        #{handleMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="alarmStatus != null">
+        #{alarmStatus,jdbcType=TINYINT},
+      </if>
+      <if test="processId != null">
+        #{processId,jdbcType=VARCHAR},
+      </if>
+      <if test="maxId != null">
+        #{maxId,jdbcType=BIGINT},
+      </if>
+      <if test="snapshotTime != null">
+        #{snapshotTime,jdbcType=DATE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.wugui.datax.admin.entity.JobLogSnapshotExample" resultType="java.lang.Long">
+    select count(*) from job_log_snapshot
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update job_log_snapshot
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.jobGroup != null">
+        job_group = #{record.jobGroup,jdbcType=INTEGER},
+      </if>
+      <if test="record.jobId != null">
+        job_id = #{record.jobId,jdbcType=INTEGER},
+      </if>
+      <if test="record.jobDesc != null">
+        job_desc = #{record.jobDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.executorAddress != null">
+        executor_address = #{record.executorAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.executorHandler != null">
+        executor_handler = #{record.executorHandler,jdbcType=VARCHAR},
+      </if>
+      <if test="record.executorParam != null">
+        executor_param = #{record.executorParam,jdbcType=VARCHAR},
+      </if>
+      <if test="record.executorShardingParam != null">
+        executor_sharding_param = #{record.executorShardingParam,jdbcType=VARCHAR},
+      </if>
+      <if test="record.executorFailRetryCount != null">
+        executor_fail_retry_count = #{record.executorFailRetryCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.triggerTime != null">
+        trigger_time = #{record.triggerTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.triggerCode != null">
+        trigger_code = #{record.triggerCode,jdbcType=INTEGER},
+      </if>
+      <if test="record.triggerMsg != null">
+        trigger_msg = #{record.triggerMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.handleTime != null">
+        handle_time = #{record.handleTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.handleCode != null">
+        handle_code = #{record.handleCode,jdbcType=INTEGER},
+      </if>
+      <if test="record.handleMsg != null">
+        handle_msg = #{record.handleMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.alarmStatus != null">
+        alarm_status = #{record.alarmStatus,jdbcType=TINYINT},
+      </if>
+      <if test="record.processId != null">
+        process_id = #{record.processId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.maxId != null">
+        max_id = #{record.maxId,jdbcType=BIGINT},
+      </if>
+      <if test="record.snapshotTime != null">
+        snapshot_time = #{record.snapshotTime,jdbcType=DATE},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update job_log_snapshot
+    set id = #{record.id,jdbcType=BIGINT},
+      job_group = #{record.jobGroup,jdbcType=INTEGER},
+      job_id = #{record.jobId,jdbcType=INTEGER},
+      job_desc = #{record.jobDesc,jdbcType=VARCHAR},
+      executor_address = #{record.executorAddress,jdbcType=VARCHAR},
+      executor_handler = #{record.executorHandler,jdbcType=VARCHAR},
+      executor_param = #{record.executorParam,jdbcType=VARCHAR},
+      executor_sharding_param = #{record.executorShardingParam,jdbcType=VARCHAR},
+      executor_fail_retry_count = #{record.executorFailRetryCount,jdbcType=INTEGER},
+      trigger_time = #{record.triggerTime,jdbcType=TIMESTAMP},
+      trigger_code = #{record.triggerCode,jdbcType=INTEGER},
+      trigger_msg = #{record.triggerMsg,jdbcType=VARCHAR},
+      handle_time = #{record.handleTime,jdbcType=TIMESTAMP},
+      handle_code = #{record.handleCode,jdbcType=INTEGER},
+      handle_msg = #{record.handleMsg,jdbcType=VARCHAR},
+      alarm_status = #{record.alarmStatus,jdbcType=TINYINT},
+      process_id = #{record.processId,jdbcType=VARCHAR},
+      max_id = #{record.maxId,jdbcType=BIGINT},
+      snapshot_time = #{record.snapshotTime,jdbcType=DATE}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="genLogsSnapshot" parameterType="com.wugui.datax.admin.entity.JobLogSnapshot">
+    replace into job_log_snapshot
+    select id, job_group, job_id,
+           job_desc, executor_address, executor_handler,
+           executor_param, executor_sharding_param, executor_fail_retry_count,
+           trigger_time, trigger_code, trigger_msg,
+           handle_time, handle_code, handle_msg,
+           alarm_status, process_id, max_id, now() snapshot_time
+    from job_log
+  </update>
+</mapper>

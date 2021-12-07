@@ -149,4 +149,13 @@ public interface JobService {
        * @return:
        */
       TriggerJobGroupDTO searchList(String words, String year);
+
+       /**
+        * @author: bahsk
+        * @date: 2021-11-01 16:55
+        * @description: 项目定制接口,批量修改任务json串中数据源
+        * @params:
+        * @return:
+        */
+      ReturnT<String> batchUpdate(List<JobDatasourceRespDTO> jobDatasourceRespDTOList);
 }

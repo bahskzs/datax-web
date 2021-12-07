@@ -1,7 +1,9 @@
 package com.wugui.datax.admin.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
+import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
 import com.wugui.datax.admin.service.DatasourceQueryService;
+import com.wugui.datax.admin.tool.database.DasColumn;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +90,19 @@ public class MetadataController extends BaseController {
     public R<List<String>> getColumns(Long datasourceId, String tableName) throws IOException {
         return success(datasourceQueryService.getColumns(datasourceId, tableName));
     }
+
+     /**
+      * @author: bahsk
+      * @date: 2021-10-27 10:55
+      * @description: 项目定制 获取数据源对应的表的所有字段以及字段类型长度等
+      * @params:
+      * @return:
+      */
+     @GetMapping("/getColumnsDetails")
+     @ApiOperation("[项目定制]根据数据源id和表名获取所有字段明细")
+     public R<List<ColumnDetailsRespDTO>> getColumnsDetails(Long datasourceId, String tableName) throws IOException {
+         return success(datasourceQueryService.getColumnsDetails(datasourceId, tableName));
+     }
 
     /**
      * 根据数据源id和sql语句获取所有字段

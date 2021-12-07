@@ -1,8 +1,8 @@
 package com.wugui.datax.admin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wugui.datax.admin.dto.DatasourceDTO;
-import com.wugui.datax.admin.dto.DatasourceGroupDTO;
+import com.wugui.datax.admin.dto.DatasourceGroupRespDTO;
+import com.wugui.datax.admin.dto.JobDatasourceRespDTO;
 import com.wugui.datax.admin.entity.JobDatasource;
 
 import java.io.IOException;
@@ -43,5 +43,16 @@ public interface JobDatasourceService extends IService<JobDatasource> {
       * @params:
       * @return:
       */
-     DatasourceGroupDTO selectDatasourceByWords(String words, Integer year);
+     DatasourceGroupRespDTO selectDatasourceByWords(String words, Integer year);
+
+
+      /**
+       * @author: bahsk
+       * @date: 2021-11-01 10:24
+       * @description: [项目定制]批量修改数据源
+       * @params:
+       * @return:
+       */
+
+     Boolean updateBatch(List<JobDatasourceRespDTO> jobDatasourceRespDTOList) ;
 }

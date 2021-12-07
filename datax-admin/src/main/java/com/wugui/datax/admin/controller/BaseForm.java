@@ -153,8 +153,9 @@ public class BaseForm {
         Page page = new Page();
         //如果无current，默认返回1000条数据
         page.setCurrent(this.getPageNo());
-//        page.setSize(this.getPageSize());
-        page.setSize(1500);
+        page.setSize(this.getPageSize());
+        //虽然非常不好但是写死了2000 由于项目这边前端没办法编译
+        //page.setSize(1500);
         if (ObjectUtil.isNotNull(this.get("ifCount"))) {
             page.setSearchCount(BooleanUtil.toBoolean(this.getString("ifCount")));
         } else {
@@ -163,6 +164,33 @@ public class BaseForm {
         }
         return page;
     }
+
+
+    /**
+     * 2021.12.03 bahskz
+     * 由于前端数据源下拉选择器是没有分页功能的，所以出现了永远也到不了第二页的情况。 所以返回数据设置为当前表的最大条数
+     * */
+    public Page getPlusPagingQueryEntity(boolean isTotal,int size) {
+        Page page = new Page();
+        //如果无current，默认返回1000条数据
+
+        page.setCurrent(this.getPageNo());
+        if(isTotal) {
+            page.setSize(-1);
+            log.info("pageSize : {}", page.getSize());
+            page.setPages(1);
+        }
+        //虽然非常不好但是写死了2000 由于项目这边前端没办法编译
+        //page.setSize(1500);
+        if (ObjectUtil.isNotNull(this.get("ifCount"))) {
+            page.setSearchCount(BooleanUtil.toBoolean(this.getString("ifCount")));
+        } else {
+            //默认给true
+            page.setSearchCount(true);
+        }
+        return page;
+    }
+
 
     /**
      * 解析分页排序参数（pageHelper）

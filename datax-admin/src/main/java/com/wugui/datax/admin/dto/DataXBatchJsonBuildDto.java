@@ -1,5 +1,6 @@
 package com.wugui.datax.admin.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
