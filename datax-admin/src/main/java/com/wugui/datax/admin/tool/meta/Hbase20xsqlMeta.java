@@ -28,4 +28,6 @@ public class Hbase20xsqlMeta extends BaseDatabaseMeta implements DatabaseInterfa
     public String getSQLQueryTables(String... tableSchema) {
         return null;
     }
+
+
 }

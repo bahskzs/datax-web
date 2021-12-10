@@ -33,6 +33,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
                 "   AND A.column_name  = '%s'", tableName, columnName);
     }
 
+
+
     @Override
     public String getSQLQueryPrimaryKey() {
         return "select cu.column_name from user_cons_columns cu, user_constraints au where cu.constraint_name = au.constraint_name and au.owner = ? and au.constraint_type = 'P' and au.table_name = ?";
@@ -68,4 +70,16 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     public String getSQLQueryColumns(String... args) {
         return "select table_name,comments from user_tab_comments where table_name = ?";
     }
+
+     /**
+      * @author: bahsk
+      * @date: 2021-12-08 11:12
+      * @description: 获取建表语句
+      * @params:
+      * @return:
+      */
+     @Override
+     public String getDdlSQL(String... args) {
+         return "SELECT DBMS_METADATA.GET_DDL(U.OBJECT_TYPE, u.object_name,u.OWNER) FROM All_OBJECTS u where owner='" + args[0] + "' and u.object_name ='" + args[1] + "'";
+     }
 }

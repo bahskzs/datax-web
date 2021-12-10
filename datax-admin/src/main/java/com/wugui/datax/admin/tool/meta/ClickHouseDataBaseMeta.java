@@ -16,4 +16,7 @@ public class ClickHouseDataBaseMeta extends BaseDatabaseMeta implements Database
     public String getSQLQueryTables() {
         return "show tables";
     }
+
+
+
 }

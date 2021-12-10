@@ -6,7 +6,7 @@ import com.wugui.datax.admin.util.JdbcConstants;
  * meta信息工厂
  *
  * @author zhouhongfa@gz-yibo.com
- * @ClassName DatabaseMetaFactory
+ * @ClassName DatabaseMetaFactory   简单工厂
  * @Version 1.0
  * @since 2019/7/17 15:55
  */

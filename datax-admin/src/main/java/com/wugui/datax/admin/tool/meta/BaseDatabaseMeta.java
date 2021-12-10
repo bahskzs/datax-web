@@ -41,6 +41,11 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
     }
 
     @Override
+    public String getDdlSQL(String... args) {
+        return null;
+    }
+
+    @Override
     public String getMaxId(String tableName, String primaryKey) {
         return String.format("select max(%s) from %s",primaryKey,tableName);
     }
@@ -57,6 +62,17 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
 
     @Override
     public String getSQLQueryTables(String... tableSchema) {
+        return null;
+    }
+
+    /**
+     * 获取当前表建表sql
+     *
+     * @param user
+     * @param tableName
+     * @return
+     */
+    public String getDdlSQL(String user, String tableName) {
         return null;
     }
 }

@@ -71,4 +71,14 @@ public interface DatasourceQueryService {
       * @return:
       */
      List<ColumnDetailsRespDTO> getColumnsDetails(Long datasourceId, String tableName) throws IOException;
+
+      /**
+       * @author: bahsk
+       * @date: 2021-12-08 16:49
+       * @description:
+       * @params:
+       * @return:
+       */
+      String getDdlSQL(String tableName,Long datasourceId);
+
 }

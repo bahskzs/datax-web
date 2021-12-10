@@ -84,7 +84,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         dataSource.setDriverClassName(jobDatasource.getJdbcDriverClass());
         dataSource.setMaximumPoolSize(1);
         dataSource.setMinimumIdle(0);
-        dataSource.setConnectionTimeout(30000);
+        dataSource.setConnectionTimeout(60000);
         this.datasource = dataSource;
         this.connection = this.datasource.getConnection();
     }
@@ -384,6 +384,40 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         }
         return res;
     }
+
+     /**
+      * @author: bahsk
+      * @date: 2021-12-08 16:12
+      * @description: [项目定制] 查询建表sql
+      * @params:
+      * @return:
+      */
+     public String getDdlSQL(String tableName,String source, String user){
+         if(JdbcConstants.ORACLE.equals(source)) {
+
+             String querySql = sqlBuilder.getDdlSQL(user.toUpperCase(),tableName.toUpperCase());
+             Statement stmt = null;
+             ResultSet resultSet = null;
+             try {
+
+                 stmt = this.connection.createStatement();
+                 resultSet = stmt.executeQuery(querySql);
+                 while (resultSet.next()) {
+                     String ddl = resultSet.getString(1).replaceAll("\\n\\t|\\n|\\t|\\\""," ");
+                    return ddl;
+                 }
+
+             } catch (SQLException e) {
+                 logger.error("获取ddl失败");
+                 e.printStackTrace();
+             }finally {
+                 JdbcUtils.close(resultSet);
+                 JdbcUtils.close(stmt);
+             }
+
+         }
+          return  null;
+     }
 
 
      /**

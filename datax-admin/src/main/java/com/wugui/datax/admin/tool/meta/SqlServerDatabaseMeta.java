@@ -40,4 +40,6 @@ public class SqlServerDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
         return "select distinct schema_name(schema_id) from sys.objects where type ='U';";
     }
 
+
+
 }

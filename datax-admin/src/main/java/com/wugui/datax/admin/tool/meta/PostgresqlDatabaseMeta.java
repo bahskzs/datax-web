@@ -57,4 +57,6 @@ public class PostgresqlDatabaseMeta extends BaseDatabaseMeta implements Database
     public String getSQLQueryComment(String schemaName, String tableName, String columnName) {
         return null;
     }
+
+
 }

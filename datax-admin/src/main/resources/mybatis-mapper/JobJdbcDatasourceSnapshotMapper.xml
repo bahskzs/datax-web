@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wugui.datax.admin.mapper.JobJdbcDatasourceSnapshotMapper">
+
   <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.JobJdbcDatasourceSnapshot">
     <result column="id" jdbcType="BIGINT" property="id" />
     <result column="datasource_name" jdbcType="VARCHAR" property="datasourceName" />
@@ -220,5 +221,29 @@
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
+  </update>
+
+  <update id="genSnapshot" >
+    insert into job_jdbc_datasource_snapshot (`id`, `datasource_name`, `datasource`, `datasource_group`, `database_name`,
+                                              jdbc_username, jdbc_url, `status`, snapshot_time)
+    select id, datasource_name, `datasource`, datasource_group, database_name,
+           jdbc_username, jdbc_url, -1 as `status`, now() as snapshot_time
+    from job_jdbc_datasource t1
+    where t1.status=1 and not exists(select 1
+                     from job_jdbc_datasource_snapshot t2
+                     where t1.id = t2.id
+    );
+
+    update job_jdbc_datasource_snapshot t1 left join datax_web.job_jdbc_datasource t2 on t1.id = t2.id
+    set
+      t1.datasource_name = t2.datasource_name,
+      t1.datasource = t2.datasource,
+      t1.datasource_group = t2.datasource_group,
+      t1.database_name = t2.database_name,
+      t1.jdbc_username = t2.jdbc_username,
+      t1.jdbc_url = t2.jdbc_url,
+      t1.status = -1,
+      t1.snapshot_time = now()
+     where t2.status=1;
   </update>
 </mapper>

@@ -63,4 +63,14 @@ public interface DatabaseInterface {
      * @return
      */
     String getMaxId(String tableName,String primaryKey);
+
+    /**
+     * 获取当前表建表sql
+     * @param args
+     *
+     * @return
+     */
+    String getDdlSQL(String... args);
+
+
 }

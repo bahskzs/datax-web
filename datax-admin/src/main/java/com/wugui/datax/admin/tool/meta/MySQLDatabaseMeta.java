@@ -28,6 +28,18 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         return String.format("SELECT COLUMN_COMMENT FROM information_schema.COLUMNS where TABLE_SCHEMA = '%s' and TABLE_NAME = '%s' and COLUMN_NAME = '%s'", schemaName, tableName, columnName);
     }
 
+    /**
+     * 获取当前表建表sql
+     *
+     * @param user
+     * @param tableName
+     * @return
+     */
+    @Override
+    public String getDdlSQL(String user, String tableName) {
+        return null;
+    }
+
     @Override
     public String getSQLQueryPrimaryKey() {
         return "select column_name from information_schema.columns where table_schema=? and table_name=? and column_key = 'PRI'";

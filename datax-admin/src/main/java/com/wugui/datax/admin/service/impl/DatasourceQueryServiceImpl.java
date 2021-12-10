@@ -8,6 +8,7 @@ import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.service.JobDatasourceService;
 import com.wugui.datax.admin.tool.database.DasColumn;
 import com.wugui.datax.admin.tool.query.*;
+import com.wugui.datax.admin.util.AESUtil;
 import com.wugui.datax.admin.util.JdbcConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,25 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         if (JdbcConstants.ORACLE.equals(datasource.getDatasource())) {
             BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
             return queryTool.getColumnsDetails(tableName, datasource.getDatasource());
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param tableName
+     * @author: bahsk
+     * @date: 2021-12-08 16:49
+     * @description:
+     * @params:
+     * @return:
+     */
+    @Override
+    public String getDdlSQL(String tableName,Long datasourceId) {
+        JobDatasource datasource = jobDatasourceService.getById(datasourceId);
+        if (JdbcConstants.ORACLE.equals(datasource.getDatasource())) {
+            BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
+            return queryTool.getDdlSQL(tableName,datasource.getDatasource(), AESUtil.decrypt(datasource.getJdbcUsername()));
         } else {
             return null;
         }

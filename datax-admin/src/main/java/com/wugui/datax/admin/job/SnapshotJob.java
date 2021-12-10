@@ -7,6 +7,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author bahsk
@@ -24,24 +26,24 @@ public class SnapshotJob {
     @Resource
     private JobJdbcDatasourceSnapshotService jobJdbcDatasourceSnapshotService;
 
-    @Scheduled(cron = "01 01 01 * * *")
+    @Scheduled(cron = " 00 00 01 * * ?")
     public void cron() {
-        log.info("快照日志表");
+        log.info("log snapshot begin:");
         long start = System.currentTimeMillis();
         jobLogSnapshotService.genLogsSnapshot();
-        log.info("快照日志表数据结束,耗时: {}毫秒", System.currentTimeMillis()
+        log.info("log snapshot end,spend: {} ms", System.currentTimeMillis()
                 - start);
     }
 
     /**
-     * TODO 临时方法
+     * 快照数据源
      */
-    @Scheduled(cron = "20 34 10 * * *")
+    @Scheduled(cron = "00 50 01 * * ?")
     public void cronDS() {
-        log.info("快照数据源表");
+        log.info("datasource snapshot begin:");
         long start = System.currentTimeMillis();
         jobJdbcDatasourceSnapshotService.genSnapshot();
-        log.info("快照数据源表数据结束,耗时: {}毫秒", System.currentTimeMillis()
+        log.info("datasource snapshot end,spend: {} ms", System.currentTimeMillis()
                 - start);
     }
 }

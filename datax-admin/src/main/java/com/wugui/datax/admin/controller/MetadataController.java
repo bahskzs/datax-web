@@ -104,6 +104,12 @@ public class MetadataController extends BaseController {
          return success(datasourceQueryService.getColumnsDetails(datasourceId, tableName));
      }
 
+     @GetMapping("/getDdlSQL")
+     @ApiOperation("[项目定制]获取建表sql")
+     public R<String> getDdlSQL(Long datasourceId, String tableName) {
+        return success(datasourceQueryService.getDdlSQL(tableName,datasourceId));
+     }
+
     /**
      * 根据数据源id和sql语句获取所有字段
      *

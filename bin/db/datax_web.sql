@@ -352,3 +352,19 @@ CHANGE COLUMN `author` `user_id` INT(11) NOT NULL COMMENT '修改用户' ;
 
 ALTER TABLE `job_info`
 CHANGE COLUMN `increment_type` `increment_type` TINYINT(4) NULL DEFAULT 0 COMMENT '增量类型' ;
+
+
+-- auto-generated definition
+create table job_jdbc_datasource_snapshot
+(
+    id               bigint                       default 0         not null comment '自增主键',
+    datasource_name  varchar(200) charset utf8mb4                   not null comment '数据源名称',
+    datasource       varchar(45) charset utf8mb4                    not null comment '数据源',
+    datasource_group varchar(200) charset utf8mb4 default 'Default' null comment '数据源分组',
+    database_name    varchar(45) charset utf8mb4                    null comment '数据库名',
+    jdbc_username    varchar(100) charset utf8mb4                   null comment '用户名',
+    jdbc_url         varchar(500) charset utf8mb4                   not null comment 'jdbc url',
+    status           tinyint(1)                   default 1         not null comment '状态：0删除 1启用 2禁用',
+    snapshot_time    date                                           null
+);
+

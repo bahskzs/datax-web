@@ -2,13 +2,15 @@ package com.wugui.datax.admin.mapper;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.entity.JobJdbcDatasourceSnapshot;
 import com.wugui.datax.admin.entity.JobJdbcDatasourceSnapshotExample;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
-public interface JobJdbcDatasourceSnapshotMapper {
+public interface JobJdbcDatasourceSnapshotMapper extends BaseMapper<JobJdbcDatasourceSnapshot> {
     long countByExample(JobJdbcDatasourceSnapshotExample example);
 
     int deleteByExample(JobJdbcDatasourceSnapshotExample example);
