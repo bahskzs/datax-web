@@ -87,9 +87,9 @@ logging:
   #level:
   #  com.wugui.datax.admin.mapper: info
 #path: ./data/applogs/admin
-  level:
-    #com.wugui.datax.admin.mapper: error
-    com.wugui.datax.admin: info
+#  level:
+#    #com.wugui.datax.admin.mapper: error
+#    com.wugui.datax.admin: info
     path: ./data/applogs/admin
 
 

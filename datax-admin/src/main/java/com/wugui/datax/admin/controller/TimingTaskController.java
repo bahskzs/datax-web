@@ -17,7 +17,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @RequestMapping("api/timetask")
-@Api(tags = "定时任务测试执行")
+@Api(tags = "[项目定制]定时任务测试执行")
 public class TimingTaskController {
 
     @Resource

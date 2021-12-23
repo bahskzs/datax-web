@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.wugui.datatx.core.util.Constants;
 import com.wugui.datax.admin.core.util.LocalCacheUtil;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.tool.database.ColumnInfo;
 import com.wugui.datax.admin.tool.database.DasColumn;
@@ -62,7 +63,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             getDataSource(jobDatasource);
         } else {
             this.connection = (Connection) LocalCacheUtil.get(jobDatasource.getDatasourceName());
-            if (!this.connection.isValid(500)) {
+            if (!this.connection.isValid(3000)) {
                 LocalCacheUtil.remove(jobDatasource.getDatasourceName());
                 getDataSource(jobDatasource);
             }
@@ -84,7 +85,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         dataSource.setDriverClassName(jobDatasource.getJdbcDriverClass());
         dataSource.setMaximumPoolSize(1);
         dataSource.setMinimumIdle(0);
-        dataSource.setConnectionTimeout(60000);
+        dataSource.setConnectionTimeout(3000);
         this.datasource = dataSource;
         this.connection = this.datasource.getConnection();
     }
@@ -385,48 +386,140 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         return res;
     }
 
+    /**
+     * @author: bahsk
+     * @date: 2021-12-08 16:12
+     * @description: [项目定制] 查询建表sql
+     * @params:
+     * @return:
+     */
+    public List<TableDetailsResp> getDdlSQL(String tableName, String user) {
+        List<TableDetailsResp> tableDetailsResps = new ArrayList<>();
+
+        String[] tables =tableName.split(",");
+        if(tables.length > 1) {
+            return this.getMultiDdlSQL(tableName,user);
+        } else {
+            // 此处if后续可以考虑替换成策略模式
+            String querySql = sqlBuilder.getDdlSQL(this.currentSchema, tableName.toUpperCase());
+            TableDetailsResp tableDetailsResp = null;
+
+            //oracle数据源比较特殊，是用用户而不是模式
+            if (currentDatabase.equals(JdbcConstants.ORACLE)) {
+                querySql = sqlBuilder.getDdlSQL(user.toUpperCase(), tableName.toUpperCase());
+            }
+
+            if (StringUtils.isBlank(querySql)) {
+                tableDetailsResp = TableDetailsResp.builder()
+                        .tableName(null)
+                        .ddlSQL("获取ddl失败,暂不支持此数据源" + this.currentDatabase + "类型")
+                        .build();
+                tableDetailsResps.add(tableDetailsResp);
+                return tableDetailsResps;
+            }
+
+            Statement stmt = null;
+            ResultSet resultSet = null;
+            try {
+
+                stmt = this.connection.createStatement();
+                resultSet = stmt.executeQuery(querySql);
+                if (resultSet.next()) {
+                    String ddl = resultSet.getString(2).replaceAll("\\n\\t|\\n|\\t|\\\"", " ");
+                    TableDetailsResp build = TableDetailsResp.builder()
+                            .tableName(tableName)
+                            .ddlSQL(ddl)
+                            .build();
+                    tableDetailsResps.add(build);
+                    return tableDetailsResps;
+                } else {
+                    TableDetailsResp build = TableDetailsResp.builder()
+                            .tableName(tableName)
+                            .ddlSQL("获取ddl失败无记录")
+                            .build();
+                    tableDetailsResps.add(build);
+                    return tableDetailsResps;
+                }
+
+            } catch (SQLException e) {
+                logger.error("获取ddl失败" + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                JdbcUtils.close(resultSet);
+                JdbcUtils.close(stmt);
+            }
+
+            TableDetailsResp build = TableDetailsResp.builder()
+                    .tableName(tableName)
+                    .ddlSQL("获取ddl失败,无法创建链接")
+                    .build();
+            tableDetailsResps.add(build);
+            return tableDetailsResps;
+        }
+    }
+
      /**
       * @author: bahsk
-      * @date: 2021-12-08 16:12
-      * @description: [项目定制] 查询建表sql
+      * @date: 2021-12-23 9:46
+      * @description: [项目定制] 查询多表建表sql,限oracle
       * @params:
       * @return:
       */
-     public String getDdlSQL(String tableName,String source, String user){
-         if(JdbcConstants.ORACLE.equals(source)) {
+    public List<TableDetailsResp> getMultiDdlSQL(String tableName, String user) {
+        List<TableDetailsResp> tableDetailsResps = new ArrayList<>();
+//        String[] tables = (String[]) tableList.toArray();
+//        String tableName = tables.length == 1 ? tables[0] : "'" + StringUtils.join(tables, "','") + "'";
+        // 此处if后续可以考虑替换成策略模式
+        String querySql = sqlBuilder.getMultiDdlSQL(this.currentSchema, tableName.toUpperCase());
+        TableDetailsResp tableDetailsResp = null;
 
-             String querySql = sqlBuilder.getDdlSQL(user.toUpperCase(),tableName.toUpperCase());
-             Statement stmt = null;
-             ResultSet resultSet = null;
-             try {
+        //oracle数据源比较特殊，是用用户而不是模式
+        if (currentDatabase.equals(JdbcConstants.ORACLE)) {
+            querySql = sqlBuilder.getMultiDdlSQL(user.toUpperCase(), "'" + tableName.toUpperCase().replaceAll(",","','") + "'");
+        }
 
-                 stmt = this.connection.createStatement();
-                 resultSet = stmt.executeQuery(querySql);
-                 while (resultSet.next()) {
-                     String ddl = resultSet.getString(1).replaceAll("\\n\\t|\\n|\\t|\\\""," ");
-                    return ddl;
-                 }
+        if (StringUtils.isBlank(querySql)) {
+            tableDetailsResp = TableDetailsResp.builder()
+                    .tableName(null)
+                    .ddlSQL("获取ddl失败,暂不支持" + this.currentDatabase + "的多表获取,请转为单表查询")
+                    .build();
+            tableDetailsResps.add(tableDetailsResp);
+            return tableDetailsResps;
+        }
 
-             } catch (SQLException e) {
-                 logger.error("获取ddl失败");
-                 e.printStackTrace();
-             }finally {
-                 JdbcUtils.close(resultSet);
-                 JdbcUtils.close(stmt);
-             }
+        Statement stmt = null;
+        ResultSet resultSet = null;
+        try {
 
-         }
-          return  null;
-     }
+            stmt = this.connection.createStatement();
+            resultSet = stmt.executeQuery(querySql);
+            while (resultSet.next()) {
+                String ddl = resultSet.getString(2).replaceAll("\\n\\t|\\n|\\t|\\\"", " ");
+                TableDetailsResp build = TableDetailsResp.builder()
+                        .tableName(tableName)
+                        .ddlSQL(ddl)
+                        .build();
+                tableDetailsResps.add(build);
+            }
+        } catch (SQLException e) {
+            logger.error("获取ddl失败" + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            JdbcUtils.close(resultSet);
+            JdbcUtils.close(stmt);
+        }
+
+        return tableDetailsResps;
+    }
 
 
-     /**
-      * @author: bahsk
-      * @date: 2021-10-27 11:50
-      * @description:
-      * @params:
-      * @return:
-      */
+    /**
+     * @author: bahsk
+     * @date: 2021-10-27 11:50
+     * @description:
+     * @params:
+     * @return:
+     */
     public List<DasColumn> getDasColumn(String tableName, String datasource) {
 
         List<ColumnDetailsRespDTO> res = Lists.newArrayList();
@@ -451,7 +544,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             JdbcUtils.close(rs);
             JdbcUtils.close(stmt);
         }
-        return  null;
+        return null;
     }
 
     @Override

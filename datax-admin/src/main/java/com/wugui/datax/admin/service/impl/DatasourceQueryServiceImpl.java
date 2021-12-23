@@ -3,6 +3,7 @@ package com.wugui.datax.admin.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.google.common.collect.Lists;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.service.JobDatasourceService;
@@ -103,19 +104,15 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
      * @param tableName
      * @author: bahsk
      * @date: 2021-12-08 16:49
-     * @description:
+     * @description: 获取DDL
      * @params:
      * @return:
      */
     @Override
-    public String getDdlSQL(String tableName,Long datasourceId) {
+    public List<TableDetailsResp> getDdlSQL(String tableName, Long datasourceId) {
         JobDatasource datasource = jobDatasourceService.getById(datasourceId);
-        if (JdbcConstants.ORACLE.equals(datasource.getDatasource())) {
-            BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
-            return queryTool.getDdlSQL(tableName,datasource.getDatasource(), AESUtil.decrypt(datasource.getJdbcUsername()));
-        } else {
-            return null;
-        }
+        BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
+        return queryTool.getDdlSQL(tableName, AESUtil.decrypt(datasource.getJdbcUsername()));
     }
 
     @Override

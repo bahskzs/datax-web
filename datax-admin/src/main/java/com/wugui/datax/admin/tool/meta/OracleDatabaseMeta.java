@@ -80,6 +80,12 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
       */
      @Override
      public String getDdlSQL(String... args) {
-         return "SELECT DBMS_METADATA.GET_DDL(U.OBJECT_TYPE, u.object_name,u.OWNER) FROM All_OBJECTS u where owner='" + args[0] + "' and u.object_name ='" + args[1] + "'";
+         return "SELECT u.object_name,DBMS_METADATA.GET_DDL(U.OBJECT_TYPE, u.object_name,u.OWNER) FROM All_OBJECTS u where owner='" + args[0] + "' and u.object_name ='" + args[1] + "'";
+     }
+
+
+     @Override
+     public String getMultiDdlSQL(String... args) {
+         return "SELECT u.object_name,DBMS_METADATA.GET_DDL(U.OBJECT_TYPE, u.object_name,u.OWNER) FROM All_OBJECTS u where owner='" + args[0] + "' and u.object_name in (" + args[1] + ")";
      }
 }

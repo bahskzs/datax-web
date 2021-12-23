@@ -72,5 +72,11 @@ public interface DatabaseInterface {
      */
     String getDdlSQL(String... args);
 
-
+    /**
+     * 获取当前表集合的建表sql
+     * @param args
+     *
+     * @return
+     */
+    String getMultiDdlSQL(String... args);
 }

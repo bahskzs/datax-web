@@ -27,5 +27,15 @@ public class HiveDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterf
         return "show tables";
     }
 
-
+    /**
+     * 获取当前表建表sql
+     *
+     * @param
+     * @param
+     * @return
+     */
+    @Override
+    public String getDdlSQL(String ...args) {
+        return "SHOW CREATE TABLE " + args[0] + "." + args[1];
+    }
 }

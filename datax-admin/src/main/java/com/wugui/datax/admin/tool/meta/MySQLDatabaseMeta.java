@@ -31,13 +31,13 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     /**
      * 获取当前表建表sql
      *
-     * @param user
-     * @param tableName
+     * @param
+     * @param
      * @return
      */
     @Override
-    public String getDdlSQL(String user, String tableName) {
-        return null;
+    public String getDdlSQL(String ...args) {
+        return "SHOW CREATE TABLE " + args[0] + "." + args[1];
     }
 
     @Override

@@ -42,7 +42,7 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
 
     @Override
     public String getDdlSQL(String... args) {
-        return null;
+        return null ;
     }
 
     @Override
@@ -73,6 +73,17 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
      * @return
      */
     public String getDdlSQL(String user, String tableName) {
+        return null;
+    }
+
+    /**
+     *
+     * @param args
+     *
+     * @return
+     */
+    @Override
+    public String getMultiDdlSQL(String... args) {
         return null;
     }
 }

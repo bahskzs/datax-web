@@ -1,6 +1,7 @@
 package com.wugui.datax.admin.service;
 
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.tool.database.DasColumn;
 
 import java.io.IOException;
@@ -79,6 +80,6 @@ public interface DatasourceQueryService {
        * @params:
        * @return:
        */
-      String getDdlSQL(String tableName,Long datasourceId);
+      List<TableDetailsResp> getDdlSQL(String tableName, Long datasourceId);
 
 }

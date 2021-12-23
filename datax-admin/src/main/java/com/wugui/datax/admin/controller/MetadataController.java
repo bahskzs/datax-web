@@ -2,6 +2,7 @@ package com.wugui.datax.admin.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.tool.database.DasColumn;
 import io.swagger.annotations.Api;
@@ -106,9 +107,11 @@ public class MetadataController extends BaseController {
 
      @GetMapping("/getDdlSQL")
      @ApiOperation("[项目定制]获取建表sql")
-     public R<String> getDdlSQL(Long datasourceId, String tableName) {
+     public R<List<TableDetailsResp>> getDdlSQL(Long datasourceId, String tableName) {
         return success(datasourceQueryService.getDdlSQL(tableName,datasourceId));
      }
+
+
 
     /**
      * 根据数据源id和sql语句获取所有字段
@@ -122,4 +125,18 @@ public class MetadataController extends BaseController {
     public R<List<String>> getColumnsByQuerySql(Long datasourceId, String querySql) throws SQLException {
         return success(datasourceQueryService.getColumnsByQuerySql(datasourceId, querySql));
     }
+
+
+     /**
+      * @author: bahsk
+      * @date: 2021-12-16 11:57
+      * @description: TODO 获取指定数据源,表对应的数据量,及估算量
+      * @params:
+      * @return:
+      */
+     public R<List<String>> getTableCount(Long datasourceId, List<String> tableName) {
+         //TODO
+         return null;
+     }
+
 }
