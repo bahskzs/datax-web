@@ -16,7 +16,7 @@ import java.util.List;
  * @author xuxueli 2016-1-12 18:03:45
  */
 @Mapper
-public interface JobInfoMapper extends BaseMapper<JobInfo> {
+public interface JobInfoMapper extends BaseMapper<JobInfo>,Mapper {
 
     List<JobInfo> pageList(@Param("offset") int offset,
                            @Param("pagesize") int pagesize,

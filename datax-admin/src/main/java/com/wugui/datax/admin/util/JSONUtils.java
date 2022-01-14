@@ -54,6 +54,7 @@ public class JSONUtils {
         return keyObj;
     }
 
+
     /**
      * @param jsonStr
      * @param changeType 0加密 or 1解密
@@ -78,7 +79,46 @@ public class JSONUtils {
         json.put("job", job);
         return json.toJSONString();
     }
+    /**
+     * @param jsonStr
+     * @param type source target
+     * @return jsonStr
+     */
+    public static String changeJsonPwd(String jsonStr, String type, String passwd) {
+        JSONObject json = JSONObject.parseObject(jsonStr);
+        JSONObject job = json.getJSONObject("job");
+        JSONArray contents = job.getJSONArray("content");
+        for (int i = 0; i < contents.size(); i++) {
+            String contentStr = contents.getString(i);
+            Object obj = contents.get(i);
+            if (StringUtils.equals("source",type)) { //解密
+                ((JSONObject) obj).put("reader", changePwd(contentStr, "reader", passwd));
 
+            } else {//加密
+                ((JSONObject) obj).put("writer", changePwd(contentStr, "writer", passwd));
+            }
+        }
+        job.put("content", contents);
+        json.put("job", job);
+        return json.toJSONString();
+    }
+
+    /**
+     * @param content
+     * @param key
+     * @return
+     */
+    public static JSONObject changePwd(String content, String key, String pwd) {
+        JSONObject keyObj = JSONObject.parseObject(JSONObject.parseObject(content).getString(key));
+        JSONObject params = JSONObject.parseObject(keyObj.getString("parameter"));
+        String dUsername = null, dPassword = null;
+        //替换密码
+        dPassword = pwd;
+        String password = dPassword == null ? params.getString("password") : dPassword;
+        params.put("password", password);
+        keyObj.put("parameter", params);
+        return keyObj;
+    }
 
 
     //TODO.. 增加方法 传入数据源

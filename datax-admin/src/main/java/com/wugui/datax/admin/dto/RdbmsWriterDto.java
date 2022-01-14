@@ -1,6 +1,8 @@
 package com.wugui.datax.admin.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -13,6 +15,8 @@ import java.io.Serializable;
  * @since 2020/01/11 17:15
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RdbmsWriterDto implements Serializable {
 
     private String preSql;

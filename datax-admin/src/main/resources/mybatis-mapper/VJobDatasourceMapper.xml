@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.VJobDatasourceMapper">
+  <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.VJobDatasource">
+    <result column="id" jdbcType="INTEGER" property="id" />
+    <result column="job_desc" jdbcType="VARCHAR" property="jobDesc" />
+    <result column="sourceName" jdbcType="VARCHAR" property="sourcename" />
+    <result column="targetName" jdbcType="VARCHAR" property="targetname" />
+    <result column="sourceUser" jdbcType="VARCHAR" property="sourceuser" />
+    <result column="targetUser" jdbcType="VARCHAR" property="targetuser" />
+    <result column="sourceUrl" jdbcType="VARCHAR" property="sourceurl" />
+    <result column="targetUrl" jdbcType="VARCHAR" property="targeturl" />
+    <result column="job_json" jdbcType="VARCHAR" property="jobJson" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, job_desc, sourceName, targetName, sourceUser, targetUser, sourceUrl, targetUrl,
+    job_json
+  </sql>
+  <select id="selectByExample" parameterType="com.wugui.datax.admin.entity.VJobDatasourceExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from v_job_datasource
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="countByExample" parameterType="com.wugui.datax.admin.entity.VJobDatasourceExample" resultType="java.lang.Long">
+    select count(*) from v_job_datasource
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+
+</mapper>

@@ -30,7 +30,7 @@ public interface JobService {
      * @param userId
      * @return
      */
-    Map<String, Object> pageList(int start, int length, int jobGroup, int triggerStatus, String jobDesc, String glueType, int userId,Integer[] projectIds);
+    Map<String, Object> pageList(int start, int length, int jobGroup, int triggerStatus, String jobDesc, String glueType, int userId, Integer[] projectIds);
 
     List<JobInfo> list();
 
@@ -75,13 +75,13 @@ public interface JobService {
      */
     ReturnT<String> start(int id);
 
-     /**
-      * @author: bahsk
-      * @date: 2021-10-15 16:21
-      * @description: 批量执行任务
-      * @params:
-      * @return:
-      */
+    /**
+     * @author: bahsk
+     * @date: 2021-10-15 16:21
+     * @description: 批量执行任务
+     * @params:
+     * @return:
+     */
     ReturnT<String> start(List<Integer> ids);
 
 
@@ -109,53 +109,72 @@ public interface JobService {
 
     /**
      * batch add
+     *
      * @param dto
      * @return
      */
     ReturnT<String> batchAdd(DataXBatchJsonBuildDto dto) throws IOException;
 
-     /**
-      * @author: bahsk
-      * @date: 2021-10-14 10:39
-      * @description: batch copy
-      * @params:  jobId,dsList
-      * @return:
-      */
+    /**
+     * @author: bahsk
+     * @date: 2021-10-14 10:39
+     * @description: batch copy
+     * @params: jobId, dsList
+     * @return:
+     */
     ReturnT<String> batchCopy(Integer jobId, List<JobDatasource> dsList);
 
-     /**
-      * @author: bahsk
-      * @date: 2021-10-14 17:18
-      * @description: 项目定制接口 批量复制并替换数据源
-      * @params:
-      * @return:
-      */
+    /**
+     * @author: bahsk
+     * @date: 2021-10-14 17:18
+     * @description: 项目定制接口 批量复制并替换数据源
+     * @params:
+     * @return:
+     */
     ReturnT<String> batchDSCopy(Integer jobId, List<DatasourceDTO> dsList) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException;
 
+    /**
+     * @author: bahsk
+     * @date: 2021-10-20 8:39
+     * @description: 项目定制接口 批量复制任务组
+     * @params:
+     * @return:
+     */
+    ReturnT<String> batchJobCopy(MultiJobsDTO jobs) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException;
+
+    /**
+     * @author: bahsk
+     * @date: 2021/10/24 11:50
+     * @description: 项目定制接口 根据查询参数返回指定任务组
+     * @params:
+     * @return:
+     */
+    TriggerJobGroupDTO searchList(String words, String year);
+
+    /**
+     * @author: bahsk
+     * @date: 2021-11-01 16:55
+     * @description: 项目定制接口, 批量修改任务json串中数据源
+     * @params:
+     * @return:
+     */
+    ReturnT<String> batchUpdate(List<JobDatasourceRespDTO> jobDatasourceRespDTOList);
+
      /**
       * @author: bahsk
-      * @date: 2021-10-20 8:39
-      * @description: 项目定制接口 批量复制任务组
+      * @date: 2021-12-31 16:00
+      * @description: 导出全部json串
       * @params:
       * @return:
       */
-     ReturnT<String> batchJobCopy(MultiJobsDTO jobs) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException;
+    ReturnT<String> downloadJson();
 
-      /**
-       * @author: bahsk
-       * @date: 2021/10/24 11:50
-       * @description: 项目定制接口 根据查询参数返回指定任务组
-       * @params:
-       * @return:
-       */
-      TriggerJobGroupDTO searchList(String words, String year);
-
-       /**
-        * @author: bahsk
-        * @date: 2021-11-01 16:55
-        * @description: 项目定制接口,批量修改任务json串中数据源
-        * @params:
-        * @return:
-        */
-      ReturnT<String> batchUpdate(List<JobDatasourceRespDTO> jobDatasourceRespDTOList);
+     /**
+      * @author: bahsk
+      * @date: 2022-01-11 11:26
+      * @description: 导出指定json串
+      * @params:
+      * @return:
+      */
+    ReturnT<String> downloadJson(Long id);
 }

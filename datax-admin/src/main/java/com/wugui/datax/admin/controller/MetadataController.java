@@ -127,16 +127,6 @@ public class MetadataController extends BaseController {
     }
 
 
-     /**
-      * @author: bahsk
-      * @date: 2021-12-16 11:57
-      * @description: TODO 获取指定数据源,表对应的数据量,及估算量
-      * @params:
-      * @return:
-      */
-     public R<List<String>> getTableCount(Long datasourceId, List<String> tableName) {
-         //TODO
-         return null;
-     }
+
 
 }

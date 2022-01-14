@@ -2,6 +2,8 @@ server:
   #port: 8080
   port: 8081
 spring:
+  jndi:
+    ignore: true
   #数据源
   datasource:
     #    username: root
@@ -80,17 +82,17 @@ mybatis-plus:
     call-setters-on-nulls: true
     jdbc-type-for-null: 'null'
     type-handlers-package: com.wugui.datax.admin.core.handler
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # 配置mybatis-plus打印sql日志
 logging:
   #level:
   #  com.wugui.datax.admin.mapper: info
-#path: ./data/applogs/admin
-#  level:
-#    #com.wugui.datax.admin.mapper: error
-#    com.wugui.datax.admin: info
-    path: ./data/applogs/admin
+  #path: ./data/applogs/admin
+  #  level:
+  #    #com.wugui.datax.admin.mapper: error
+  #    com.wugui.datax.admin: info
+  path: ./data/applogs/admin
 
 
 
@@ -108,6 +110,9 @@ datax:
         max: 100
       ### log retention days
     logretentiondays: 30
+  executor:
+    #jsonpath: D:\\temp\\executor\\json\\
+    jsonpath: I:\\BigData\\json\\
 
 datasource:
   aes:

@@ -13,6 +13,7 @@ import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.entity.JobInfo;
 import com.wugui.datax.admin.service.JobDatasourceService;
 import com.wugui.datax.admin.service.JobService;
+import com.wugui.datax.admin.util.CopyUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.var;
@@ -212,7 +213,8 @@ public class JobInfoController extends BaseController{
     @ApiOperation("[项目定制]构建批量创建任务")
     public ReturnT<CusDataXBatchJsonBuildDTO> bulidBatchAdd(@RequestParam(required = true) String words,
                                                          @RequestParam(required = true) Integer year,
-                                                         @RequestParam(required = true) String tableName) {
+                                                         @RequestParam(required = true) String tableName
+                                                            ) {
         DatasourceGroupRespDTO datasourceGroupRespDTO = this.jobDatasourceService.selectDatasourceByWords(words, year);
         List<DatasourceDTO> datasourceDTOList = datasourceGroupRespDTO.getDatasourceDTOList();
         DatasourceDTO datasourceDTO = datasourceDTOList.get(0);
@@ -225,24 +227,66 @@ public class JobInfoController extends BaseController{
                 .readerTables(Arrays.asList(tables))
                 .writerTables(Arrays.asList(tables))
                 .rdbmsReader(new RdbmsReaderDto())
-                .rdbmsWriter(new RdbmsWriterDto())
+                .rdbmsWriter(new RdbmsWriterDto("truncate table "+tableName,null))
                 .build();
 
         return new ReturnT<>(build);
     }
 
+    @GetMapping("/autoBulid")
+    @ApiOperation("[项目定制]自动构建创建任务")
+    public ReturnT<CusDataXBatchJsonBuildDTO> bulidBatchAdd(@RequestParam(required = true) String source,
+                                                            @RequestParam(required = true) String target,
+                                                            @RequestParam(required = true) String tableName,
+                                                            @RequestParam(required = true) String templateId,
+                                                            @RequestParam(required = true) String targetTableName) throws IOException {
+
+        //TODO table不允许多余1个
+        String[] tables = tableName.split(",");
+        String[] targetTables = targetTableName.split(",");
+        CusDataXBatchJsonBuildDTO build = CusDataXBatchJsonBuildDTO.builder()
+                .readerDatasourceId(Long.valueOf(source))
+                .requireDSName(true)
+                .writerDatasourceId(Long.valueOf(target))
+                .readerTables(Arrays.asList(tables))
+                .writerTables(Arrays.asList(targetTables))
+                .rdbmsReader(new RdbmsReaderDto())
+                .rdbmsWriter(new RdbmsWriterDto("truncate table "+targetTableName,null))
+                .templateId(Integer.valueOf(templateId))
+                .build();
+        DataXBatchJsonBuildDto dto = CopyUtil.copy(build, DataXBatchJsonBuildDto.class);
+        if (dto.getTemplateId() ==0) {
+            return new ReturnT<>(ReturnT.FAIL_CODE, (I18nUtil.getString("system_please_choose") + I18nUtil.getString("jobinfo_field_temp")));
+        }
+        jobService.batchAdd(dto);
+        return new ReturnT<>();
+    }
+
      /**
       * @author: bahsk
       * @date: 2021-11-01 15:24
-      * @description: TODO [项目定制]批量替换json串数据连接
+      * @description: TODO [项目定制]批量替换json串数据连接 出现了一点意外 需要排查一下接口失效问题
       * @params:
       * @return:
       */
      @PutMapping("/batchUpdate/datasource")
-     @ApiOperation("批量替换数据源")
+     @ApiOperation("[项目定制]批量替换数据源")
      public ReturnT<String> batchUpdate(@RequestBody List<JobDatasourceRespDTO> jobDatasourceRespDTOList) {
          return  jobService.batchUpdate(jobDatasourceRespDTOList);
      }
 
+
+     @PostMapping("/download/json")
+     @ApiOperation("[项目定制]导出json串")
+     public ReturnT<String> downloadJson() {
+         return  jobService.downloadJson();
+     }
+
+
+    @PostMapping("/download/json/{id}")
+    @ApiOperation("[项目定制]导出指定任务的json串")
+    public ReturnT<String> downloadJson(@PathVariable(value = "id") Long id) {
+        return  jobService.downloadJson(id);
+    }
 
 }

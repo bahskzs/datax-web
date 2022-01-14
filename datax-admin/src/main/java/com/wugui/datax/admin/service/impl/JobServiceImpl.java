@@ -1,10 +1,12 @@
 package com.wugui.datax.admin.service.impl;
 
 
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wugui.datatx.core.biz.model.ReturnT;
 import com.wugui.datatx.core.enums.ExecutorBlockStrategyEnum;
 import com.wugui.datatx.core.glue.GlueTypeEnum;
+import com.wugui.datatx.core.log.JobLogger;
 import com.wugui.datatx.core.util.DateUtil;
 import com.wugui.datax.admin.core.cron.CronExpression;
 import com.wugui.datax.admin.core.route.ExecutorRouteStrategyEnum;
@@ -13,23 +15,25 @@ import com.wugui.datax.admin.core.util.I18nUtil;
 import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.*;
 import com.wugui.datax.admin.mapper.*;
-import com.wugui.datax.admin.service.DatasourceQueryService;
-import com.wugui.datax.admin.service.DataxJsonService;
-import com.wugui.datax.admin.service.JobDatasourceService;
-import com.wugui.datax.admin.service.JobService;
+import com.wugui.datax.admin.service.*;
 import com.wugui.datax.admin.util.CopyUtil;
 import com.wugui.datax.admin.util.DateFormatUtils;
 import com.wugui.datax.admin.util.JSONUtils;
+import com.wugui.datax.admin.util.SystemUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
 import javax.annotation.Resource;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -44,6 +48,9 @@ import java.util.*;
 @Slf4j
 public class JobServiceImpl implements JobService {
 //    private static Logger logger = LoggerFactory.getLogger(JobServiceImpl.class);
+
+    @Value("${datax.executor.jsonpath}")
+    private String jsonPath;
 
     @Resource
     private JobGroupMapper jobGroupMapper;
@@ -65,6 +72,8 @@ public class JobServiceImpl implements JobService {
     private JobDatasourceService jobDatasourceService;
     @Resource
     private JobDatasourceMapper jobDatasourceMapper;
+    @Resource
+    private VJobDatasourceService vJobDatasourceService;
 
 
     @Override
@@ -335,80 +344,108 @@ public class JobServiceImpl implements JobService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ReturnT<String> batchUpdate(List<JobDatasourceRespDTO> jobDatasourceRespDTOList) {
-        // 1. 查询传入list对应的JobDatasource含名称,用户名,密码,url
-        List<JobDatasource> jobDatasources = new ArrayList<>();
-        for(JobDatasourceRespDTO jobDatasourceRespDTO : jobDatasourceRespDTOList) {
-            jobDatasources.add(jobDatasourceService.getById(jobDatasourceRespDTO.getId()));
-        }
-
-        Map<Long,List<JobInfo>> dataSourceAndJobMap = new HashMap<>();
-        Map<Long,JobDatasourceRespDTO> datasourceRespDTOMap = new HashMap<>();
+        // 1. 查询传入list对应的JobDatasources (含名称,用户名,密码,url)
+//        List<JobDatasource> jobDatasources = new ArrayList<>();
+//        for(JobDatasourceRespDTO jobDatasourceRespDTO : jobDatasourceRespDTOList) {
+//            jobDatasources.add(jobDatasourceService.getById(jobDatasourceRespDTO.getId()));
+//        }
+//
+//        //数据源,数据源的DTO(用户,名称,url)
+//        Map<Long,JobDatasourceRespDTO> datasourceRespDTOMap = new HashMap<>();
 
         // 2. 根据数据源的名称匹配相应的jobInfo并构造相应的数据
-        for(JobDatasource jobDatasource : jobDatasources) {
-            String sourceName = jobDatasource.getDatasourceName().substring(3,jobDatasource.getDatasourceName().length());
-            // 3.将sourceName 和 jobInfo的job_desc进行模糊匹配筛选出第一批需要修改的任务
-            QueryWrapper<JobInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.select("id","job_desc","job_json")
-                    .like("job_desc", sourceName);
-            Long datasourceId = jobDatasource.getId();
+        for(JobDatasourceRespDTO jobDatasource : jobDatasourceRespDTOList) {
 
-            JobDatasourceRespDTO build = JobDatasourceRespDTO.builder()
-                    .id(jobDatasource.getId())
-                    .jdbcUrl(jobDatasource.getJdbcUrl())
-                    .jdbcUsername(jobDatasource.getJdbcUsername())
-                    .jdbcPassword(jobDatasource.getJdbcPassword())
-                    .build();
-            datasourceRespDTOMap.put(datasourceId,build);
-            dataSourceAndJobMap.put(datasourceId,this.jobInfoMapper.selectList(queryWrapper));
-        }
+            //拿到要替换账号密码的任务列表
+            List<JobInfo> source = vJobDatasourceService.findByParams(jobDatasource.getJdbcUsername(), jobDatasource.getJdbcUrl(), "source");
+            List<JobInfo> target = vJobDatasourceService.findByParams(jobDatasource.getJdbcUsername(), jobDatasource.getJdbcUrl(), "target");
 
-        // 4.比对jobInfo的username ,jdbcUrl 和JobDatasource中的是否一致? 是--> 替换密码
-        dataSourceAndJobMap.forEach((key, value) -> {
-            List<JobInfo> jobInfos = dataSourceAndJobMap.get(key);
-            JobDatasourceRespDTO jobDatasourceRespDTO = datasourceRespDTOMap.get(key);
-            for (JobInfo jobInfo : jobInfos) {
+            String pwd = jobDatasource.getJdbcPassword();
+            //TODO JobInfo 必须是过滤过是source 还是target的列表
+            // 4.比对jobInfo的username ,jdbcUrl 和JobDatasource中的是否一致? 是--> 替换密码
+            for (JobInfo jobInfo : source) {
                 //比较数据源是和Reader中的一致还是writer中的一致
-                String json = diffPassword(jobDatasourceRespDTO, jobInfo, "reader");
-                if(StringUtils.isBlank(json)) {
-                    json = diffPassword(jobDatasourceRespDTO, jobInfo, "writer");
-                }
+                String json =  JSONUtils.changeJsonPwd(jobInfo.getJobJson(),"source",pwd);
                 //获取任务信息，替换密码
                 JobInfo job = jobInfoMapper.loadById(jobInfo.getId());
                 job.setJobJson(json);
                 jobInfoMapper.update(job);
             }
-        });
+
+            for (JobInfo jobInfo : target) {
+                //比较数据源是和Reader中的一致还是writer中的一致
+                String json =  JSONUtils.changeJsonPwd(jobInfo.getJobJson(),"target",pwd);
+                //获取任务信息，替换密码
+                JobInfo job = jobInfoMapper.loadById(jobInfo.getId());
+                job.setJobJson(json);
+                jobInfoMapper.update(job);
+            }
+        }
+
 
         return new ReturnT<>("success");
     }
 
-     /**
-      * @author: bahsk
-      * @date: 2021-11-03 8:47
-      * @description: 比较传入的数据源和jobinfo中的数据源是否是一个
-      * @params:
-      * @return:
-      */
-    private String diffPassword(JobDatasourceRespDTO jobDatasourceRespDTO, JobInfo jobInfo,String source) {
+    /**
+     * @author: bahsk
+     * @date: 2021-12-31 16:00
+     * @description: 导出json串
+     * @params:
+     * @return:
+     */
+    @Override
+    public ReturnT<String> downloadJson() {
 
-        //取出指定reader 或者 writer 的parameter
-        Map<String,String> param = JSONUtils.getDBParameter(source,jobInfo.getJobJson());
+        List<JobInfo> all = jobInfoMapper.findAll();
 
-        //判断传入的username和jdbcUrl是否一致
-        if(StringUtils.equals(jobDatasourceRespDTO.getJdbcUsername(),param.get("username"))
-                && StringUtils.equals(jobDatasourceRespDTO.getJdbcUrl(),param.get("jdbcUrl"))) {
-
-            //如果数据连接和用户名相同,那么就替换密码
-            param.put("password",jobDatasourceRespDTO.getJdbcPassword());
-
-            //将替换后的param传入并得到替换后的json串
-            String json = JSONUtils.modifyPassword(param,source,jobInfo.getJobJson());
-
-            return json;
+        for(JobInfo jobInfo : all) {
+            String jobJson = jobInfo.getJobJson();
+            String tmpFilePath;
+            String dataXHomePath = SystemUtils.getDataXHomePath();
+            if (!FileUtil.exist(jsonPath)) {
+                FileUtil.mkdir(jsonPath);
+            }
+            tmpFilePath = jsonPath + "jobTmp-" + jobInfo.getId() + ".conf";
+            // 根据json写入到临时本地文件
+            try (PrintWriter writer = new PrintWriter(tmpFilePath, "UTF-8")) {
+                writer.println(jobJson);
+            } catch (FileNotFoundException | UnsupportedEncodingException e) {
+                JobLogger.log("JSON 临时文件写入异常：" + e.getMessage());
+            }
         }
-        return null;
+        return new ReturnT<>("success");
+
     }
+
+    /**
+     * @param id
+     * @author: bahsk
+     * @date: 2022-01-11 11:26
+     * @description: 导出指定json串
+     * @params:
+     * @return:
+     */
+    @Override
+    public ReturnT<String> downloadJson(Long id) {
+
+        JobInfo jobInfo = this.jobInfoMapper.loadById(Math.toIntExact(id));
+        String jobJson = JSONUtils.changeJson(jobInfo.getJobJson(), JSONUtils.decrypt);
+        String tmpFilePath;
+        String dataXHomePath = SystemUtils.getDataXHomePath();
+        if (!FileUtil.exist(jsonPath)) {
+            FileUtil.mkdir(jsonPath);
+        }
+        tmpFilePath = jsonPath + "jobTmp-" + jobInfo.getId() + ".conf";
+        // 根据json写入到临时本地文件
+        try (PrintWriter writer = new PrintWriter(tmpFilePath, "UTF-8")) {
+            writer.println(jobJson);
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            JobLogger.log("JSON 临时文件写入异常：" + e.getMessage());
+        }
+        return new ReturnT<>("success");
+    }
+
+
 
 
     private boolean isNumeric(String str) {

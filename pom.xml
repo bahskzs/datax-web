@@ -29,6 +29,7 @@
         <fastjson.version>1.2.70</fastjson.version>
         <slf4j-api.version>1.7.28</slf4j-api.version>
         <logback-classic.version>1.2.2</logback-classic.version>
+        <log4j.version>2.17.0</log4j.version>
         <commons-io.version>2.4</commons-io.version>
         <junit.version>4.12</junit.version>
         <hutool.version>4.5.1</hutool.version>
@@ -36,7 +37,7 @@
         <mysql-connector.version>5.1.47</mysql-connector.version>
         <jna.version>4.1.0</jna.version>
         <groovy.version>2.5.8</groovy.version>
-        <mybatisplus.version>3.3.1</mybatisplus.version>
+        <mybatisplus.version>3.4.2</mybatisplus.version>
         <swagger.version>2.9.2</swagger.version>
         <swagger-models.version>1.5.21</swagger-models.version>
         <spring.version>4.3.25.RELEASE</spring.version>
@@ -57,6 +58,30 @@
     </properties>
 
 
-
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>RELEASE</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-web</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

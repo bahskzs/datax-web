@@ -2,10 +2,13 @@ package com.wugui.admin.dao;
 
 import com.wugui.datax.admin.entity.JobInfo;
 import com.wugui.datax.admin.mapper.JobInfoMapper;
+import javafx.application.Application;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
+
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -14,21 +17,21 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class JobInfoMapperTest {
-	
+
 	@Resource
 	private JobInfoMapper jobInfoMapper;
-	
+
 	@Test
 	public void pageList(){
 		List<JobInfo> list = jobInfoMapper.pageList(0, 20, 0, -1, null, null, 0,null);
 		int list_count = jobInfoMapper.pageListCount(0, 20, 0, -1, null, null, 0,null);
-		
+
 		System.out.println(list);
 		System.out.println(list_count);
 
 		List<JobInfo> list2 = jobInfoMapper.getJobsByGroup(1);
 	}
-	
+
 	@Test
 	public void save_load(){
 		JobInfo info = new JobInfo();
