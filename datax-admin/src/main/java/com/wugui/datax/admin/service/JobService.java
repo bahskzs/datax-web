@@ -177,4 +177,13 @@ public interface JobService {
       * @return:
       */
     ReturnT<String> downloadJson(Long id);
+
+     /**
+      * @author: bahsk
+      * @date: 2022-01-20 15:34
+      * @description: 查询任务json(解密的)
+      * @params:
+      * @return:
+      */
+    JobInfo selectOne(Long id);
 }

@@ -445,7 +445,21 @@ public class JobServiceImpl implements JobService {
         return new ReturnT<>("success");
     }
 
-
+    /**
+     * @param id
+     * @author: bahsk
+     * @date: 2022-01-20 15:34
+     * @description: 查询任务json(解密的)
+     * @params:
+     * @return:
+     */
+    @Override
+    public JobInfo selectOne(Long id) {
+        JobInfo jobInfo = this.jobInfoMapper.loadById(Math.toIntExact(id));
+        String jobJson = JSONUtils.changeJson(jobInfo.getJobJson(), JSONUtils.decrypt);
+        jobInfo.setJobJson(jobJson.replaceAll("\\\"","\""));
+        return jobInfo;
+    }
 
 
     private boolean isNumeric(String str) {

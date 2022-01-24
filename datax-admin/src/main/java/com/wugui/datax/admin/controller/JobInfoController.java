@@ -59,6 +59,13 @@ public class JobInfoController extends BaseController{
         return new ReturnT<>(jobService.list());
     }
 
+    @GetMapping("/job")
+    @ApiOperation("获取指定job的json")
+    public ReturnT<JobInfo> selectOne(@RequestParam long id) {
+        JobInfo jobInfo = jobService.selectOne(id);
+        return new ReturnT<>(jobInfo);
+    }
+
      /**
       * @author: bahsk
       * @date: 2021-10-27 9:22
