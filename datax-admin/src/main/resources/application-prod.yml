@@ -1,0 +1,30 @@
+spring:
+  #数据源
+  datasource:
+    #    username: root
+    #password: root
+    #url: jdbc:mysql://localhost:3306/datax_web?serverTimezone=Asia/Shanghai&useLegacyDatetimeCode=false&useSSL=false&nullNamePatternMatchesAll=true&useUnicode=true&characterEncoding=UTF-8
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://10.100.32.144:9009/datax_web
+    password: Bosssoft@2021
+    username: root
+    hikari:
+      ## 最小空闲连接数量
+      minimum-idle: 5
+      ## 空闲连接存活最大时间，默认600000（10分钟）
+      idle-timeout: 180000
+      ## 连接池最大连接数，默认是10
+      maximum-pool-size: 10
+      ## 数据库连接超时时间,默认30秒，即30000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+      ##此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      max-lifetime: 1800000
+
+
+# hadoop配置
+hadoop:
+  mode: HA
+  nameNodes: namenode55,namenode109
+  nameService: nameservice1
+  address: 10.96.10.128:8020,10.96.10.127:8020

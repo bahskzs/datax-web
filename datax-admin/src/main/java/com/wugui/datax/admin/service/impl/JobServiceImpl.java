@@ -461,7 +461,8 @@ public class JobServiceImpl implements JobService {
     @Override
     public JobInfo selectOne(Long id) {
         JobInfo jobInfo = this.jobInfoMapper.loadById(Math.toIntExact(id));
-        String jobJson = JSONUtils.changeJson(jobInfo.getJobJson(), JSONUtils.decrypt);
+        String json = JSONUtils.changeJobEnv(jobInfo.getJobJson(),hadoopConfig.getParameters());
+        String jobJson = JSONUtils.changeJson(json, JSONUtils.decrypt);
         jobInfo.setJobJson(jobJson.replaceAll("\\\"","\""));
         return jobInfo;
     }

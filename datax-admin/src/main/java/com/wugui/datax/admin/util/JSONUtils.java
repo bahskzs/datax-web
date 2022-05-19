@@ -118,10 +118,11 @@ public class JSONUtils {
     public static JSONObject changeEnv(String contentStr, String key, Map<String, Object> param) {
         JSONObject keyObj = JSONObject.parseObject(JSONObject.parseObject(contentStr).getString(key));
         JSONObject params = JSONObject.parseObject(keyObj.getString("parameter"));
-        String name = null;
-        if (StringUtils.equals("hdfs", params.getString("name").substring(0, 3))) {
+        String source = keyObj.getString("name").substring(0, 4);
+
+        if (StringUtils.equals("hdfs",source)) {
             params.put("hadoopConfig", JSON.toJSONString(param));
-            params.put("defaultFS", param.get("nameService"));
+            params.put("defaultFS", param.get("dfs.nameservices"));
         }
         keyObj.put("parameter", params);
         return keyObj;
