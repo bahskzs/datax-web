@@ -8,6 +8,7 @@ import com.wugui.datatx.core.enums.ExecutorBlockStrategyEnum;
 import com.wugui.datatx.core.glue.GlueTypeEnum;
 import com.wugui.datatx.core.log.JobLogger;
 import com.wugui.datatx.core.util.DateUtil;
+import com.wugui.datax.admin.config.HadoopConfig;
 import com.wugui.datax.admin.core.cron.CronExpression;
 import com.wugui.datax.admin.core.route.ExecutorRouteStrategyEnum;
 import com.wugui.datax.admin.core.thread.JobScheduleHelper;
@@ -74,6 +75,9 @@ public class JobServiceImpl implements JobService {
     private JobDatasourceMapper jobDatasourceMapper;
     @Resource
     private VJobDatasourceService vJobDatasourceService;
+
+    @Resource
+    private HadoopConfig hadoopConfig;
 
 
     @Override
@@ -429,7 +433,8 @@ public class JobServiceImpl implements JobService {
     public ReturnT<String> downloadJson(Long id) {
 
         JobInfo jobInfo = this.jobInfoMapper.loadById(Math.toIntExact(id));
-        String jobJson = JSONUtils.changeJson(jobInfo.getJobJson(), JSONUtils.decrypt);
+        String json = JSONUtils.changeJobEnv(jobInfo.getJobJson(),hadoopConfig.getParameters());
+        String jobJson = JSONUtils.changeJson(json, JSONUtils.decrypt);
         String tmpFilePath;
         String dataXHomePath = SystemUtils.getDataXHomePath();
         if (!FileUtil.exist(jsonPath)) {

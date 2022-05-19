@@ -12,9 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * @create: 2019-06-17 10:40
  **/
 @Configuration
-
 public class WebConfig implements WebMvcConfigurer {
-
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

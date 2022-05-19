@@ -1,9 +1,13 @@
 package com.wugui.datax.admin.util;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.wugui.datax.admin.config.HadoopConfig;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +20,7 @@ import java.util.Map;
  * @Version 1.0
  * @since 2019/7/31 14:54
  */
+@Component
 public class JSONUtils {
 
     /**
@@ -26,6 +31,7 @@ public class JSONUtils {
      * decrypt 加密
      */
     public static Integer encrypt = 1;
+
 
     /**
      * @param content
@@ -79,9 +85,52 @@ public class JSONUtils {
         json.put("job", job);
         return json.toJSONString();
     }
+
+    /**
+     * bahskzs
+     * 根据当前环境追加对应的hadoop环境参数，ha专用
+     *
+     * @param jsonStr
+     * @return
+     */
+    public static String changeJobEnv(String jsonStr,Map<String, Object> params) {
+        JSONObject json = JSONObject.parseObject(jsonStr);
+        JSONObject job = json.getJSONObject("job");
+        JSONArray contents = job.getJSONArray("content");
+        for (int i = 0; i < contents.size(); i++) {
+            String contentStr = contents.getString(i);
+            Object obj = contents.get(i);
+            ((JSONObject) obj).put("reader", changeEnv(contentStr, "reader",params));
+            ((JSONObject) obj).put("writer", changeEnv(contentStr, "writer",params));
+        }
+        job.put("content", contents);
+        json.put("job", job);
+        return json.toJSONString();
+    }
+
+    /**
+     * 修改对应reader/writer内的环境信息
+     *
+     * @param contentStr
+     * @param key        reader/writer
+     * @return
+     */
+    public static JSONObject changeEnv(String contentStr, String key, Map<String, Object> param) {
+        JSONObject keyObj = JSONObject.parseObject(JSONObject.parseObject(contentStr).getString(key));
+        JSONObject params = JSONObject.parseObject(keyObj.getString("parameter"));
+        String name = null;
+        if (StringUtils.equals("hdfs", params.getString("name").substring(0, 3))) {
+            params.put("hadoopConfig", JSON.toJSONString(param));
+            params.put("defaultFS", param.get("nameService"));
+        }
+        keyObj.put("parameter", params);
+        return keyObj;
+    }
+
+
     /**
      * @param jsonStr
-     * @param type source target
+     * @param type    source target
      * @return jsonStr
      */
     public static String changeJsonPwd(String jsonStr, String type, String passwd) {
@@ -91,7 +140,7 @@ public class JSONUtils {
         for (int i = 0; i < contents.size(); i++) {
             String contentStr = contents.getString(i);
             Object obj = contents.get(i);
-            if (StringUtils.equals("source",type)) { //解密
+            if (StringUtils.equals("source", type)) { //解密
                 ((JSONObject) obj).put("reader", changePwd(contentStr, "reader", passwd));
 
             } else {//加密
@@ -122,14 +171,15 @@ public class JSONUtils {
 
 
     //TODO.. 增加方法 传入数据源
-     /**
-      * @author: bahsk
-      * @date: 2021-10-14 16:49
-      * @description: 批量更换数据源
-      * @params:
-      * @return:
-      */
-    public static String changeJsonDSs(String jsonStr, List<Map<String,String>> dsList) {
+
+    /**
+     * @author: bahsk
+     * @date: 2021-10-14 16:49
+     * @description: 批量更换数据源
+     * @params:
+     * @return:
+     */
+    public static String changeJsonDSs(String jsonStr, List<Map<String, String>> dsList) {
         JSONObject json = JSONObject.parseObject(jsonStr);
         JSONObject job = json.getJSONObject("job");
         JSONArray contents = job.getJSONArray("content");
@@ -146,14 +196,14 @@ public class JSONUtils {
     }
 
 
-     /**
-      * @author: bahsk
-      * @date: 2021-10-14 15:44
-      * @description: 替换数据源
-      * @params:
-      * @return:
-      */
-    public static JSONObject changeDS(String content, String key, Map<String,String> dbParams) {
+    /**
+     * @author: bahsk
+     * @date: 2021-10-14 15:44
+     * @description: 替换数据源
+     * @params:
+     * @return:
+     */
+    public static JSONObject changeDS(String content, String key, Map<String, String> dbParams) {
         JSONObject keyObj = JSONObject.parseObject(JSONObject.parseObject(content).getString(key));
         JSONObject params = JSONObject.parseObject(keyObj.getString("parameter"));
 
@@ -171,10 +221,10 @@ public class JSONUtils {
         String[] arr = new String[1];
         arr[0] = jdbcUrl;
 
-        if("reader".equals(key)) {
-            ((JSONObject) connection.get(0)).put("jdbcUrl",arr);
-        }else {
-            ((JSONObject) connection.get(0)).put("jdbcUrl",jdbcUrl);
+        if ("reader".equals(key)) {
+            ((JSONObject) connection.get(0)).put("jdbcUrl", arr);
+        } else {
+            ((JSONObject) connection.get(0)).put("jdbcUrl", jdbcUrl);
         }
 
 
@@ -185,86 +235,73 @@ public class JSONUtils {
         return keyObj;
     }
 
-     /**
-      * @author: bahsk
-      * @date: 2021-11-02 11:39
-      * @description: TODO 获取指定reader/writer的username,password,jdbcUrl
-      * @params: String source,String jsonStr
-      * @return: Map<String,String>
-      */
-     public static Map<String,String> getDBParameter(String source, String jsonStr) {
-         Map<String,String> params = new HashMap<>();
+    /**
+     * @author: bahsk
+     * @date: 2021-11-02 11:39
+     * @description: 获取指定reader/writer的username,password,jdbcUrl,下期如果还没有用到就删除
+     * @params: String source,String jsonStr
+     * @return: Map<String, String>
+     */
+    @Deprecated
+    public static Map<String, String> getDBParameter(String source, String jsonStr) {
+        Map<String, String> params = new HashMap<>();
 
-         //调用getParams 获取json串中"parameter"
-         JSONObject parameters = JSONUtils.getParams(source,jsonStr);
+        //调用getParams 获取json串中"parameter"
+        JSONObject parameters = JSONUtils.getParams(source, jsonStr);
 
-         String dUsername = parameters.getString("username");
-         String dPassword = parameters.getString("password");
+        String dUsername = parameters.getString("username");
+        String dPassword = parameters.getString("password");
 
-         JSONArray connection = parameters.getJSONArray("connection");
-         JSONObject object = (JSONObject) connection.get(0);
-         String jdbcUrl = "";
-         if(StringUtils.equals(source,"reader")) {
-             JSONArray dJdbcUrl = object.getJSONArray("jdbcUrl");
-             jdbcUrl = (String)dJdbcUrl.get(0);
-         } else {
-             jdbcUrl = (String) object.get("jdbcUrl");
-         }
+        JSONArray connection = parameters.getJSONArray("connection");
+        JSONObject object = (JSONObject) connection.get(0);
+        String jdbcUrl = "";
+        if (StringUtils.equals(source, "reader")) {
+            JSONArray dJdbcUrl = object.getJSONArray("jdbcUrl");
+            jdbcUrl = (String) dJdbcUrl.get(0);
+        } else {
+            jdbcUrl = (String) object.get("jdbcUrl");
+        }
 
 
-         params.put("username", dUsername);
-         params.put("jdbcUrl", jdbcUrl);
+        params.put("username", dUsername);
+        params.put("jdbcUrl", jdbcUrl);
 
-         return params;
-     }
+        return params;
+    }
 
-      /**
-       * @author: bahsk
-       * @date: 2021-11-02 11:52
-       * @description: TODO 替换密码,只换密码即可
-       * @params: String jsonStr,String passwd
-       * @return:
-       */
-//     public String changePassword(String jsonStr,String source, String passwd) {
-//         JSONObject parameters = JSONUtils.getParams(source,jsonStr);
-//         parameters.put("password",passwd);
-//         //替换密码
-//         String json = JSONUtils.setParams(parameters.toJSONString(), source, jsonStr);
-//         return json;
-//     }
 
-      /**
-       * @author: bahsk
-       * @date: 2021-11-02 15:13
-       * @description: 获取params
-       * @params: String source,String jsonStr
-       * @return: JSONObject parameters
-       */
-     public static JSONObject getParams(String source,String jsonStr) {
+    /**
+     * @author: bahsk
+     * @date: 2021-11-02 15:13
+     * @description: 获取params
+     * @params: String source,String jsonStr
+     * @return: JSONObject parameters
+     */
+    public static JSONObject getParams(String source, String jsonStr) {
 
-         //解构传入的json串
-         JSONObject json = JSONObject.parseObject(jsonStr);
-         JSONObject job = json.getJSONObject("job");
+        //解构传入的json串
+        JSONObject json = JSONObject.parseObject(jsonStr);
+        JSONObject job = json.getJSONObject("job");
 
-         // 1.解析content
-         JSONArray contents = job.getJSONArray("content");
+        // 1.解析content
+        JSONArray contents = job.getJSONArray("content");
 
-         // 2.根据传入的source进行读取reader或者writer底下的配置项
-         String contentStr = contents.getString(0);
-         JSONObject keyObj = JSONObject.parseObject(JSONObject.parseObject(contentStr).getString(source));
+        // 2.根据传入的source进行读取reader或者writer底下的配置项
+        String contentStr = contents.getString(0);
+        JSONObject keyObj = JSONObject.parseObject(JSONObject.parseObject(contentStr).getString(source));
 
-         JSONObject parameters = JSONObject.parseObject(keyObj.getString("parameter"));
-         return parameters;
-     }
+        JSONObject parameters = JSONObject.parseObject(keyObj.getString("parameter"));
+        return parameters;
+    }
 
-     /**
-      * @author: bahsk
-      * @date: 2021-11-02 15:14
-      * @description: TODO 设置Parameter 要注意这个parameter 应该是完整的parameter而不是只有三个参数的param
-      * @params: String parameters,String source,String jsonStr
-      * @return:
-      */
-    public static String modifyPassword(Map<String,String> params,String source,String jsonStr) {
+    /**
+     * @author: bahsk
+     * @date: 2021-11-02 15:14
+     * @description: TODO 设置Parameter 要注意这个parameter 应该是完整的parameter而不是只有三个参数的param
+     * @params: String parameters,String source,String jsonStr
+     * @return:
+     */
+    public static String modifyPassword(Map<String, String> params, String source, String jsonStr) {
 
         //解构传入的json串
         JSONObject json = JSONObject.parseObject(jsonStr);
@@ -279,16 +316,16 @@ public class JSONUtils {
         JSONObject parameters = JSONObject.parseObject(keyObj.getString("parameter"));
 
 
-        parameters.put("password",params.get("password"));
+        parameters.put("password", params.get("password"));
 
         keyObj.put("parameter", parameters);
 
         JSONObject contentObj = JSONObject.parseObject(contentStr);
         contentObj.put(source, keyObj);
-        contents.set(0,contentObj);
+        contents.set(0, contentObj);
 
         job.put("content", contents);
-        json.put("job",job);
+        json.put("job", job);
         jsonStr = json.toJSONString();
 
         return jsonStr;

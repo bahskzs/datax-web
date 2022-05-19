@@ -2,11 +2,11 @@ server:
   #port: 8080
   port: 8081
 spring:
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
+#  mvc:
+#    pathmatch:
+#      matching-strategy: ant_path_matcher
   profiles:
-    active: prod
+    active: dev
   jndi:
     ignore: true
   #数据源
@@ -34,8 +34,11 @@ management:
     mail:
       enabled: false
   server:
-    servlet:
-      context-path: /actuator
+    base-path: /actuator
+
+swagger:
+  basic:
+    enable :true
 
 mybatis-plus:
   # mapper.xml文件扫描

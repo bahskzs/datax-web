@@ -61,10 +61,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/static/**","/index.html","/favicon.ico","/avatar.jpg").permitAll()
                 .antMatchers("/api/callback","/api/processCallback","/api/registry","/api/registryRemove").permitAll()
-                .antMatchers("/doc.html","/swagger-resources/**","/webjars/**","/*/api-docs").anonymous()
+                .antMatchers("/doc.html","/swagger-resources/**","/webjars/**","/*/api-docs").permitAll()
                 .antMatchers("/api/jobJdbcDatasource**","/api/jobJdbcDatasource/**,","/api/job/**").permitAll()
                 .antMatchers("/api/jobJdbcDatasource/batch").permitAll()
                 .antMatchers("/copy/**").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/trigger/batch").permitAll()
                 .antMatchers("/api/jobJdbcDatasource/**").permitAll()
                 .antMatchers("/api/metadata/**").permitAll()
@@ -86,38 +87,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return source;
     }
 
-    @Bean
-    public static BeanPostProcessor springfoxHandlerProviderBeanPostProcessor() {
-        return new BeanPostProcessor() {
-
-            @Override
-            public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-                if (bean instanceof WebMvcRequestHandlerProvider ) {
-                    customizeSpringfoxHandlerMappings(getHandlerMappings(bean));
-                }
-                return bean;
-            }
-
-            private <T extends RequestMappingInfoHandlerMapping> void customizeSpringfoxHandlerMappings(List<T> mappings) {
-                List<T> copy = mappings.stream()
-                        .filter(mapping -> mapping.getPatternParser() == null)
-                        .collect(Collectors.toList());
-                mappings.clear();
-                mappings.addAll(copy);
-            }
-
-            @SuppressWarnings("unchecked")
-            private List<RequestMappingInfoHandlerMapping> getHandlerMappings(Object bean) {
-                try {
-                    Field field = ReflectionUtils.findField(bean.getClass(), "handlerMappings");
-                    field.setAccessible(true);
-                    return (List<RequestMappingInfoHandlerMapping>) field.get(bean);
-                } catch (IllegalArgumentException | IllegalAccessException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
-        };
-    }
 
 
 }

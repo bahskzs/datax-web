@@ -2,6 +2,9 @@ package com.wugui.datax.admin.config;
 
 import com.google.common.collect.Multimap;
 import io.swagger.models.*;
+import io.swagger.models.Contact;
+import io.swagger.models.Operation;
+import io.swagger.models.Tag;
 import io.swagger.models.parameters.Parameter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +13,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.ApiListing;
-import springfox.documentation.service.Documentation;
-import springfox.documentation.service.ResourceListing;
+import springfox.documentation.service.*;
 import springfox.documentation.swagger2.mappers.*;
 
 import java.util.*;
@@ -116,6 +116,7 @@ public class ServiceModelToSwagger2MapperImpl extends ServiceModelToSwagger2Mapp
 
         return contact;
     }
+
 
     @Override
     protected Operation mapOperation(springfox.documentation.service.Operation from) {

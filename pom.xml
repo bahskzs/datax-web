@@ -45,7 +45,8 @@
 
         <spring.version>5.3.12</spring.version>
         <junit.version>4.12</junit.version>
-        <spring-boot.version>2.6.7</spring-boot.version>
+        <spring-boot.version>2.5.6</spring-boot.version>
+<!--        <spring-boot.version>2.6.7</spring-boot.version>-->
 
         <jjwt.version>0.9.0</jjwt.version>
         <netty.version>4.1.43.Final</netty.version>
