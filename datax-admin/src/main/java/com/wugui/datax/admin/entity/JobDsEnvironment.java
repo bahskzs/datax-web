@@ -1,6 +1,8 @@
 package com.wugui.datax.admin.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,8 +23,8 @@ import java.util.Date;
 @ApiModel(value = "",description = "")
 public class JobDsEnvironment implements Serializable,Cloneable{
     /** 自增主键 */
-//    @Id
-//    @GeneratedValue
+    @TableId
+    @ApiModelProperty(value = "自增主键")
     private Long id ;
     /** 数据源id */
     private Integer datasourceId ;
