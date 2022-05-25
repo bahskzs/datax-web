@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace=".mapper.JobDsEnvironmentMapper">
+    <resultMap type=".entity.JobDsEnvironment" id="JobDsEnvironmentMap">
+        <result property="id" column="id" jdbcType="Long"/>
+        <result property="datasourceId" column="datasource_id" jdbcType="INT"/>
+        <result property="datasourceName" column="datasource_name" jdbcType="VARCHAR"/>
+        <result property="datasourceType" column="datasource_type" jdbcType="INT"/>
+        <result property="path" column="path" jdbcType="VARCHAR"/>
+        <result property="defaultFs" column="default_fs" jdbcType="VARCHAR"/>
+        <result property="fileType" column="file_type" jdbcType="VARCHAR"/>
+        <result property="fieldDelimiter" column="field_delimiter" jdbcType="VARCHAR"/>
+        <result property="nameNodes" column="name_nodes" jdbcType="VARCHAR"/>
+        <result property="nameServices" column="name_services" jdbcType="VARCHAR"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="proxyProvider" column="proxy_provider" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="DATETIME"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="updateDate" column="update_date" jdbcType="DATETIME"/>
+        <result property="comments" column="comments" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 通过ID查询单条数据 -->
+    <select id="queryById" resultMap="JobDsEnvironmentMap">
+        select
+            id,datasource_id,datasource_name,datasource_type,path,default_fs,file_type,field_delimiter,name_nodes,name_services,address,proxy_provider,status,create_by,create_date,update_by,update_date,comments
+        from job_ds_environment
+        where id = #{id}
+    </select>
+
+    <!--分页查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="JobDsEnvironmentMap">
+        select
+        id,datasource_id,datasource_name,datasource_type,path,default_fs,file_type,field_delimiter,name_nodes,name_services,address,proxy_provider,status,create_by,create_date,update_by,update_date,comments
+        from job_ds_environment
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="datasourceId != null and datasourceId != ''">
+                and datasource_id = #{datasourceId}
+            </if>
+            <if test="datasourceName != null and datasourceName != ''">
+                and datasource_name = #{datasourceName}
+            </if>
+            <if test="datasourceType != null and datasourceType != ''">
+                and datasource_type = #{datasourceType}
+            </if>
+            <if test="path != null and path != ''">
+                and path = #{path}
+            </if>
+            <if test="defaultFs != null and defaultFs != ''">
+                and default_fs = #{defaultFs}
+            </if>
+            <if test="fileType != null and fileType != ''">
+                and file_type = #{fileType}
+            </if>
+            <if test="fieldDelimiter != null and fieldDelimiter != ''">
+                and field_delimiter = #{fieldDelimiter}
+            </if>
+            <if test="nameNodes != null and nameNodes != ''">
+                and name_nodes = #{nameNodes}
+            </if>
+            <if test="nameServices != null and nameServices != ''">
+                and name_services = #{nameServices}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address}
+            </if>
+            <if test="proxyProvider != null and proxyProvider != ''">
+                and proxy_provider = #{proxyProvider}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by = #{createBy}
+            </if>
+            <if test="createDate != null and createDate != ''">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+            <if test="updateDate != null and updateDate != ''">
+                and update_date = #{updateDate}
+            </if>
+            <if test="comments != null and comments != ''">
+                and comments = #{comments}
+            </if>
+        </where>
+        limit #{pageable.offset}, #{pageable.pageSize}
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from job_ds_environment
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="datasourceId != null and datasourceId != ''">
+                and datasource_id = #{datasourceId}
+            </if>
+            <if test="datasourceName != null and datasourceName != ''">
+                and datasource_name = #{datasourceName}
+            </if>
+            <if test="datasourceType != null and datasourceType != ''">
+                and datasource_type = #{datasourceType}
+            </if>
+            <if test="path != null and path != ''">
+                and path = #{path}
+            </if>
+            <if test="defaultFs != null and defaultFs != ''">
+                and default_fs = #{defaultFs}
+            </if>
+            <if test="fileType != null and fileType != ''">
+                and file_type = #{fileType}
+            </if>
+            <if test="fieldDelimiter != null and fieldDelimiter != ''">
+                and field_delimiter = #{fieldDelimiter}
+            </if>
+            <if test="nameNodes != null and nameNodes != ''">
+                and name_nodes = #{nameNodes}
+            </if>
+            <if test="nameServices != null and nameServices != ''">
+                and name_services = #{nameServices}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address}
+            </if>
+            <if test="proxyProvider != null and proxyProvider != ''">
+                and proxy_provider = #{proxyProvider}
+            </if>
+            <if test="status != null and status != ''">
+                and status = #{status}
+            </if>
+            <if test="createBy != null and createBy != ''">
+                and create_by = #{createBy}
+            </if>
+            <if test="createDate != null and createDate != ''">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+            <if test="updateDate != null and updateDate != ''">
+                and update_date = #{updateDate}
+            </if>
+            <if test="comments != null and comments != ''">
+                and comments = #{comments}
+            </if>
+        </where>
+    </select>
+
+    <!--新增数据-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into job_ds_environment(id,datasource_id,datasource_name,datasource_type,path,default_fs,file_type,field_delimiter,name_nodes,name_services,address,proxy_provider,status,create_by,create_date,update_by,update_date,comments)
+        values (#{id},#{datasourceId},#{datasourceName},#{datasourceType},#{path},#{defaultFs},#{fileType},#{fieldDelimiter},#{nameNodes},#{nameServices},#{address},#{proxyProvider},#{status},#{createBy},#{createDate},#{updateBy},#{updateDate},#{comments})
+    </insert>
+
+    <!-- 批量新增数据 -->
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into job_ds_environment(id,datasource_id,datasource_name,datasource_type,path,default_fs,file_type,field_delimiter,name_nodes,name_services,address,proxy_provider,status,create_by,create_date,update_by,update_date,comments)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id},#{entity.datasourceId},#{entity.datasourceName},#{entity.datasourceType},#{entity.path},#{entity.defaultFs},#{entity.fileType},#{entity.fieldDelimiter},#{entity.nameNodes},#{entity.nameServices},#{entity.address},#{entity.proxyProvider},#{entity.status},#{entity.createBy},#{entity.createDate},#{entity.updateBy},#{entity.updateDate},#{entity.comments})
+        </foreach>
+    </insert>
+
+    <!-- 批量新增或按主键更新数据 -->
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into job_ds_environment(id,datasource_id,datasource_name,datasource_type,path,default_fs,file_type,field_delimiter,name_nodes,name_services,address,proxy_provider,status,create_by,create_date,update_by,update_date,comments)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.id},#{entity.datasourceId},#{entity.datasourceName},#{entity.datasourceType},#{entity.path},#{entity.defaultFs},#{entity.fileType},#{entity.fieldDelimiter},#{entity.nameNodes},#{entity.nameServices},#{entity.address},#{entity.proxyProvider},#{entity.status},#{entity.createBy},#{entity.createDate},#{entity.updateBy},#{entity.updateDate},#{entity.comments})
+        </foreach>
+        on duplicate key update
+        id=values(id),
+        datasource_id=values(datasource_id),
+        datasource_name=values(datasource_name),
+        datasource_type=values(datasource_type),
+        path=values(path),
+        default_fs=values(default_fs),
+        file_type=values(file_type),
+        field_delimiter=values(field_delimiter),
+        name_nodes=values(name_nodes),
+        name_services=values(name_services),
+        address=values(address),
+        proxy_provider=values(proxy_provider),
+        status=values(status),
+        create_by=values(create_by),
+        create_date=values(create_date),
+        update_by=values(update_by),
+        update_date=values(update_date),
+        comments=values(comments)
+    </insert>
+
+    <!-- 更新数据 -->
+    <update id="update">
+        update job_ds_environment
+        <set>
+            <if test="id != null and id != ''">
+                id = #{id},
+            </if>
+            <if test="datasourceId != null and datasourceId != ''">
+                datasource_id = #{datasourceId},
+            </if>
+            <if test="datasourceName != null and datasourceName != ''">
+                datasource_name = #{datasourceName},
+            </if>
+            <if test="datasourceType != null and datasourceType != ''">
+                datasource_type = #{datasourceType},
+            </if>
+            <if test="path != null and path != ''">
+                path = #{path},
+            </if>
+            <if test="defaultFs != null and defaultFs != ''">
+                default_fs = #{defaultFs},
+            </if>
+            <if test="fileType != null and fileType != ''">
+                file_type = #{fileType},
+            </if>
+            <if test="fieldDelimiter != null and fieldDelimiter != ''">
+                field_delimiter = #{fieldDelimiter},
+            </if>
+            <if test="nameNodes != null and nameNodes != ''">
+                name_nodes = #{nameNodes},
+            </if>
+            <if test="nameServices != null and nameServices != ''">
+                name_services = #{nameServices},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="proxyProvider != null and proxyProvider != ''">
+                proxy_provider = #{proxyProvider},
+            </if>
+            <if test="status != null and status != ''">
+                status = #{status},
+            </if>
+            <if test="createBy != null and createBy != ''">
+                create_by = #{createBy},
+            </if>
+            <if test="createDate != null and createDate != ''">
+                create_date = #{createDate},
+            </if>
+            <if test="updateBy != null and updateBy != ''">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateDate != null and updateDate != ''">
+                update_date = #{updateDate},
+            </if>
+            <if test="comments != null and comments != ''">
+                comments = #{comments},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from job_ds_environment where id = #{id}
+    </delete>
+</mapper>
