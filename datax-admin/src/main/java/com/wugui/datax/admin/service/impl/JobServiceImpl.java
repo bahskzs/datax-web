@@ -264,8 +264,8 @@ public class JobServiceImpl implements JobService {
             JobDatasourceDTO targetDS = CopyUtil.copy(targetSource,JobDatasourceDTO.class);
 
             List<Map<String,String>> dbParamsList = new ArrayList<Map<String,String>>();
-            dbParamsList.add(BeanMap.create(sourceDS));
-            dbParamsList.add(BeanMap.create(targetDS));
+            dbParamsList.add(org.apache.commons.beanutils.BeanUtils.describe(sourceDS));
+            dbParamsList.add(org.apache.commons.beanutils.BeanUtils.describe(targetDS));
 
             //改造数据源--修改的是jobJson
             String json = JSONUtils.changeJsonDSs(jobJson, dbParamsList);
@@ -754,7 +754,7 @@ public class JobServiceImpl implements JobService {
         List<String> rColumns;
         List<String> wColumns;
         for (int i = 0; i < rdTables.size(); i++) {
-            rColumns = datasourceQueryService.getColumns(dto.getReaderDatasourceId(), rdTables.get(i));
+                rColumns = datasourceQueryService.getColumns(dto.getReaderDatasourceId(), rdTables.get(i));
             wColumns = datasourceQueryService.getColumns(dto.getWriterDatasourceId(), wrTables.get(i));
 
             jsonBuild.setReaderDatasourceId(dto.getReaderDatasourceId());
