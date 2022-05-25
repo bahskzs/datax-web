@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.wugui.datatx.core.util.Constants;
+import com.wugui.datax.admin.config.HadoopConfig;
 import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.tool.datax.reader.*;
@@ -19,6 +20,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,9 @@ import static com.wugui.datax.admin.util.JdbcConstants.*;
  */
 @Data
 public class DataxJsonHelper implements DataxJsonInterface {
+
+    @Resource
+    private HadoopConfig hadoopConfig;
 
     /**
      * 读取的表，根据datax示例，支持多个表（先不考虑，后面再去实现， 这里先用list保存吧）
@@ -329,6 +334,7 @@ public class DataxJsonHelper implements DataxJsonInterface {
             columns.add(column);
         });
         dataxHivePojo.setColumns(columns);
+        //hiveWriterDto 引用自job_ds_environment
         dataxHivePojo.setWriterDefaultFS(hiveWriterDto.getWriterDefaultFS());
         dataxHivePojo.setWriteFieldDelimiter(hiveWriterDto.getWriteFieldDelimiter());
         dataxHivePojo.setWriterFileType(hiveWriterDto.getWriterFileType());

@@ -5,8 +5,9 @@ import com.wugui.datatx.core.enums.IncrementTypeEnum;
 import com.wugui.datatx.core.log.JobLogger;
 import com.wugui.datatx.core.util.Constants;
 import com.wugui.datatx.core.util.DateUtil;
+import com.wugui.datax.executor.util.StringUtils;
 import com.wugui.datax.executor.util.SystemUtils;
-import org.apache.commons.lang3.StringUtils;
+
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -92,7 +93,9 @@ public class BuildCommand {
         if (incrementType != null && IncrementTypeEnum.PARTITION.getCode() == incrementType) {
             if (StringUtils.isNotBlank(partitionStr)) {
                 List<String> partitionInfo = Arrays.asList(partitionStr.split(SPLIT_COMMA));
-                if (doc.length() > 0) doc.append(SPLIT_SPACE);
+                if (doc.length() > 0) {
+                    doc.append(SPLIT_SPACE);
+                }
                 doc.append(PARAMS_CM).append(TRANSFORM_QUOTES).append(String.format(PARAMS_CM_V_PT, buildPartition(partitionInfo))).append(TRANSFORM_QUOTES);
             }
         }

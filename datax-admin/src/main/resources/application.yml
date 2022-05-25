@@ -6,7 +6,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   profiles:
-    active: dev
+    active: prod
   jndi:
     ignore: true
   #数据源

@@ -2,12 +2,13 @@ package com.wugui.datax.executor.core.config;
 
 import com.wugui.datatx.core.executor.impl.JobSpringExecutor;
 import com.wugui.datax.executor.util.SystemUtils;
-import org.apache.commons.lang3.StringUtils;
+//import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
 
 /**
  * xxl-job config

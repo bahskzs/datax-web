@@ -1,5 +1,6 @@
 package com.wugui.datax.executor.service.jobhandler;
 
+
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import com.wugui.datatx.core.biz.model.HandleProcessCallbackParam;
@@ -9,10 +10,11 @@ import com.wugui.datatx.core.handler.IJobHandler;
 import com.wugui.datatx.core.handler.annotation.JobHandler;
 import com.wugui.datatx.core.log.JobLogger;
 import com.wugui.datatx.core.thread.ProcessCallbackThread;
+
 import com.wugui.datatx.core.util.ProcessUtil;
 import com.wugui.datax.executor.service.logparse.LogStatistics;
+import com.wugui.datax.executor.util.StringUtils;
 import com.wugui.datax.executor.util.SystemUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

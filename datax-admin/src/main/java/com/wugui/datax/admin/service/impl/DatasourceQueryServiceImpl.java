@@ -7,7 +7,7 @@ import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.service.JobDatasourceService;
-import com.wugui.datax.admin.tool.database.DasColumn;
+//import com.wugui.datax.admin.tool.database.DasColumn;
 import com.wugui.datax.admin.tool.query.*;
 import com.wugui.datax.admin.util.AESUtil;
 import com.wugui.datax.admin.util.JdbcConstants;
@@ -30,8 +30,11 @@ import java.util.List;
 @Service
 public class DatasourceQueryServiceImpl implements DatasourceQueryService {
 
-    @Autowired
-    private JobDatasourceService jobDatasourceService;
+    private final JobDatasourceService jobDatasourceService;
+
+    public DatasourceQueryServiceImpl(JobDatasourceService jobDatasourceService) {
+        this.jobDatasourceService = jobDatasourceService;
+    }
 
     @Override
     public List<String> getDBs(Long id) throws IOException {
@@ -49,9 +52,11 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         if (ObjectUtil.isNull(datasource)) {
             return Lists.newArrayList();
         }
-        if (JdbcConstants.HBASE.equals(datasource.getDatasource())) {
-            return new HBaseQueryTool(datasource).getTableNames();
-        } else if (JdbcConstants.MONGODB.equals(datasource.getDatasource())) {
+//        if (JdbcConstants.HBASE.equals(datasource.getDatasource())) {
+//            return new HBaseQueryTool(datasource).getTableNames();
+//        } else
+
+            if (JdbcConstants.MONGODB.equals(datasource.getDatasource())) {
             return new MongoDBQueryTool(datasource).getCollectionNames(datasource.getDatabaseName());
         } else {
             BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
@@ -81,11 +86,9 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
      * @author: bahsk
      * @date: 2021-10-27 10:58
      * @description: [项目定制]根据数据源id和表名获取所有字段明细/仅限
-     * @params:
-     * @return:
      */
     @Override
-    public List<ColumnDetailsRespDTO> getColumnsDetails(Long datasourceId, String tableName) throws IOException {
+    public List<ColumnDetailsRespDTO> getColumnsDetails(Long datasourceId, String tableName)  {
         //获取数据源对象
         JobDatasource datasource = jobDatasourceService.getById(datasourceId);
         //queryTool组装
@@ -102,11 +105,10 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
 
     /**
      * @param tableName
+     * @param datasourceId
      * @author: bahsk
      * @date: 2021-12-08 16:49
      * @description: 获取DDL
-     * @params:
-     * @return:
      */
     @Override
     public List<TableDetailsResp> getDdlSQL(String tableName, Long datasourceId) {
@@ -135,9 +137,11 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         if (ObjectUtil.isNull(datasource)) {
             return Lists.newArrayList();
         }
-        if (JdbcConstants.HBASE.equals(datasource.getDatasource())) {
-            return new HBaseQueryTool(datasource).getColumns(tableName);
-        } else if (JdbcConstants.MONGODB.equals(datasource.getDatasource())) {
+//        if (JdbcConstants.HBASE.equals(datasource.getDatasource())) {
+//            return new HBaseQueryTool(datasource).getColumns(tableName);
+//        } else
+
+            if (JdbcConstants.MONGODB.equals(datasource.getDatasource())) {
             return new MongoDBQueryTool(datasource).getColumns(tableName);
         } else {
             BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);

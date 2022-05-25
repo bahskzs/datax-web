@@ -1,6 +1,6 @@
 package com.wugui.datax.executor.util;
 
-import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,9 @@ public class SystemUtils {
      * @return
      */
     public static String getDataXHomePath() {
-        if (StringUtils.isNotEmpty(DATAX_HOME)) return DATAX_HOME;
+        if (StringUtils.isNotEmpty(DATAX_HOME)) {
+            return DATAX_HOME;
+        }
         String dataXHome = System.getenv("DATAX_HOME");
         if (StringUtils.isBlank(dataXHome)) {
             //LOGGER.warn("DATAX_HOME 环境变量为NULL");

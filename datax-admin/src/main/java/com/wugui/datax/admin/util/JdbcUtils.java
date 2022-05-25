@@ -1,7 +1,8 @@
 package com.wugui.datax.admin.util;
 
 
-import org.apache.xerces.impl.dv.util.HexBin;
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
+//import org.apache.xerces.impl.dv.util.HexBin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

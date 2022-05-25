@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/datax_web
     username: root
-    password: QAZwsx123
+    password: Bosssoft@2021
     hikari:
       ## 最小空闲连接数量
       minimum-idle: 5
@@ -23,4 +23,5 @@ hadoop:
   nameNodes: namenode55,namenode109
   nameService: nameservice1
   address: 10.96.10.128:8020,10.96.10.127:8020
+
 

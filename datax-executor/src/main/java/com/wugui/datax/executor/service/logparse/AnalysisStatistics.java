@@ -2,8 +2,7 @@ package com.wugui.datax.executor.service.logparse;
 
 import com.wugui.datatx.core.log.JobLogger;
 import com.wugui.datatx.core.util.Constants;
-import org.apache.commons.lang3.StringUtils;
-
+import com.wugui.datax.executor.util.StringUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,9 +62,13 @@ public class AnalysisStatistics {
     }
 
     private static String subResult(String line) {
-        if (StringUtils.isBlank(line)) return Constants.STRING_BLANK;
+        if (StringUtils.isBlank(line)) {
+            return Constants.STRING_BLANK;
+        }
         int pos = line.indexOf(Constants.SPLIT_SCOLON);
-        if (pos > 0) return line.substring(pos + 1).trim();
+        if (pos > 0) {
+            return line.substring(pos + 1).trim();
+        }
         return line.trim();
     }
 }

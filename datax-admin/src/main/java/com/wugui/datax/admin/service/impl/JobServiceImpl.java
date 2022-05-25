@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -263,8 +264,8 @@ public class JobServiceImpl implements JobService {
             JobDatasourceDTO targetDS = CopyUtil.copy(targetSource,JobDatasourceDTO.class);
 
             List<Map<String,String>> dbParamsList = new ArrayList<Map<String,String>>();
-            dbParamsList.add(org.apache.commons.beanutils.BeanUtils.describe(sourceDS));
-            dbParamsList.add(org.apache.commons.beanutils.BeanUtils.describe(targetDS));
+            dbParamsList.add(BeanMap.create(sourceDS));
+            dbParamsList.add(BeanMap.create(targetDS));
 
             //改造数据源--修改的是jobJson
             String json = JSONUtils.changeJsonDSs(jobJson, dbParamsList);

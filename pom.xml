@@ -28,33 +28,31 @@
         <commons-lang3.version>3.3.2</commons-lang3.version>
         <fastjson.version>1.2.70</fastjson.version>
         <slf4j-api.version>1.7.28</slf4j-api.version>
-        <logback-classic.version>1.2.2</logback-classic.version>
+        <logback-classic.version>1.2.9</logback-classic.version>
         <log4j.version>2.17.0</log4j.version>
         <commons-io.version>2.4</commons-io.version>
-        <junit.version>4.12</junit.version>
+        <junit4.version>4.13.2</junit4.version>
         <hutool.version>4.5.1</hutool.version>
-        <postgresql.version>42.2.5</postgresql.version>
-        <mysql-connector.version>5.1.47</mysql-connector.version>
+        <postgresql.version>42.3.5</postgresql.version>
+        <mysql-connector.version>8.0.29</mysql-connector.version>
         <jna.version>4.1.0</jna.version>
-        <groovy.version>2.5.8</groovy.version>
+        <groovy.version>2.5.14</groovy.version>
         <mybatisplus.version>3.4.2</mybatisplus.version>
 
         <swagger.version>1.9.3</swagger.version>
         <springfox.version>2.9.2</springfox.version>
         <swagger-models.version>1.5.24</swagger-models.version>
 
-        <spring.version>5.3.12</spring.version>
-        <junit.version>4.12</junit.version>
-<!--        <spring-boot.version>2.5.6</spring-boot.version>-->
+        <spring.version>5.3.19</spring.version>
         <spring-boot.version>2.6.7</spring-boot.version>
-
+        <lombok.version>1.18.22</lombok.version>
         <jjwt.version>0.9.0</jjwt.version>
-        <netty.version>4.1.43.Final</netty.version>
+        <netty.version>4.1.77.Final</netty.version>
         <hessian.version>4.0.63</hessian.version>
-        <hadoop.version>2.7.3</hadoop.version>
+        <hadoop.version>2.8.5</hadoop.version>
         <hive.jdbc.version>2.1.0</hive.jdbc.version>
 
-        <hbase.version>1.3.0</hbase.version>
+        <hbase.version>1.7.1</hbase.version>
         <mongo-java-driver.version>3.4.2</mongo-java-driver.version>
         <oshi.core.version>3.5.0</oshi.core.version>
 
@@ -64,12 +62,7 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>RELEASE</version>
-                <scope>compile</scope>
-            </dependency>
+
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-web</artifactId>
@@ -84,6 +77,11 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
                 <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
             </dependency>
 
         </dependencies>
