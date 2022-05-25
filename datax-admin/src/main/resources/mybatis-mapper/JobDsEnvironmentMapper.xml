@@ -21,7 +21,26 @@
         <result property="updateDate" column="update_date" />
         <result property="comments" column="comments" />
     </resultMap>
-
+    <sql id="Base_Column_List">
+        id,
+		datasource_id,
+		datasource_name,
+		datasource_type,
+		path,
+		default_fs,
+		file_type,
+		field_delimiter,
+        name_nodes,
+        name_services,
+        address,
+        proxy_provider,
+        status,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        comments
+    </sql>
     <!-- 通过ID查询单条数据 -->
     <select id="queryById" resultMap="JobDsEnvironmentMap">
         select
@@ -245,13 +264,13 @@
             <if test="createBy != null and createBy != ''">
                 create_by = #{createBy},
             </if>
-            <if test="createDate != null and createDate != ''">
+            <if test="createDate != null ">
                 create_date = #{createDate},
             </if>
             <if test="updateBy != null and updateBy != ''">
                 update_by = #{updateBy},
             </if>
-            <if test="updateDate != null and updateDate != ''">
+            <if test="updateDate != null ">
                 update_date = #{updateDate},
             </if>
             <if test="comments != null and comments != ''">
@@ -265,4 +284,25 @@
     <delete id="deleteById">
         delete from job_ds_environment where id = #{id}
     </delete>
+
+    <select id="selectByDataSourceId" parameterType="java.lang.Long" resultMap="JobDsEnvironmentMap">
+        select
+        <include refid="Base_Column_List" />
+        from job_ds_environment
+        where datasource_id = #{id}
+    </select>
+
+    <select id="selectListById" parameterType="java.lang.Long" resultMap="JobDsEnvironmentMap">
+        select
+        <include refid="Base_Column_List" />
+        from job_ds_environment
+        where id = #{id}
+    </select>
+
+    <select id="selectCountByDataSourceId" parameterType="java.lang.Long" resultType="int">
+        select
+        count(1)
+        from job_ds_environment
+        where status=1 and datasource_id = #{id}
+    </select>
 </mapper>

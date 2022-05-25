@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -53,10 +54,12 @@ public class JobDsEnvironment implements Serializable,Cloneable{
     /** 创建人 */
     private String createBy ;
     /** 创建时间 */
+    @DateTimeFormat(pattern = "yyyyMMdd")
     private Date createDate ;
     /** 更新人 */
     private String updateBy ;
     /** 更新时间 */
+    @DateTimeFormat(pattern = "yyyyMMdd")
     private Date updateDate ;
     /** 备注 */
     private String comments ;

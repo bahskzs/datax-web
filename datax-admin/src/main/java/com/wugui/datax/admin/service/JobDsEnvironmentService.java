@@ -52,4 +52,13 @@ public interface JobDsEnvironmentService{
      */
     JobDsEnvironment queryByDataSourceId(Long id);
 
+
+    /**
+     * 查看一个datasourceid下status=1 的数量
+     *
+     * @param id 主键
+     * @return
+     */
+    int selectCountByDataSourceId(Long id);
+
 }

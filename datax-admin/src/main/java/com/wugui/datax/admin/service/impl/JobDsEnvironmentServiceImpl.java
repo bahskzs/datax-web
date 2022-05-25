@@ -63,11 +63,17 @@ public class JobDsEnvironmentServiceImpl implements JobDsEnvironmentService {
 
     @Override
     public List<JobDsEnvironment> queryListById(Long id) {
-        return null;
+
+        return jobDsEnvironmentMapper.selectListById(id);
     }
 
     @Override
     public JobDsEnvironment queryByDataSourceId(Long id) {
-        return null;
+        return jobDsEnvironmentMapper.selectByDataSourceId(id);
+    }
+
+    @Override
+    public int selectCountByDataSourceId(Long id) {
+        return jobDsEnvironmentMapper.selectCountByDataSourceId(id);
     }
 }
