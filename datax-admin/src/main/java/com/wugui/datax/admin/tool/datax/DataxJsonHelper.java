@@ -9,6 +9,8 @@ import com.wugui.datatx.core.util.Constants;
 import com.wugui.datax.admin.config.HadoopConfig;
 import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.JobDatasource;
+import com.wugui.datax.admin.entity.JobDsEnvironment;
+import com.wugui.datax.admin.service.JobDsEnvironmentService;
 import com.wugui.datax.admin.tool.datax.reader.*;
 import com.wugui.datax.admin.tool.datax.writer.*;
 import com.wugui.datax.admin.tool.pojo.DataxHbasePojo;
@@ -37,6 +39,9 @@ import static com.wugui.datax.admin.util.JdbcConstants.*;
  */
 @Data
 public class DataxJsonHelper implements DataxJsonInterface {
+
+    @Resource
+    private JobDsEnvironmentService jobDsEnvironmentService;
 
     @Resource
     private HadoopConfig hadoopConfig;
@@ -268,6 +273,23 @@ public class DataxJsonHelper implements DataxJsonInterface {
             column.put("type", c.split(Constants.SPLIT_SCOLON)[2]);
             columns.add(column);
         });
+        /**
+         * TODO 1.获取hive数据源对应的环境配置信息
+         *      2.组装hiveReaderDto
+         */
+        JobDsEnvironment jobDsEnvironment = JobDsEnvironment.builder().defaultFs("hdfs://10.100.32.144:9000")
+                .datasourceId(725)
+                .datasourceType(1)
+                .fieldDelimiter("\u0001")
+                .path("/user/hive/warehouse/dw_pay.db/").build();
+
+        if(hiveReaderDto == null) {
+            hiveReaderDto = new HiveReaderDto();
+            hiveReaderDto.setReaderDefaultFS(jobDsEnvironment.getDefaultFs());
+            hiveReaderDto.setReaderPath(jobDsEnvironment.getPath() + writerTables.get(0));
+            hiveReaderDto.setReaderFieldDelimiter(jobDsEnvironment.getFieldDelimiter());
+        }
+
         dataxHivePojo.setColumns(columns);
         dataxHivePojo.setReaderDefaultFS(hiveReaderDto.getReaderDefaultFS());
         dataxHivePojo.setReaderFieldDelimiter(hiveReaderDto.getReaderFieldDelimiter());
@@ -335,6 +357,25 @@ public class DataxJsonHelper implements DataxJsonInterface {
         });
         dataxHivePojo.setColumns(columns);
         //hiveWriterDto 引用自job_ds_environment
+        /**
+         * TODO 1.获取hive数据源对应的环境配置信息
+         *      2.组装hiveWrierDto
+        */
+//        JobDsEnvironment jobDsEnvironment = jobDsEnvironmentService.queryByDataSourceId(writerDatasource.getId());
+        JobDsEnvironment jobDsEnvironment = JobDsEnvironment.builder().defaultFs("hdfs://10.100.32.144:9000")
+                .datasourceId(725)
+                .datasourceType(1)
+                .fieldDelimiter("\u0001")
+                .path("/user/hive/warehouse/dw_pay.db/").build();
+
+        if(hiveWriterDto == null) {
+            hiveWriterDto = new HiveWriterDto();
+            hiveWriterDto.setWriterDefaultFS(jobDsEnvironment.getDefaultFs());
+            hiveWriterDto.setWriterPath(jobDsEnvironment.getPath() + writerTables.get(0));
+            hiveWriterDto.setWriterFileName("data");
+            hiveWriterDto.setWriteFieldDelimiter(jobDsEnvironment.getFieldDelimiter());
+            hiveWriterDto.setWriteMode("append");
+        }
         dataxHivePojo.setWriterDefaultFS(hiveWriterDto.getWriterDefaultFS());
         dataxHivePojo.setWriteFieldDelimiter(hiveWriterDto.getWriteFieldDelimiter());
         dataxHivePojo.setWriterFileType(hiveWriterDto.getWriterFileType());
