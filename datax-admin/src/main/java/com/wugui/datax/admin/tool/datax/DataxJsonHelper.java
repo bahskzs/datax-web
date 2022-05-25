@@ -273,15 +273,13 @@ public class DataxJsonHelper implements DataxJsonInterface {
             column.put("type", c.split(Constants.SPLIT_SCOLON)[2]);
             columns.add(column);
         });
-        /**
-         * TODO 1.获取hive数据源对应的环境配置信息
-         *      2.组装hiveReaderDto
-         */
-        JobDsEnvironment jobDsEnvironment = JobDsEnvironment.builder().defaultFs("hdfs://10.100.32.144:9000")
-                .datasourceId(725)
-                .datasourceType(1)
-                .fieldDelimiter("\u0001")
-                .path("/user/hive/warehouse/dw_pay.db/").build();
+
+        JobDsEnvironment jobDsEnvironment = jobDsEnvironmentService.queryByDataSourceId(writerDatasource.getId());
+//        JobDsEnvironment jobDsEnvironment = JobDsEnvironment.builder().defaultFs("hdfs://10.100.32.144:9000")
+//                .datasourceId(725)
+//                .datasourceType(1)
+//                .fieldDelimiter("\u0001")
+//                .path("/user/hive/warehouse/dw_pay.db/").build();
 
         if(hiveReaderDto == null) {
             hiveReaderDto = new HiveReaderDto();
@@ -357,16 +355,12 @@ public class DataxJsonHelper implements DataxJsonInterface {
         });
         dataxHivePojo.setColumns(columns);
         //hiveWriterDto 引用自job_ds_environment
-        /**
-         * TODO 1.获取hive数据源对应的环境配置信息
-         *      2.组装hiveWrierDto
-        */
-//        JobDsEnvironment jobDsEnvironment = jobDsEnvironmentService.queryByDataSourceId(writerDatasource.getId());
-        JobDsEnvironment jobDsEnvironment = JobDsEnvironment.builder().defaultFs("hdfs://10.100.32.144:9000")
-                .datasourceId(725)
-                .datasourceType(1)
-                .fieldDelimiter("\u0001")
-                .path("/user/hive/warehouse/dw_pay.db/").build();
+        JobDsEnvironment jobDsEnvironment = jobDsEnvironmentService.queryByDataSourceId(writerDatasource.getId());
+//        JobDsEnvironment jobDsEnvironment = JobDsEnvironment.builder().defaultFs("hdfs://10.100.32.144:9000")
+//                .datasourceId(725)
+//                .datasourceType(1)
+//                .fieldDelimiter("\u0001")
+//                .path("/user/hive/warehouse/dw_pay.db/").build();
 
         if(hiveWriterDto == null) {
             hiveWriterDto = new HiveWriterDto();
