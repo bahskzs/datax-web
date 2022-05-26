@@ -1,17 +1,21 @@
 package com.wugui.datax.admin.service.impl;
 
 import com.wugui.datax.admin.entity.JobDsEnvironment;
+import com.wugui.datax.admin.mapper.CustomJobDsEnvironmentMapper;
 import com.wugui.datax.admin.mapper.JobDsEnvironmentMapper;
 import com.wugui.datax.admin.service.JobDsEnvironmentService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
 public class JobDsEnvironmentServiceImpl implements JobDsEnvironmentService {
-    @Autowired
+    @Resource
     private JobDsEnvironmentMapper jobDsEnvironmentMapper;
+
+    @Resource
+    private CustomJobDsEnvironmentMapper customJobDsEnvironmentMapper;
 
     /**
      * 通过ID查询单条数据
@@ -21,7 +25,7 @@ public class JobDsEnvironmentServiceImpl implements JobDsEnvironmentService {
      */
     @Override
     public JobDsEnvironment queryById(Long id){
-        return jobDsEnvironmentMapper.queryById(id);
+        return jobDsEnvironmentMapper.selectByPrimaryKey(id);
     }
 
 
@@ -44,9 +48,8 @@ public class JobDsEnvironmentServiceImpl implements JobDsEnvironmentService {
      * @return 实例对象
      */
     @Override
-    public JobDsEnvironment update(JobDsEnvironment jobDsEnvironment){
-        jobDsEnvironmentMapper.update(jobDsEnvironment);
-        return queryById(jobDsEnvironment.getId());
+    public int update(JobDsEnvironment jobDsEnvironment){
+        return customJobDsEnvironmentMapper.update(jobDsEnvironment);
     }
 
     /**
@@ -56,24 +59,30 @@ public class JobDsEnvironmentServiceImpl implements JobDsEnvironmentService {
      * @return 是否成功
      */
     @Override
-    public boolean deleteById(Long id){
-        int total = jobDsEnvironmentMapper.deleteById(id);
-        return total > 0;
+    public Boolean deleteById(Long id){
+        int res = jobDsEnvironmentMapper.deleteByPrimaryKey(id);
+        return res>0;
     }
 
     @Override
     public List<JobDsEnvironment> queryListById(Long id) {
 
-        return jobDsEnvironmentMapper.selectListById(id);
+        return customJobDsEnvironmentMapper.selectListById(id);
     }
 
     @Override
     public JobDsEnvironment queryByDataSourceId(Long id) {
-        return jobDsEnvironmentMapper.selectByDataSourceId(id);
+
+        return customJobDsEnvironmentMapper.selectByDataSourceId(id);
     }
 
     @Override
     public int selectCountByDataSourceId(Long id) {
-        return jobDsEnvironmentMapper.selectCountByDataSourceId(id);
+        return customJobDsEnvironmentMapper.selectCountByDataSourceId(id);
+    }
+
+    @Override
+    public List<JobDsEnvironment> selectAllEnv() {
+        return jobDsEnvironmentMapper.selectByExample(null);
     }
 }

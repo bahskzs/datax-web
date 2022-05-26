@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.xml.crypto.Data;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -19,21 +20,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/job/env")
 @Api(tags = "数据源环境接口")
-public class JobDsEnvironmentController {
+public class JobDsEnvironmentController extends BaseController{
     @Resource
     private JobDsEnvironmentService jobDsEnvironmentService;
 
-    @GetMapping("/selectListById")
-    @ApiOperation("通过主键查询数据")
-    public List<JobDsEnvironment> selectListById(Long id) {
-        return jobDsEnvironmentService.queryListById(id);
+    @GetMapping("/all")
+    @ApiOperation("查询数据源对应的环境列表")
+    public R<List<JobDsEnvironment>> selectListById(@RequestParam(required = true) Long id) {
+        return success(jobDsEnvironmentService.selectAllEnv());
+    }
+
+    @GetMapping("/{id}")
+    @ApiOperation("查询数据源对应的环境列表")
+    public R<List<JobDsEnvironment>> selectListById(@PathVariable Serializable id) {
+        return success(jobDsEnvironmentService.queryListById((Long) id));
     }
 
 
-    @GetMapping("/selectByDataSourceId")
-    @ApiOperation("通过数据源主键查询单条数据")
-    public JobDsEnvironment selectByDataSourceId(Long id) {
-        return jobDsEnvironmentService.queryByDataSourceId(id);
+    @GetMapping("/select")
+    @ApiOperation("查询数据源启用状态的环境信息")
+    public R<JobDsEnvironment> selectByDataSourceId(@RequestParam(required = true) Long id) {
+        return success(jobDsEnvironmentService.queryByDataSourceId(id));
     }
 
 
@@ -66,7 +73,7 @@ public class JobDsEnvironmentController {
      */
     @ApiOperation("更新数据")
     @PutMapping
-    public R<JobDsEnvironment> edit(JobDsEnvironment jobDsEnvironment){
+    public R<Integer> edit(JobDsEnvironment jobDsEnvironment){
         Date date=new Date();
         jobDsEnvironment.setUpdateDate(date);
 
@@ -90,8 +97,8 @@ public class JobDsEnvironmentController {
      */
     @ApiOperation("通过主键删除数据")
     @DeleteMapping
-    public ResponseEntity<Boolean> deleteById(Long id){
-        return ResponseEntity.ok(jobDsEnvironmentService.deleteById(id));
+    public R<Boolean> deleteById(Long id){
+        return R.ok(jobDsEnvironmentService.deleteById(id));
 
     }
 

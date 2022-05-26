@@ -27,14 +27,14 @@ public interface JobDsEnvironmentService{
      * @param jobDsEnvironment 实例对象
      * @return 实例对象
      */
-    JobDsEnvironment update(JobDsEnvironment jobDsEnvironment);
+    int update(JobDsEnvironment jobDsEnvironment);
     /**
      * 通过主键删除数据
      *
      * @param id 主键
      * @return 是否成功
      */
-    boolean deleteById(Long id);
+    Boolean deleteById(Long id);
 
     /**
      * 通过ID查询List
@@ -61,4 +61,9 @@ public interface JobDsEnvironmentService{
      */
     int selectCountByDataSourceId(Long id);
 
+    /**
+     * 查询全部环境信息
+     * @return
+     */
+    List<JobDsEnvironment> selectAllEnv();
 }
