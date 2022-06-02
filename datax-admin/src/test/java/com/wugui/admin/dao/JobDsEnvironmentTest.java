@@ -25,8 +25,12 @@ public class JobDsEnvironmentTest {
     JobDsEnvironmentService JobDsEnvironmentService;
     @Test
     public void test(){
-        int countNum = JobDsEnvironmentService.selectCountByDataSourceId(1L);
-        Assert.assertEquals(1,countNum);
-        System.out.println(countNum);
+        JobDsEnvironment jobDsEnvironment=new JobDsEnvironment();
+
+
+        jobDsEnvironment.setId(2L);
+        jobDsEnvironment.setDatasourceId(725);
+        int countNum = JobDsEnvironmentService.selectCountById(jobDsEnvironment);
+        System.out.println("+++++++++++++++++++++++++++++++++++++"+countNum);
     }
 }

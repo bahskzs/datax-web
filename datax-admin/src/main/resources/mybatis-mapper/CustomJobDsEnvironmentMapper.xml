@@ -43,11 +43,11 @@
         where id = #{id}
     </select>
 
-    <select id="selectCountByDataSourceId" parameterType="java.lang.Long" resultType="int">
+    <select id="selectCountById" parameterType="com.wugui.datax.admin.entity.JobDsEnvironment" resultType="int" >
         select
         count(1)
         from job_ds_environment
-        where status=1 and datasource_id = #{id}
+        where status=1 and datasource_id = #{datasourceId} and id!=#{id}
     </select>
 
 
@@ -97,13 +97,13 @@
             <if test="createBy != null and createBy != ''">
                 create_by = #{createBy},
             </if>
-            <if test="createDate != null and createDate != ''">
+            <if test="createDate != null ">
                 create_date = #{createDate},
             </if>
             <if test="updateBy != null and updateBy != ''">
                 update_by = #{updateBy},
             </if>
-            <if test="updateDate != null and updateDate != ''">
+            <if test="updateDate != null ">
                 update_date = #{updateDate},
             </if>
             <if test="comments != null and comments != ''">
@@ -112,5 +112,11 @@
         </set>
         where id = #{id}
     </update>
+
+
+
+
+
+
 </mapper>
 

@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface JobDsEnvironmentMapper {
+public interface JobDsEnvironmentMapper  {
     long countByExample(JobDsEnvironmentExample example);
 
     int deleteByExample(JobDsEnvironmentExample example);

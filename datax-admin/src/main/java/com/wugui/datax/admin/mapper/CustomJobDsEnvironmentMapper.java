@@ -1,6 +1,10 @@
 package com.wugui.datax.admin.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.wugui.datax.admin.entity.JobDsEnvironment;
+import com.wugui.datax.admin.entity.JobInfo;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -10,13 +14,15 @@ import java.util.List;
  * @description
  */
 public interface CustomJobDsEnvironmentMapper {
+
+
     /**
      * 通过主键查询list JobDsEnvironment
      *
      * @param id 主键
      * @return
      */
-    List<JobDsEnvironment> selectListById(Long id);
+    JobDsEnvironment selectListById(Long id);
     /**
      * 通过主键 查询JobDsEnvironment
      *
@@ -28,11 +34,13 @@ public interface CustomJobDsEnvironmentMapper {
     /**
      * 查看一个datasourceid下status=1 的数量
      *
-     * @param id 主键
+     * @param jobDsEnvironment
      * @return
      */
-    int selectCountByDataSourceId(Long id);
+    int selectCountById(JobDsEnvironment jobDsEnvironment);
 
 
     int update(JobDsEnvironment jobDsEnvironment);
+
+
 }
