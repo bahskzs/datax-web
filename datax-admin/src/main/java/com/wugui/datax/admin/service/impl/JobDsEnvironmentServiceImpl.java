@@ -10,13 +10,11 @@ import com.wugui.datax.admin.entity.JobDsEnvironmentExample;
 import com.wugui.datax.admin.mapper.CustomJobDsEnvironmentMapper;
 import com.wugui.datax.admin.mapper.JobDsEnvironmentMapper;
 import com.wugui.datax.admin.service.JobDsEnvironmentService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
+import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -100,20 +98,22 @@ public class JobDsEnvironmentServiceImpl implements JobDsEnvironmentService {
     public PageResp<JobDsEnvironment> list(JobDsEnvironmentDTO jobDsEnvironmentDTO) {
         JobDsEnvironmentExample jobDsEnvironmentExample = new JobDsEnvironmentExample();
         JobDsEnvironmentExample.Criteria criteria=jobDsEnvironmentExample.createCriteria();
-
+        if (!ObjectUtils.isEmpty(jobDsEnvironmentDTO.getDatasourceName())) {
+            criteria.andDatasourceNameLike("%"+jobDsEnvironmentDTO.getDatasourceName()+"%");
+        }
+        if (!ObjectUtils.isEmpty(jobDsEnvironmentDTO.getDataSourceType())) {
+            criteria.andDatasourceTypeEqualTo(jobDsEnvironmentDTO.getDataSourceType());
+        }
         logger.info("分页数：{}", jobDsEnvironmentDTO.getPage());
         logger.info("条数：{}", jobDsEnvironmentDTO.getSize());
 
-        PageHelper.startPage(1, 3);
+        PageHelper.startPage(jobDsEnvironmentDTO.getPage(), jobDsEnvironmentDTO.getSize());
         List<JobDsEnvironment> jobDsEnvironmentList = jobDsEnvironmentMapper.selectByExample(jobDsEnvironmentExample);
 
         PageInfo<JobDsEnvironment> pageInfo = new PageInfo<>(jobDsEnvironmentList);
-        pageInfo.setPageSize(3);
-        pageInfo.setPageNum(1);
         logger.info("总行数：{}", pageInfo.getTotal());
         logger.info("总页数：{}", pageInfo.getPages());
 
-        //List<JobDsEnvironment> list = CopyUtil.copyList(jobDsEnvironmentList, JobDsEnvironment.class);
 
         PageResp<JobDsEnvironment> pageResp = new PageResp();
         pageResp.setTotal(pageInfo.getTotal());

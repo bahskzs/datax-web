@@ -3,18 +3,14 @@ package com.wugui.datax.admin.controller;
 
 
 import com.baomidou.mybatisplus.extension.api.R;
-import com.wugui.datax.admin.dto.CommonResp;
 import com.wugui.datax.admin.dto.JobDsEnvironmentDTO;
-import com.wugui.datax.admin.dto.JobResourceDTO;
 import com.wugui.datax.admin.dto.PageResp;
 import com.wugui.datax.admin.entity.JobDsEnvironment;
-import com.wugui.datax.admin.entity.JobResource;
 import com.wugui.datax.admin.service.JobDsEnvironmentService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
-import javax.validation.Valid;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -106,13 +102,8 @@ public class JobDsEnvironmentController extends BaseController{
 
     @ApiOperation("根据条件分页查询")
     @GetMapping("/list")
-    public CommonResp list(JobDsEnvironmentDTO jobDsEnvironmentDTO) {
-        CommonResp<PageResp<JobDsEnvironment>> listCommonResp = new CommonResp<>();
-    /*    jobDsEnvironmentDTO.setPage(1);
-        jobDsEnvironmentDTO.setSize(5);*/
-        PageResp<JobDsEnvironment> list = jobDsEnvironmentService.list(jobDsEnvironmentDTO);
-        listCommonResp.setContent(list);
-        return listCommonResp;
+    public R<PageResp<JobDsEnvironment>> list(JobDsEnvironmentDTO jobDsEnvironmentDTO) {
+        return R.ok(jobDsEnvironmentService.list(jobDsEnvironmentDTO));
     }
 
 
