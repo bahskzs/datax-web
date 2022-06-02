@@ -2,11 +2,13 @@ server:
   #port: 8080
   port: 8081
 spring:
+  main:
+    allow-circular-references: true
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   profiles:
-    active: prod
+    active: dev
   jndi:
     ignore: true
   #数据源
