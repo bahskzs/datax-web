@@ -104,12 +104,13 @@ public class JobDsEnvironmentServiceImpl implements JobDsEnvironmentService {
         logger.info("分页数：{}", jobDsEnvironmentDTO.getPage());
         logger.info("条数：{}", jobDsEnvironmentDTO.getSize());
 
+        //22
         PageHelper.startPage(1, 3);
-        List<JobDsEnvironment> jobDsEnvironmentList = jobDsEnvironmentMapper.selectByExample(jobDsEnvironmentExample);
+        List<JobDsEnvironment> jobDsEnvironmentList = jobDsEnvironmentMapper.selectByExample(null);
 
         PageInfo<JobDsEnvironment> pageInfo = new PageInfo<>(jobDsEnvironmentList);
-        pageInfo.setPageSize(3);
-        pageInfo.setPageNum(1);
+//        pageInfo.setPageSize(3);
+//        pageInfo.setPageNum(1);
         logger.info("总行数：{}", pageInfo.getTotal());
         logger.info("总页数：{}", pageInfo.getPages());
 

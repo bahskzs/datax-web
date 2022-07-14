@@ -583,7 +583,11 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             String sql = getSQLQueryTables();
             rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                String tableName = rs.getString(1);
+                String tableName = rs.getString("tablename");
+//                logger.info("col1 :{},col2: {},col3: {}",
+//                        rs.getString("tablename"),
+//                        rs.getString("namespace"),
+//                        rs.getString("istemporaary"));
                 tables.add(tableName);
             }
         } catch (SQLException e) {
