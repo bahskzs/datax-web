@@ -1,6 +1,7 @@
 package com.wugui.datax.admin.service;
 
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.dto.TableCountResp;
 import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.tool.database.DasColumn;
 
@@ -82,4 +83,12 @@ public interface DatasourceQueryService {
        */
       List<TableDetailsResp> getDdlSQL(String tableName, Long datasourceId);
 
+
+    /**
+     * @date:2022-08-16 15:28
+     * @description: [项目定制]根据数据源id和表名获取数据量
+     * @params:
+     * @return:
+     */
+    List<TableCountResp> getTableCount(String tableName, Long datasourceId);
 }

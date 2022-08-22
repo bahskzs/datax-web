@@ -3,6 +3,7 @@ package com.wugui.datax.admin.service.impl;
 import cn.hutool.core.util.ObjectUtil;
 import com.google.common.collect.Lists;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.dto.TableCountResp;
 import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.DatasourceQueryService;
@@ -115,6 +116,14 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         JobDatasource datasource = jobDatasourceService.getById(datasourceId);
         BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
         return queryTool.getDdlSQL(tableName, AESUtil.decrypt(datasource.getJdbcUsername()));
+    }
+
+    //TODO  返回至少返回 表名,表记录的集合
+    public List<TableCountResp> getTableCount(String tableName, Long datasourceId) {
+        //根据id获取数据源 mysql oracle hive
+        JobDatasource datasource = jobDatasourceService.getById(datasourceId);
+        BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
+        return queryTool.getTableCount(tableName, AESUtil.decrypt(datasource.getJdbcUsername()));
     }
 
     @Override

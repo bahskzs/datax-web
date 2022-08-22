@@ -54,4 +54,15 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     public String getSQLQueryColumns(String... args) {
         return "select column_name from information_schema.columns where table_schema=? and table_name=?";
     }
+
+    /**
+     *
+     * @param args 用户名，需要查找数据记录数的表名
+     *
+     * @return 数据表名，表的记录数
+     */
+    @Override
+    public String getTableCount(String... args){
+        return "select '" + args[1] + "' as table_name,count(1) table_counts from " + args[0] + "." + args[1];
+    }
 }

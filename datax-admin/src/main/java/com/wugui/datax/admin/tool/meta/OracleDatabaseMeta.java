@@ -88,4 +88,15 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
      public String getMultiDdlSQL(String... args) {
          return "SELECT u.object_name,DBMS_METADATA.GET_DDL(U.OBJECT_TYPE, u.object_name,u.OWNER) FROM All_OBJECTS u where owner='" + args[0] + "' and u.object_name in (" + args[1] + ")";
      }
+
+    /**
+     *
+     * @param args 用户名，需要查找数据记录数的表名
+     *
+     * @return 数据表名，表的记录数
+     */
+     @Override
+    public String getTableCount(String... args){
+         return "select '" + args[1] + "' as table_name,count(1) table_counts from " + args[0] + "." + args[1];
+     }
 }

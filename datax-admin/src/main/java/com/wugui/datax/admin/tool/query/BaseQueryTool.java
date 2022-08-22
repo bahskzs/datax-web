@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.wugui.datatx.core.util.Constants;
 import com.wugui.datax.admin.core.util.LocalCacheUtil;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.dto.TableCountResp;
 import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.tool.database.ColumnInfo;
@@ -730,4 +731,68 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     protected String getSQLQueryTableSchema() {
         return sqlBuilder.getSQLQueryTableSchema();
     }
+
+
+    /**
+     * @param user,tableName
+     * @description 根据用户名和表名返回记录数
+     */
+    public List<TableCountResp> getTableCount(String tableName, String user){
+        List<TableCountResp> tableCountResps = new ArrayList<>();
+
+            String querySql = sqlBuilder.getTableCount(this.currentSchema, tableName);
+            TableCountResp tableCountResp = null;
+
+            //oracle数据源比较特殊，是用用户而不是模式
+            if (currentDatabase.equals(JdbcConstants.ORACLE)) {
+                querySql = sqlBuilder.getTableCount(user, tableName);
+            }
+
+            if (StringUtils.isBlank(querySql)) {
+                tableCountResp = TableCountResp.builder()
+                        .tableName(null)
+                        .tableCounts("获取ddl失败,暂不支持此数据源" + this.currentDatabase + "类型")
+                        .build();
+                tableCountResps.add(tableCountResp);
+                return tableCountResps;
+            }
+
+            Statement stmt = null;
+            ResultSet resultSet = null;
+            try {
+
+                stmt = this.connection.createStatement();
+                resultSet = stmt.executeQuery(querySql);
+                if (resultSet.next()) {
+                    String tablecount = resultSet.getString(2);
+                    TableCountResp build = TableCountResp.builder()
+                            .tableName(tableName)
+                            .tableCounts(tablecount)
+                            .build();
+                    tableCountResps.add(build);
+                    return tableCountResps;
+                } else {
+                    TableCountResp build = TableCountResp.builder()
+                            .tableName(tableName)
+                            .tableCounts("获取ddl失败无记录")
+                            .build();
+                    tableCountResps.add(build);
+                    return tableCountResps;
+                }
+
+            } catch (SQLException e) {
+                logger.error("获取ddl失败" + e.getMessage());
+                e.printStackTrace();
+            } finally {
+                JdbcUtils.close(resultSet);
+                JdbcUtils.close(stmt);
+            }
+
+            TableCountResp build = TableCountResp.builder()
+                    .tableName(tableName)
+                    .tableCounts("获取ddl失败,无法创建链接")
+                    .build();
+            tableCountResps.add(build);
+            return tableCountResps;
 }
+        }

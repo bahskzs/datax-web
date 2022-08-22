@@ -86,4 +86,15 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
     public String getMultiDdlSQL(String... args) {
         return null;
     }
+
+    /**
+     *
+     * @param args 用户名，数据库表名
+     *
+     * @return 查询表的记录数
+     */
+    @Override
+    public String getTableCount(String... args){
+        return null;
+    }
 }

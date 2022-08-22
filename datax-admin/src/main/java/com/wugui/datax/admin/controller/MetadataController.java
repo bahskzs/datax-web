@@ -2,6 +2,7 @@ package com.wugui.datax.admin.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.dto.TableCountResp;
 import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.tool.database.DasColumn;
@@ -127,6 +128,16 @@ public class MetadataController extends BaseController {
     }
 
 
-
-
+    /**
+     * 根据数据源id和表名获取数据量
+     *
+     * @param datasourceId   数据源id
+     * @param tableName      表名
+     * @return
+     */
+    @GetMapping("/getTableCount")
+    @ApiOperation("[项目定制]根据数据源id和表名获取数据量")
+    public R<List<TableCountResp>> getTableCount(String tableName, Long datasourceId){
+        return success(datasourceQueryService.getTableCount(tableName, datasourceId));
+    }
 }
