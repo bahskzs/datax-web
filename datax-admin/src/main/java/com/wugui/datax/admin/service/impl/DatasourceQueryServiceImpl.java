@@ -2,6 +2,7 @@ package com.wugui.datax.admin.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.google.common.collect.Lists;
+import com.wugui.datax.admin.dto.ColumnDetailsDiffRespDTO;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
 import com.wugui.datax.admin.dto.TableCountResp;
 import com.wugui.datax.admin.dto.TableDetailsResp;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -126,6 +128,7 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         return queryTool.getTableCount(tableName, AESUtil.decrypt(datasource.getJdbcUsername()));
     }
 
+
     @Override
     public List<String> getCollectionNames(long id, String dbName) throws IOException {
         //获取数据源对象
@@ -170,5 +173,35 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         return queryTool.getColumnsByQuerySql(querySql);
     }
 
+
+
+    @Override
+    public List<ColumnDetailsDiffRespDTO> getColumnsDiffDetails(Long sourceDatasourceId, Long targetDatasourceId, List<String> tableNameList) throws IOException {
+        //获取来源数据源对象
+        JobDatasource sourceDatasource = jobDatasourceService.getById(sourceDatasourceId);
+        //获取目标数据源对象
+        JobDatasource targetDatasource = jobDatasourceService.getById(targetDatasourceId);
+        //queryTool组装
+        if (ObjectUtil.isNull(sourceDatasource) || ObjectUtil.isNull(targetDatasource)) {
+            return Lists.newArrayList();
+        }
+        BaseQueryTool queryTool = QueryToolFactory.getByDbType(sourceDatasource);
+
+        List<ColumnDetailsDiffRespDTO> list = null;
+        for (int i = 0; i < tableNameList.size(); i++) {
+            List<ColumnDetailsDiffRespDTO> listAll;
+            String tableName = tableNameList.get(i);
+            List<ColumnDetailsRespDTO> sourceList = queryTool.getColumnsDetails(tableName, sourceDatasource.getDatasource());
+            List<ColumnDetailsRespDTO> targetList = queryTool.getColumnsDetails(tableName, sourceDatasource.getDatasource());
+            list = queryTool.getColumnsDetailsDiff(sourceList, targetList, tableName);
+
+            System.out.println(tableName);
+
+        }
+
+
+        return list;
+
+    }
 
 }

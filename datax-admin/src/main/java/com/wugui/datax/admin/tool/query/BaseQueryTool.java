@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.wugui.datatx.core.util.Constants;
 import com.wugui.datax.admin.core.util.LocalCacheUtil;
+import com.wugui.datax.admin.dto.ColumnDetailsDiffRespDTO;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
 import com.wugui.datax.admin.dto.TableCountResp;
 import com.wugui.datax.admin.dto.TableDetailsResp;
@@ -24,10 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 抽象查询工具
@@ -627,6 +625,9 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     @Override
     public List<String> getColumnsByQuerySql(String querySql) throws SQLException {
 
+
+
+
         List<String> res = Lists.newArrayList();
         Statement stmt = null;
         ResultSet rs = null;
@@ -795,4 +796,67 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             tableCountResps.add(build);
             return tableCountResps;
 }
+
+
+    public List<ColumnDetailsDiffRespDTO> getColumnsDetailsDiff(List<ColumnDetailsRespDTO> sourceList, List<ColumnDetailsRespDTO> targetList, String tableName) {
+        List<ColumnDetailsDiffRespDTO> res = Lists.newArrayList();
+        int sourceCount = sourceList.size();
+        int targetCount = targetList.size();
+        if (sourceCount == 0 || targetCount == 0) {
+           throw  new RuntimeException("指定数据源下未找到该表！");
+        }
+
+
+        //遍历sourcelist
+        for (int i = 0; i < sourceCount; i++) {
+
+            Boolean isSame = false;
+            //默认添加字段语句
+            String updateSql = "alter table " + tableName + " add " + sourceList.get(i).getColumn() + " " + sourceList.get(i).getColumnType() + "(" + sourceList.get(i).getColumnLength() + ");";
+            //先把sourcelist相关字段写入作为基准
+            ColumnDetailsDiffRespDTO build = ColumnDetailsDiffRespDTO
+                    .builder()
+                    .columnName(sourceList.get(i).getColumn())
+                    .sourceColumnType(sourceList.get(i).getColumnType())
+                    .sourceColumnLength(sourceList.get(i).getColumnLength())
+                    .targetColumnType(null)
+                    .targetColumnLength(null)
+                    .isSame(false)
+                    .updateSql(updateSql)
+                    .build();
+            //遍历targetlist
+            for (int j = 0; j < targetCount; j++) {
+                String sourceColumn = sourceList.get(i).getColumn();
+                String targetColumn = targetList.get(j).getColumn();
+                //判断遍历中判断字段名是否相同，相同的话把targetlist相关信息写入
+                if (sourceColumn.equals(targetColumn)) {
+                    //构造更新语句
+                    updateSql = "alter table " + tableName + " modify " + sourceList.get(i).getColumn() + " " + sourceList.get(i).getColumnType() + "(" + sourceList.get(i).getColumnLength() + ");";
+                    //相同字段判断类型，长度是否相同
+                    if (sourceList.get(i).getColumnType().equals(targetList.get(j).getColumnType()) && sourceList.get(i).getColumnLength().equals(targetList.get(j).getColumnLength())) {
+                        isSame = true;
+                        updateSql = "";
+                    }
+                    //更新target相关字段
+                    build.setTargetColumnType(targetList.get(j).getColumnType());
+                    build.setTargetColumnLength(targetList.get(j).getColumnLength());
+                    build.setIsSame(isSame);
+                    build.setUpdateSql(updateSql);
+
+                }
+            }
+            if(build.getIsSame().equals(false)){
+                res.add(build);
+            }
+
+        }
+
+        return res;
+    }
+
+
+
+
+
+
         }

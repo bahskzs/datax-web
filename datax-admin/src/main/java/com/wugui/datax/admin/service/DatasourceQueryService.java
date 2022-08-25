@@ -1,5 +1,6 @@
 package com.wugui.datax.admin.service;
 
+import com.wugui.datax.admin.dto.ColumnDetailsDiffRespDTO;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
 import com.wugui.datax.admin.dto.TableCountResp;
 import com.wugui.datax.admin.dto.TableDetailsResp;
@@ -91,4 +92,16 @@ public interface DatasourceQueryService {
      * @return:
      */
     List<TableCountResp> getTableCount(String tableName, Long datasourceId);
+
+    /**
+     * @date:2022-08-22
+     * @description: [项目定制]根据不同数据源id与表名  对比数据类型与长度
+     * @param sourceDatasourceId
+     * @param targetDatasourceId
+     * @param
+     * @return  List<ColumnDetailsDiffRespDTO>
+     * @throws IOException
+     */
+    List<ColumnDetailsDiffRespDTO> getColumnsDiffDetails(Long sourceDatasourceId,Long targetDatasourceId,List<String> tableNameList) throws IOException;
+
 }

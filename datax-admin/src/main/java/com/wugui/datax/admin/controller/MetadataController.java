@@ -1,6 +1,7 @@
 package com.wugui.datax.admin.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
+import com.wugui.datax.admin.dto.ColumnDetailsDiffRespDTO;
 import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
 import com.wugui.datax.admin.dto.TableCountResp;
 import com.wugui.datax.admin.dto.TableDetailsResp;
@@ -140,4 +141,16 @@ public class MetadataController extends BaseController {
     public R<List<TableCountResp>> getTableCount(String tableName, Long datasourceId){
         return success(datasourceQueryService.getTableCount(tableName, datasourceId));
     }
+
+    @GetMapping("/getTableDiff")
+    @ApiOperation("[项目定制]根据不同数据源id和表名获取字段区别")
+    public R<List<ColumnDetailsDiffRespDTO>> getTableDiff(Long sourceDatasourceId, Long targetDatasourceId, List<String> tableNameList) throws IOException {
+        sourceDatasourceId= Long.valueOf(728);
+        targetDatasourceId= Long.valueOf(729);
+        tableNameList.add("TEST_AREA_CODE_YI");
+        tableNameList.add("TEST_AREA_CODE_YI_1");
+        return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
+    }
+
+
 }
