@@ -2,10 +2,7 @@ package com.wugui.datax.admin.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.google.common.collect.Lists;
-import com.wugui.datax.admin.dto.ColumnDetailsDiffRespDTO;
-import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
-import com.wugui.datax.admin.dto.TableCountResp;
-import com.wugui.datax.admin.dto.TableDetailsResp;
+import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.service.JobDatasourceService;
@@ -120,12 +117,22 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         return queryTool.getDdlSQL(tableName, AESUtil.decrypt(datasource.getJdbcUsername()));
     }
 
-    //TODO  返回至少返回 表名,表记录的集合
-    public List<TableCountResp> getTableCount(String tableName, Long datasourceId) {
+    //TODO  获取单张表的数据量
+    public TableCountResp getTableCount(String tableName, Long datasourceId) {
         //根据id获取数据源 mysql oracle hive
         JobDatasource datasource = jobDatasourceService.getById(datasourceId);
         BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
-        return queryTool.getTableCount(tableName, AESUtil.decrypt(datasource.getJdbcUsername()));
+        TableCountResp result = queryTool.getTableCount(tableName);
+        return result;
+    }
+
+    @Override
+    public List<TableCountResp> getTableCounts(List<String> tableList, Long datasourceId) {
+        List<TableCountResp> tableCountResp = new ArrayList<>();
+        for (String s : tableList) {
+            tableCountResp.add(getTableCount(s, datasourceId));
+        }
+        return  tableCountResp;
     }
 
 
@@ -203,5 +210,7 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         return list;
 
     }
+
+
 
 }

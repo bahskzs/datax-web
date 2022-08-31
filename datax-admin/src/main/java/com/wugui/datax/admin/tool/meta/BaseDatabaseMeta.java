@@ -95,6 +95,7 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
      */
     @Override
     public String getTableCount(String... args){
-        return null;
+        return String.format("select count(1) nums from %s",args[0]);
     }
+
 }

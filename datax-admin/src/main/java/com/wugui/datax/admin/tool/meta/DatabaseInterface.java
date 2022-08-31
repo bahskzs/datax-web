@@ -87,4 +87,5 @@ public interface DatabaseInterface {
      * @returns 查询指定数据库表的记录数
      */
     String getTableCount(String... args);
+
 }

@@ -735,28 +735,13 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
 
     /**
-     * @param user,tableName
-     * @description 根据用户名和表名返回记录数
+     * @param tableName
+     * @description 根据表名返回记录数
      */
-    public List<TableCountResp> getTableCount(String tableName, String user){
-        List<TableCountResp> tableCountResps = new ArrayList<>();
+    public TableCountResp getTableCount(String tableName){
+        TableCountResp tableCountResps = new TableCountResp();
 
-            String querySql = sqlBuilder.getTableCount(this.currentSchema, tableName);
-            TableCountResp tableCountResp = null;
-
-            //oracle数据源比较特殊，是用用户而不是模式
-            if (currentDatabase.equals(JdbcConstants.ORACLE)) {
-                querySql = sqlBuilder.getTableCount(user, tableName);
-            }
-
-            if (StringUtils.isBlank(querySql)) {
-                tableCountResp = TableCountResp.builder()
-                        .tableName(null)
-                        .tableCounts("获取ddl失败,暂不支持此数据源" + this.currentDatabase + "类型")
-                        .build();
-                tableCountResps.add(tableCountResp);
-                return tableCountResps;
-            }
+            String querySql = sqlBuilder.getTableCount(tableName);
 
             Statement stmt = null;
             ResultSet resultSet = null;
@@ -765,35 +750,29 @@ public abstract class BaseQueryTool implements QueryToolInterface {
                 stmt = this.connection.createStatement();
                 resultSet = stmt.executeQuery(querySql);
                 if (resultSet.next()) {
-                    String tablecount = resultSet.getString(2);
-                    TableCountResp build = TableCountResp.builder()
+                    String tableCount = resultSet.getString(1);
+                    tableCountResps = TableCountResp.builder()
                             .tableName(tableName)
-                            .tableCounts(tablecount)
+                            .tableCounts(tableCount)
                             .build();
-                    tableCountResps.add(build);
-                    return tableCountResps;
+
                 } else {
-                    TableCountResp build = TableCountResp.builder()
+                    tableCountResps = TableCountResp.builder()
                             .tableName(tableName)
-                            .tableCounts("获取ddl失败无记录")
+                            .tableCounts("获取失败，无记录")
                             .build();
-                    tableCountResps.add(build);
-                    return tableCountResps;
+
                 }
 
             } catch (SQLException e) {
-                logger.error("获取ddl失败" + e.getMessage());
+                logger.error("获取记录数失败" + e.getMessage());
                 e.printStackTrace();
             } finally {
                 JdbcUtils.close(resultSet);
                 JdbcUtils.close(stmt);
             }
 
-            TableCountResp build = TableCountResp.builder()
-                    .tableName(tableName)
-                    .tableCounts("获取ddl失败,无法创建链接")
-                    .build();
-            tableCountResps.add(build);
+
             return tableCountResps;
 }
 
@@ -854,9 +833,4 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         return res;
     }
 
-
-
-
-
-
-        }
+}

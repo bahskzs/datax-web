@@ -1,8 +1,10 @@
 package com.wugui.datax.admin.dto;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author Hyh
@@ -11,6 +13,8 @@ import lombok.Data;
  */
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TableCountResp {
     private String tableName;
     private  String tableCounts;
