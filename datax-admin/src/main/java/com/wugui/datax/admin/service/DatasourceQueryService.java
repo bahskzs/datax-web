@@ -1,7 +1,6 @@
 package com.wugui.datax.admin.service;
 
 import com.wugui.datax.admin.dto.*;
-import com.wugui.datax.admin.tool.database.DasColumn;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -97,7 +96,7 @@ public interface DatasourceQueryService {
      * @params:
      * @return:
      */
-    List<TableCountResp> getTableCounts(List<String> tableList, Long datasourceId);
+    List<TableCountResp> getTableCounts(List<String> tableList, List<Integer> datasourceList);
 
 
 
@@ -111,6 +110,5 @@ public interface DatasourceQueryService {
      * @throws IOException
      */
     List<ColumnDetailsDiffRespDTO> getColumnsDiffDetails(Long sourceDatasourceId,Long targetDatasourceId,List<String> tableNameList) throws IOException;
-
 
 }

@@ -1,12 +1,8 @@
 package com.wugui.datax.admin.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
-import com.wugui.datax.admin.dto.ColumnDetailsDiffRespDTO;
-import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
-import com.wugui.datax.admin.dto.TableCountResp;
-import com.wugui.datax.admin.dto.TableDetailsResp;
+import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.service.DatasourceQueryService;
-import com.wugui.datax.admin.tool.database.DasColumn;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -132,17 +127,12 @@ public class MetadataController extends BaseController {
 
     /**
      * 根据数据源id和表名获取数据量
-     *
-     * @param datasourceId   数据源id
-     * @param tableList      表名
-     * @return
      */
     @PostMapping ("/getTableCount")
     @ApiOperation("[项目定制]根据数据源id和表名获取数据量")
-    public R<List<TableCountResp>> getTableCount(@RequestBody List<String> tableList, Long datasourceId){
-        return success(datasourceQueryService.getTableCounts(tableList, datasourceId));
+    public R<List<TableCountResp>> getTableCount(@RequestBody DatasourceTableDTO dto){
+        return success(datasourceQueryService.getTableCounts(dto.getTableList(), dto.getDatasourceList()));
     }
-
 
 
     @GetMapping("/getTableDiff")

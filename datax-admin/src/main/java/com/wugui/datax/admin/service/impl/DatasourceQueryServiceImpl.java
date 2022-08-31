@@ -11,7 +11,6 @@ import com.wugui.datax.admin.tool.query.*;
 import com.wugui.datax.admin.util.AESUtil;
 import com.wugui.datax.admin.util.JdbcConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -126,14 +125,19 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         return result;
     }
 
-    @Override
-    public List<TableCountResp> getTableCounts(List<String> tableList, Long datasourceId) {
+
+    public List<TableCountResp> getTableCounts(List<String> tableList, List<Integer> datasourceList) {
         List<TableCountResp> tableCountResp = new ArrayList<>();
-        for (String s : tableList) {
-            tableCountResp.add(getTableCount(s, datasourceId));
+
+        //数据源id A 进入循环 count表数据 ； B进入循环 count表数据
+        for (Integer datasource : datasourceList){
+            for (String table : tableList) {
+                tableCountResp.add(getTableCount(table, Long.valueOf(datasource)));
+            }
         }
         return  tableCountResp;
     }
+
 
 
     @Override
