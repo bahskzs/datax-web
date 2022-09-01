@@ -40,6 +40,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         return "SHOW CREATE TABLE " + args[0] + "." + args[1];
     }
 
+
     @Override
     public String getSQLQueryPrimaryKey() {
         return "select column_name from information_schema.columns where table_schema=? and table_name=? and column_key = 'PRI'";
@@ -54,4 +55,5 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     public String getSQLQueryColumns(String... args) {
         return "select column_name from information_schema.columns where table_schema=? and table_name=?";
     }
+
 }

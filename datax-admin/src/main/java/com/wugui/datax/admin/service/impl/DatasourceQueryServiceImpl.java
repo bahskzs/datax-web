@@ -2,8 +2,7 @@ package com.wugui.datax.admin.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.google.common.collect.Lists;
-import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
-import com.wugui.datax.admin.dto.TableDetailsResp;
+import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.DatasourceQueryService;
 import com.wugui.datax.admin.service.JobDatasourceService;
@@ -12,11 +11,11 @@ import com.wugui.datax.admin.tool.query.*;
 import com.wugui.datax.admin.util.AESUtil;
 import com.wugui.datax.admin.util.JdbcConstants;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -117,6 +116,30 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         return queryTool.getDdlSQL(tableName, AESUtil.decrypt(datasource.getJdbcUsername()));
     }
 
+    //TODO  获取单张表的数据量
+    public TableCountResp getTableCount(String tableName, Long datasourceId) {
+        //根据id获取数据源 mysql oracle hive
+        JobDatasource datasource = jobDatasourceService.getById(datasourceId);
+        BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
+        TableCountResp result = queryTool.getTableCount(tableName);
+        return result;
+    }
+
+
+    public List<TableCountResp> getTableCounts(List<String> tableList, List<Integer> datasourceList) {
+        List<TableCountResp> tableCountResp = new ArrayList<>();
+
+        //数据源id A 进入循环 count表数据 ； B进入循环 count表数据
+        for (Integer datasource : datasourceList){
+            for (String table : tableList) {
+                tableCountResp.add(getTableCount(table, Long.valueOf(datasource)));
+            }
+        }
+        return  tableCountResp;
+    }
+
+
+
     @Override
     public List<String> getCollectionNames(long id, String dbName) throws IOException {
         //获取数据源对象
@@ -160,6 +183,38 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         BaseQueryTool queryTool = QueryToolFactory.getByDbType(jdbcDatasource);
         return queryTool.getColumnsByQuerySql(querySql);
     }
+
+
+
+    @Override
+    public List<ColumnDetailsDiffRespDTO> getColumnsDiffDetails(Long sourceDatasourceId, Long targetDatasourceId, List<String> tableNameList) throws IOException {
+        //获取来源数据源对象
+        JobDatasource sourceDatasource = jobDatasourceService.getById(sourceDatasourceId);
+        //获取目标数据源对象
+        JobDatasource targetDatasource = jobDatasourceService.getById(targetDatasourceId);
+        //queryTool组装
+        if (ObjectUtil.isNull(sourceDatasource) || ObjectUtil.isNull(targetDatasource)) {
+            return Lists.newArrayList();
+        }
+        BaseQueryTool queryTool = QueryToolFactory.getByDbType(sourceDatasource);
+
+        List<ColumnDetailsDiffRespDTO> list = null;
+        for (int i = 0; i < tableNameList.size(); i++) {
+            List<ColumnDetailsDiffRespDTO> listAll;
+            String tableName = tableNameList.get(i);
+            List<ColumnDetailsRespDTO> sourceList = queryTool.getColumnsDetails(tableName, sourceDatasource.getDatasource());
+            List<ColumnDetailsRespDTO> targetList = queryTool.getColumnsDetails(tableName, sourceDatasource.getDatasource());
+            list = queryTool.getColumnsDetailsDiff(sourceList, targetList, tableName);
+
+            System.out.println(tableName);
+
+        }
+
+
+        return list;
+
+    }
+
 
 
 }

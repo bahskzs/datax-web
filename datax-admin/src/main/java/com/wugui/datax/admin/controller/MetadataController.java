@@ -1,10 +1,8 @@
 package com.wugui.datax.admin.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
-import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
-import com.wugui.datax.admin.dto.TableDetailsResp;
+import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.service.DatasourceQueryService;
-import com.wugui.datax.admin.tool.database.DasColumn;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,6 +125,25 @@ public class MetadataController extends BaseController {
     }
 
 
+    /**
+     * 根据数据源id和表名获取数据量
+     */
+    @PostMapping ("/getTableCount")
+    @ApiOperation("[项目定制]根据数据源id和表名获取数据量")
+    public R<List<TableCountResp>> getTableCount(@RequestBody DatasourceTableDTO dto){
+        return success(datasourceQueryService.getTableCounts(dto.getTableList(), dto.getDatasourceList()));
+    }
+
+
+    @GetMapping("/getTableDiff")
+    @ApiOperation("[项目定制]根据不同数据源id和表名获取字段区别")
+    public R<List<ColumnDetailsDiffRespDTO>> getTableDiff(Long sourceDatasourceId, Long targetDatasourceId, List<String> tableNameList) throws IOException {
+        sourceDatasourceId= Long.valueOf(728);
+        targetDatasourceId= Long.valueOf(729);
+        tableNameList.add("TEST_AREA_CODE_YI");
+        tableNameList.add("TEST_AREA_CODE_YI_1");
+        return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
+    }
 
 
 }

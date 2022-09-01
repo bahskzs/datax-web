@@ -1,8 +1,6 @@
 package com.wugui.datax.admin.service;
 
-import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
-import com.wugui.datax.admin.dto.TableDetailsResp;
-import com.wugui.datax.admin.tool.database.DasColumn;
+import com.wugui.datax.admin.dto.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -81,5 +79,36 @@ public interface DatasourceQueryService {
        * @return:
        */
       List<TableDetailsResp> getDdlSQL(String tableName, Long datasourceId);
+
+
+    /**
+     * @date:2022-08-16 15:28
+     * @description: [项目定制]根据数据源id和表名获取数据量
+     * @params:
+     * @return:
+     */
+    TableCountResp getTableCount(String tableName, Long datasourceId);
+
+
+    /**
+     * @date:2022-08-16 15:28
+     * @description: [项目定制]根据数据源id和表名获取数据量
+     * @params:
+     * @return:
+     */
+    List<TableCountResp> getTableCounts(List<String> tableList, List<Integer> datasourceList);
+
+
+
+    /**
+     * @date:2022-08-22
+     * @description: [项目定制]根据不同数据源id与表名  对比数据类型与长度
+     * @param sourceDatasourceId
+     * @param targetDatasourceId
+     * @param
+     * @return  List<ColumnDetailsDiffRespDTO>
+     * @throws IOException
+     */
+    List<ColumnDetailsDiffRespDTO> getColumnsDiffDetails(Long sourceDatasourceId,Long targetDatasourceId,List<String> tableNameList) throws IOException;
 
 }

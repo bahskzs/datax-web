@@ -79,4 +79,13 @@ public interface DatabaseInterface {
      * @return
      */
     String getMultiDdlSQL(String... args);
+
+    /**
+     * 获取当前数据库表的记录数
+     * @param args 用户名，需要查找数据记录数的表名
+     *
+     * @returns 查询指定数据库表的记录数
+     */
+    String getTableCount(String... args);
+
 }
