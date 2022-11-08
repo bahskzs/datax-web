@@ -1,6 +1,10 @@
 package com.wugui.datax.admin.service;
 
-import com.wugui.datax.admin.dto.*;
+import com.wugui.datax.admin.dto.ColumnDetailsDiffRespDTO;
+import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
+import com.wugui.datax.admin.dto.TableCountResp;
+import com.wugui.datax.admin.dto.TableDetailsResp;
+import com.wugui.datax.admin.tool.database.DasColumn;
 
 import java.io.IOException;
 import java.sql.SQLException;

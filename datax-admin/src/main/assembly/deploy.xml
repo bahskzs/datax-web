@@ -32,7 +32,7 @@
             <includes>
                 <include>*.properties</include>
                 <include>logback.xml</include>
-                <include>application.yml</include>
+                <include>application*.yml</include>
                 <include>mybatis-mapper/**</include>
                 <include>i18n/**</include>
                 <include>static/**</include>

@@ -88,4 +88,20 @@ public interface DatabaseInterface {
      */
     String getTableCount(String... args);
 
+
+    /**
+     * 获取修改字段Modify
+     * @param args
+     * @return
+     */
+    String getAlterModify(String... args);
+
+    /**
+     * 获取添加字段add语句
+     * @param args
+     * @return
+     */
+    String getAlterAdd(String... args);
+
+
 }

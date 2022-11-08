@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -135,13 +136,17 @@ public class MetadataController extends BaseController {
     }
 
 
+    /**
+     * 根据不同数据源id和表名获取字段区别
+     * @param sourceDatasourceId 来源数据id
+     * @param targetDatasourceId 目标数据id
+     * @param
+     * @return
+     * @throws IOException
+     */
     @GetMapping("/getTableDiff")
     @ApiOperation("[项目定制]根据不同数据源id和表名获取字段区别")
-    public R<List<ColumnDetailsDiffRespDTO>> getTableDiff(Long sourceDatasourceId, Long targetDatasourceId, List<String> tableNameList) throws IOException {
-        sourceDatasourceId= Long.valueOf(728);
-        targetDatasourceId= Long.valueOf(729);
-        tableNameList.add("TEST_AREA_CODE_YI");
-        tableNameList.add("TEST_AREA_CODE_YI_1");
+    public R<List<ColumnDetailsDiffRespDTO>> getTableDiff(@RequestParam(value = "tableNameList",required=false) List<String> tableNameList, Long sourceDatasourceId, Long targetDatasourceId) throws IOException {
         return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
     }
 

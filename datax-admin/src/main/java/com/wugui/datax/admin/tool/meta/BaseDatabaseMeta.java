@@ -98,4 +98,25 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
         return String.format("select count(1) nums from %s",args[0]);
     }
 
+    /**
+     * 获取alter语句
+     * @param args
+     * @return
+     */
+    @Override
+    public String getAlterModify(String... args){
+        return null;
+    }
+
+    /**
+     * 获取alter语句
+     * @param args
+     * @return
+     */
+    @Override
+    public String getAlterAdd(String... args){
+        return null;
+    }
+
+
 }

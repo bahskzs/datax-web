@@ -56,4 +56,37 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         return "select column_name from information_schema.columns where table_schema=? and table_name=?";
     }
 
+    /**
+     *
+     * @param args 用户名，需要查找数据记录数的表名
+     *
+     * @return 数据表名，表的记录数
+     */
+    @Override
+    public String getTableCount(String... args){
+        return "select '" + args[1] + "' as table_name,count(1) table_counts from " + args[0] + "." + args[1];
+    }
+
+
+    /**
+     * 获取mysql  alter Modify语句
+     * @param args
+     * @return
+     */
+    @Override
+    public String getAlterModify(String... args){
+        // 获取mysql Modify语句
+        return "alter table " + args[0] + " modify " + args[1]+ " " + args[2] + "(" + args[3] + ");";
+    }
+
+    /**
+     * 获取mysql  alter add语句
+     * @param args
+     * @return
+     */
+    @Override
+    public String getAlterAdd(String... args){
+        // 获取mysql Add语句
+        return "alter table " + args[0] + " add " + args[1]+ " " + args[2] + "(" + args[3] + ");";
+    }
 }

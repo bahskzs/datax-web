@@ -19,16 +19,16 @@ import java.util.Map;
 @Data
 public class HadoopConfig {
 
-    @Value("${hadoop.mode}")
+    @Value("${hadoop.mode:false}")
     private String mode;
 
-    @Value("${hadoop.nameNodes}")
+    @Value("${hadoop.nameNodes:localhost}")
     private String nameNodes;
 
-    @Value("${hadoop.nameService}")
+    @Value("${hadoop.nameService:localhost}")
     private String nameService;
 
-    @Value("${hadoop.address}")
+    @Value("${hadoop.address:localhost}")
     private String address;
 
     private static final String PROXY = "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider";

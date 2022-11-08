@@ -11,13 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ColumnDetailsDiffRespDTO {
 
-    private String columnName;
-    private String sourceColumnType;
+    private String column;
+    private String columnType;
     private String targetColumnType;
-    private Integer sourceColumnLength;
-    private Integer targetColumnLength;
-    private Boolean isSame;
-    private String updateSql;
+    private String columnLength;
+    private String targetColumnLength;
+    private String alterType;
+    private String alterString;
 
 
 }

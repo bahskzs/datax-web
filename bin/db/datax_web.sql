@@ -471,18 +471,42 @@ create table job_log_snapshot
 
 
 -- 创建视图  v_job_datasource job与数据源的关联视图
-CREATE ALGORITHM = UNDEFINED DEFINER =`root`@`%` SQL SECURITY DEFINER VIEW `datax_web`.`v_job_datasource` AS
-select `datax_web`.`job_info`.`id`                                                                  AS `id`,
-       `datax_web`.`job_info`.`job_desc`                                                            AS `job_desc`,
-       trim(substring_index(`datax_web`.`job_info`.`job_desc`, '~', 1))                             AS `sourceName`,
-       trim(replace(substring_index(`datax_web`.`job_info`.`job_desc`, '~', 1), '生产-', '贴源-'))      AS `targetName`,
-       replace(json_extract(`datax_web`.`job_info`.`job_json`, '$.job.content[0].reader.parameter.username'), '"',
-               '')                                                                                  AS `sourceUser`,
-       replace(json_extract(`datax_web`.`job_info`.`job_json`, '$.job.content[0].writer.parameter.username'), '"',
-               '')                                                                                  AS `targetUser`,
-       replace(json_extract(`datax_web`.`job_info`.`job_json`,
-                            '$.job.content[0].reader.parameter.connection[0].jdbcUrl[0]'), '"', '') AS `sourceUrl`,
-       replace(json_extract(`datax_web`.`job_info`.`job_json`,
-                            '$.job.content[0].writer.parameter.connection[0].jdbcUrl'), '"', '')    AS `targetUrl`
-from `datax_web`.`job_info`;
+-- CREATE ALGORITHM = UNDEFINED DEFINER =`root`@`%` SQL SECURITY DEFINER VIEW v_job_datasource AS
+-- select `datax_web`.`job_info`.`id`                                                                  AS `id`,
+--        `datax_web`.`job_info`.`job_desc`                                                            AS `job_desc`,
+--        trim(substring_index(`datax_web`.`job_info`.`job_desc`, '~', 1))                             AS `sourceName`,
+--        trim(replace(substring_index(`datax_web`.`job_info`.`job_desc`, '~', 1), '生产-', '贴源-'))      AS `targetName`,
+--        replace(json_extract(`datax_web`.`job_info`.`job_json`, '$.job.content[0].reader.parameter.username'), '"',
+--                '')                                                                                  AS `sourceUser`,
+--        replace(json_extract(`datax_web`.`job_info`.`job_json`, '$.job.content[0].writer.parameter.username'), '"',
+--                '')                                                                                  AS `targetUser`,
+--        replace(json_extract(`datax_web`.`job_info`.`job_json`,
+--                             '$.job.content[0].reader.parameter.connection[0].jdbcUrl[0]'), '"', '') AS `sourceUrl`,
+--        replace(json_extract(`datax_web`.`job_info`.`job_json`,
+--                             '$.job.content[0].writer.parameter.connection[0].jdbcUrl'), '"', '')    AS `targetUrl`
+-- from job_info;
+
+
+CREATE TABLE `job_log_snapshot` (
+                                    `id` bigint(20) NOT NULL DEFAULT '0',
+                                    `job_group` int(11) NOT NULL COMMENT '执行器主键ID',
+                                    `job_id` int(11) NOT NULL COMMENT '任务，主键ID',
+                                    `job_desc` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL,
+                                    `executor_address` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '执行器地址，本次执行的地址',
+                                    `executor_handler` varchar(255) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '执行器任务handler',
+                                    `executor_param` varchar(512) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '执行器任务参数',
+                                    `executor_sharding_param` varchar(20) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '执行器任务分片参数，格式如 1/2',
+                                    `executor_fail_retry_count` int(11) DEFAULT '0' COMMENT '失败重试次数',
+                                    `trigger_time` datetime DEFAULT NULL COMMENT '调度-时间',
+                                    `trigger_code` int(11) NOT NULL COMMENT '调度-结果',
+                                    `trigger_msg` text CHARACTER SET utf8mb4 COMMENT '调度-日志',
+                                    `handle_time` datetime DEFAULT NULL COMMENT '执行-时间',
+                                    `handle_code` int(11) NOT NULL COMMENT '执行-状态',
+                                    `handle_msg` text CHARACTER SET utf8mb4 COMMENT '执行-日志',
+                                    `alarm_status` tinyint(4) NOT NULL DEFAULT '0' COMMENT '告警状态：0-默认、1-无需告警、2-告警成功、3-告警失败',
+                                    `process_id` varchar(20) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT 'datax进程Id',
+                                    `max_id` bigint(20) DEFAULT NULL COMMENT '增量表max id',
+                                    `snapshot_time` date DEFAULT NULL COMMENT '快照时间',
+                                    PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 

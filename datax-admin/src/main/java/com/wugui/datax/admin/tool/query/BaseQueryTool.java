@@ -780,61 +780,24 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             return tableCountResps;
 }
 
-
-    public List<ColumnDetailsDiffRespDTO> getColumnsDetailsDiff(List<ColumnDetailsRespDTO> sourceList, List<ColumnDetailsRespDTO> targetList, String tableName) {
-        List<ColumnDetailsDiffRespDTO> res = Lists.newArrayList();
-        int sourceCount = sourceList.size();
-        int targetCount = targetList.size();
-        if (sourceCount == 0 || targetCount == 0) {
-           throw  new RuntimeException("指定数据源下未找到该表！");
+    /**
+     * 获取更新语句
+     * @param diffDTO
+     * @param tableName
+     * @return
+     */
+    public String getColumnsAlter(ColumnDetailsDiffRespDTO diffDTO,String tableName){
+        // 拼接alter语句
+        String alterType=diffDTO.getAlterType();
+        String alterString;
+        if(alterType=="a"){
+            alterString = sqlBuilder.getAlterAdd(tableName,diffDTO.getColumn(),diffDTO.getColumnType(),diffDTO.getColumnLength());
+        }else{
+            alterString = sqlBuilder.getAlterModify(tableName,diffDTO.getColumn(),diffDTO.getColumnType(),diffDTO.getColumnLength());
         }
-
-
-        //遍历sourcelist
-        for (int i = 0; i < sourceCount; i++) {
-
-            Boolean isSame = false;
-            //默认添加字段语句
-            String updateSql = "alter table " + tableName + " add " + sourceList.get(i).getColumn() + " " + sourceList.get(i).getColumnType() + "(" + sourceList.get(i).getColumnLength() + ");";
-            //先把sourcelist相关字段写入作为基准
-            ColumnDetailsDiffRespDTO build = ColumnDetailsDiffRespDTO
-                    .builder()
-                    .columnName(sourceList.get(i).getColumn())
-                    .sourceColumnType(sourceList.get(i).getColumnType())
-                    .sourceColumnLength(sourceList.get(i).getColumnLength())
-                    .targetColumnType(null)
-                    .targetColumnLength(null)
-                    .isSame(false)
-                    .updateSql(updateSql)
-                    .build();
-            //遍历targetlist
-            for (int j = 0; j < targetCount; j++) {
-                String sourceColumn = sourceList.get(i).getColumn();
-                String targetColumn = targetList.get(j).getColumn();
-                //判断遍历中判断字段名是否相同，相同的话把targetlist相关信息写入
-                if (sourceColumn.equals(targetColumn)) {
-                    //构造更新语句
-                    updateSql = "alter table " + tableName + " modify " + sourceList.get(i).getColumn() + " " + sourceList.get(i).getColumnType() + "(" + sourceList.get(i).getColumnLength() + ");";
-                    //相同字段判断类型，长度是否相同
-                    if (sourceList.get(i).getColumnType().equals(targetList.get(j).getColumnType()) && sourceList.get(i).getColumnLength().equals(targetList.get(j).getColumnLength())) {
-                        isSame = true;
-                        updateSql = "";
-                    }
-                    //更新target相关字段
-                    build.setTargetColumnType(targetList.get(j).getColumnType());
-                    build.setTargetColumnLength(targetList.get(j).getColumnLength());
-                    build.setIsSame(isSame);
-                    build.setUpdateSql(updateSql);
-
-                }
-            }
-            if(build.getIsSame().equals(false)){
-                res.add(build);
-            }
-
-        }
-
-        return res;
+        return alterString;
     }
 
 }
+
+
