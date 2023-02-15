@@ -1,9 +1,6 @@
 package com.wugui.datax.admin.service;
 
-import com.wugui.datax.admin.dto.ColumnDetailsDiffRespDTO;
-import com.wugui.datax.admin.dto.ColumnDetailsRespDTO;
-import com.wugui.datax.admin.dto.TableCountResp;
-import com.wugui.datax.admin.dto.TableDetailsResp;
+import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.tool.database.DasColumn;
 
 import java.io.IOException;
@@ -49,6 +46,10 @@ public interface DatasourceQueryService {
      * @return
      */
     List<String> getColumns(Long id, String tableName) throws IOException;
+
+
+
+
 
     /**
      * 根据 sql 语句获取字段
@@ -114,5 +115,10 @@ public interface DatasourceQueryService {
      * @throws IOException
      */
     List<ColumnDetailsDiffRespDTO> getColumnsDiffDetails(Long sourceDatasourceId,Long targetDatasourceId,List<String> tableNameList) throws IOException;
+
+
+    //TODO 建表
+     // DatasourceTableBO
+
 
 }

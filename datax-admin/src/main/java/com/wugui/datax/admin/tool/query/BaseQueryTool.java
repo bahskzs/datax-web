@@ -3,6 +3,7 @@ package com.wugui.datax.admin.tool.query;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.wugui.datatx.core.util.Constants;
 import com.wugui.datax.admin.core.util.LocalCacheUtil;
 import com.wugui.datax.admin.dto.ColumnDetailsDiffRespDTO;
@@ -11,6 +12,7 @@ import com.wugui.datax.admin.dto.TableCountResp;
 import com.wugui.datax.admin.dto.TableDetailsResp;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.tool.database.ColumnInfo;
+import com.wugui.datax.admin.tool.database.CusColumn;
 import com.wugui.datax.admin.tool.database.DasColumn;
 import com.wugui.datax.admin.tool.database.TableInfo;
 import com.wugui.datax.admin.tool.meta.DatabaseInterface;
@@ -146,6 +148,44 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         return tableInfo;
     }
 
+
+    public TableInfo buildTableInfo(String tableName,String userName) {
+        //获取表信息
+        List<Map<String, Object>> tableInfos = this.getTableInfo(tableName);
+        if (tableInfos.isEmpty()) {
+            throw new NullPointerException("查询出错! ");
+        }
+
+        TableInfo tableInfo = new TableInfo();
+        //表名，注释
+        List tValues = new ArrayList(tableInfos.get(0).values());
+
+        tableInfo.setName(StrUtil.toString(tValues.get(0)));
+        tableInfo.setComment(StrUtil.toString(tValues.get(1)));
+
+
+        //TODO 获取所有字段
+        List<ColumnInfo> fullColumn = getColumns(tableName,userName);
+        tableInfo.setColumns(fullColumn);
+
+        //获取主键列
+        List<String> primaryKeys = getPrimaryKeys(tableName);
+        logger.info("主键列为：{}", primaryKeys);
+
+        //设置ifPrimaryKey标志
+        fullColumn.forEach(e -> {
+            if (primaryKeys.contains(e.getName())) {
+                e.setIfPrimaryKey(true);
+            } else {
+                e.setIfPrimaryKey(false);
+            }
+        });
+        return tableInfo;
+    }
+
+
+
+
     //无论怎么查，返回结果都应该只有表名和表注释，遍历map拿value值即可
     @Override
     public List<Map<String, Object>> getTableInfo(String tableName) {
@@ -153,7 +193,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         logger.info(sqlQueryTableNameComment);
         List<Map<String, Object>> res = null;
         try {
-            res = JdbcUtils.executeQuery(connection, sqlQueryTableNameComment, ImmutableList.of(currentSchema, tableName));
+            res = JdbcUtils.executeQuery(connection, sqlQueryTableNameComment, ImmutableList.of( tableName));
         } catch (SQLException e) {
             logger.error("[getTableInfo Exception] --> "
                     + "the exception message is:" + e.getMessage());
@@ -181,6 +221,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         List<ColumnInfo> fullColumn = Lists.newArrayList();
         //获取指定表的所有字段
         try {
+
             //获取查询指定表所有字段的sql语句
             String querySql = sqlBuilder.getSQLQueryFields(tableName);
             logger.info("querySql: {}", querySql);
@@ -203,6 +244,68 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         return fullColumn;
     }
 
+
+    public List<ColumnInfo> getColumns(String tableName,String userName) {
+
+        List<ColumnInfo> fullColumn = Lists.newArrayList();
+        //获取指定表的所有字段
+        try {
+
+            //获取查询指定表所有字段的sql语句
+            String querySql = sqlBuilder.getSQLQueryFields(tableName,userName);
+            logger.info("querySql: {}", querySql);
+
+            //获取所有字段
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(querySql);
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            List<DasColumn> dasColumns = buildCusColumn(tableName, metaData);
+            statement.close();
+
+            //构建 fullColumn
+            fullColumn = buildFullColumn(dasColumns);
+
+        } catch (SQLException e) {
+            logger.error("[getColumns Exception] --> "
+                    + "the exception message is:" + e.getMessage());
+        }
+        return fullColumn;
+    }
+
+
+    /**
+     *  返回字段名称,字段信息用于字段比较
+     * @param tableName
+     * @return
+     */
+    public Map<String,ColumnInfo> getColumnMap(String tableName, String userName) {
+
+        Map<String,ColumnInfo> res = Maps.newHashMap();
+        //获取指定表的所有字段
+        try {
+            //获取查询指定表所有字段的sql语句
+            String querySql = sqlBuilder.getSQLQueryFields(tableName,userName);
+            logger.info("querySql: {}", querySql);
+
+            //获取所有字段
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(querySql);
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            List<DasColumn> dasColumns = buildCusColumn(tableName, metaData);
+            statement.close();
+
+            //构建 fullColumn
+            res = buildColumnMap(dasColumns);
+
+        } catch (SQLException e) {
+            logger.error("[getColumns Exception] --> "
+                    + "the exception message is:" + e.getMessage());
+        }
+        return res;
+    }
+
     private List<ColumnInfo> buildFullColumn(List<DasColumn> dasColumns) {
         List<ColumnInfo> res = Lists.newArrayList();
         dasColumns.forEach(e -> {
@@ -213,6 +316,19 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             columnInfo.setIfPrimaryKey(e.isIsprimaryKey());
             columnInfo.setIsnull(e.getIsNull());
             res.add(columnInfo);
+        });
+        return res;
+    }
+    private Map<String,ColumnInfo> buildColumnMap(List<DasColumn> dasColumns) {
+        Map<String,ColumnInfo> res = Maps.newHashMap();
+        dasColumns.forEach(e -> {
+            ColumnInfo columnInfo = new ColumnInfo();
+            columnInfo.setName(e.getColumnName());
+            columnInfo.setComment(e.getColumnComment());
+            columnInfo.setType(e.getColumnTypeName());
+            columnInfo.setIfPrimaryKey(e.isIsprimaryKey());
+            columnInfo.setIsnull(e.getIsNull());
+            res.put(e.getColumnName(),columnInfo);
         });
         return res;
     }
@@ -231,6 +347,79 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
                 res.add(dasColumn);
             }
+
+            Statement statement = connection.createStatement();
+
+            if (currentDatabase.equals(JdbcConstants.MYSQL) || currentDatabase.equals(JdbcConstants.ORACLE)) {
+                DatabaseMetaData databaseMetaData = connection.getMetaData();
+
+                ResultSet resultSet = databaseMetaData.getPrimaryKeys(null, null, tableName);
+
+                while (resultSet.next()) {
+                    String name = resultSet.getString("COLUMN_NAME");
+                    res.forEach(e -> {
+                        if (e.getColumnName().equals(name)) {
+                            e.setIsprimaryKey(true);
+
+                        } else {
+                            e.setIsprimaryKey(false);
+                        }
+                    });
+                }
+
+                res.forEach(e -> {
+                    String sqlQueryComment = sqlBuilder.getSQLQueryComment(currentSchema, tableName, e.getColumnName());
+                    //查询字段注释
+                    try {
+                        ResultSet resultSetComment = statement.executeQuery(sqlQueryComment);
+                        while (resultSetComment.next()) {
+                            e.setColumnComment(resultSetComment.getString(1));
+                        }
+                        JdbcUtils.close(resultSetComment);
+                    } catch (SQLException e1) {
+                        logger.error("[buildDasColumn executeQuery Exception] --> "
+                                + "the exception message is:" + e1.getMessage());
+                    }
+                });
+            }
+
+            JdbcUtils.close(statement);
+        } catch (SQLException e) {
+            logger.error("[buildDasColumn Exception] --> "
+                    + "the exception message is:" + e.getMessage());
+        }
+        return res;
+    }
+
+
+    private List<DasColumn> buildCusColumn(String tableName, ResultSetMetaData metaData) {
+        List<DasColumn> res = Lists.newArrayList();
+        try {
+            int columnCount = metaData.getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                DasColumn dasColumn = new DasColumn();
+                dasColumn.setColumnClassName(metaData.getColumnClassName(i));
+                dasColumn.setColumnTypeName(metaData.getColumnTypeName(i));
+                dasColumn.setColumnName(metaData.getColumnName(i));
+                dasColumn.setIsNull(metaData.isNullable(i));
+                //dasColumn.setColumnLength(metaData.getColumnDisplaySize(i));
+                if(!(metaData.getColumnTypeName(i) == "BLOB" || metaData.getColumnTypeName(i) == "CLOB" || metaData.getColumnTypeName(i) == "BLOB")) {
+                   int scale = metaData.getScale(i);
+                   int dataLength = metaData.getColumnDisplaySize(i);
+                   if(scale != 0) {
+                       dasColumn.setColumnTypeName(metaData.getColumnTypeName(i) + "(" + dataLength + "," + scale + ")");
+                   } else {
+                       dasColumn.setColumnTypeName(metaData.getColumnTypeName(i) + "(" + dataLength + ")");
+                   }
+                }
+                if(metaData.getColumnTypeName(i) == "DATE") {
+                    dasColumn.setColumnTypeName(metaData.getColumnTypeName(i));
+                }
+                res.add(dasColumn);
+            }
+
+            //TODO  setColumnTypeName --> 字段类型(长度)
+
 
             Statement statement = connection.createStatement();
 
@@ -305,6 +494,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             stmt = connection.createStatement();
             rs = stmt.executeQuery(querySql);
             ResultSetMetaData metaData = rs.getMetaData();
+
 
             int columnCount = metaData.getColumnCount();
             for (int i = 1; i <= columnCount; i++) {
@@ -456,6 +646,9 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             return tableDetailsResps;
         }
     }
+
+
+
 
      /**
       * @author: bahsk
@@ -710,6 +903,29 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         }
     }
 
+    /**
+     * 执行建表语句(含注释)
+     * @param sqlList
+     */
+    public void executeCreateTableSqls(List<String> sqlList) {
+        if (sqlList == null) {
+            return;
+        }
+        Statement stmt = null;
+        try {
+            stmt = connection.createStatement();
+            for (String sql : sqlList) {
+                stmt.executeUpdate(sql);
+            }
+
+        } catch (SQLException e) {
+            logger.error("[executeCreateTableSql Exception] --> "
+                    + "the exception message is:" + e.getMessage());
+        } finally {
+            JdbcUtils.close(stmt);
+        }
+    }
+
     public List<String> getTableSchema() {
         List<String> schemas = new ArrayList<>();
         Statement stmt = null;
@@ -798,6 +1014,11 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         return alterString;
     }
 
+
+    @Override
+    public List<String> buildCreateTableSql(TableInfo tableInfo) {
+        return null;
+    }
 }
 
 

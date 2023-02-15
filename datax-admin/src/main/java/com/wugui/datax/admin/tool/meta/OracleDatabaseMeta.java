@@ -47,7 +47,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     @Override
     public String getSQLQueryTableNameComment() {
-        return "select table_name,comments from user_tab_comments where table_name = ?";
+        return "select table_name,comments from all_tab_comments where table_name = ? ";
     }
 
     @Override

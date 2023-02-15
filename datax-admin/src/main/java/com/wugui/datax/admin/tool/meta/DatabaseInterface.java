@@ -1,5 +1,8 @@
 package com.wugui.datax.admin.tool.meta;
 
+import com.wugui.datax.admin.tool.database.ColumnInfo;
+import com.wugui.datax.admin.tool.database.TableInfo;
+
 public interface DatabaseInterface {
 
     /**
@@ -9,6 +12,8 @@ public interface DatabaseInterface {
      * @return The SQL to launch.
      */
     String getSQLQueryFields(String tableName);
+
+    String getSQLQueryFields(String tableName, String userName);
 
     /**
      * 获取主键字段
@@ -104,4 +109,11 @@ public interface DatabaseInterface {
     String getAlterAdd(String... args);
 
 
+    /**
+     *  根据表信息构建建表语句
+     * @param tableName
+     * @param tableInfo
+     * @return 是否完成建表
+     */
+    boolean createTable(String tableName, TableInfo tableInfo);
 }

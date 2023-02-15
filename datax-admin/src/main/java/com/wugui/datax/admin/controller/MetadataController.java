@@ -1,13 +1,16 @@
 package com.wugui.datax.admin.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
+import com.wugui.datatx.core.biz.model.ReturnT;
 import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.service.DatasourceQueryService;
+import com.wugui.datax.admin.service.TableService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -28,6 +31,9 @@ public class MetadataController extends BaseController {
 
     @Autowired
     private DatasourceQueryService datasourceQueryService;
+
+    @Resource
+    private TableService tableService;
 
     /**
      * 根据数据源id获取mongo库名
@@ -150,5 +156,24 @@ public class MetadataController extends BaseController {
         return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
     }
 
+
+//    //TODO createTable
+    @PostMapping("/createTable")
+    @ApiOperation("[项目定制]根据不同数据源id和表名获取字段区别")
+    public R<Boolean> createtTable(@RequestBody DatasourceTableBO datasourceTableBO) throws IOException {
+      //  return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
+        return success(tableService.create(datasourceTableBO));
+
+    }
+
+
+    //TODO autoCreateTable 获取columns接口
+    // 1.reader 数据源,表, writer数据源, 需要构建的字段列表, 是否自动构建
+    @GetMapping("/getCustomColumns")
+    @ApiOperation("[项目定制]自动构建表对应获取columns接口")
+    public R<List<String>> getCustomColumns(Long datasourceId, String tableName,List<String> columns) throws IOException {
+       //TODO 如果是自动构建则查询reader对应的字段/指定字段列表,如果非自动构建则
+        return success(datasourceQueryService.getColumns(datasourceId, tableName));
+    }
 
 }

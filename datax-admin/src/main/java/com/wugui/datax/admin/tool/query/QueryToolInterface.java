@@ -24,6 +24,13 @@ public interface QueryToolInterface {
     TableInfo buildTableInfo(String tableName);
 
     /**
+     *  构建建表语句
+     * @param tableInfo table 注释及字段信息
+     * @return
+     */
+    List<String> buildCreateTableSql(TableInfo tableInfo);
+
+    /**
      * 获取指定表信息
      *
      * @return

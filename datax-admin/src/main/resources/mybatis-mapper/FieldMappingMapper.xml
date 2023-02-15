@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.FieldMappingMapper">
+
+    <update id="update" parameterType="com.wugui.datax.admin.entity.FieldMapping">
+        UPDATE field_mapping
+        <set>
+            <if test="fieldsType!=null">fields_type = #{fieldsType},</if>
+            <if test="datasource!=null">datasource = #{datasource},</if>
+            <if test="sourceFieldType!=null">source_field_type = #{sourceFieldType},</if>
+            <if test="targetDatasource!=null">target_datasource = #{targetDatasource},</if>
+            <if test="targetFieldType!=null">target_field_type = #{targetFieldType},</if>
+            <if test="comments!=null">comments = #{comments},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

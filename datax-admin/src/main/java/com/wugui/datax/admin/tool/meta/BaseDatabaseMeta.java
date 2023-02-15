@@ -1,5 +1,7 @@
 package com.wugui.datax.admin.tool.meta;
 
+import com.wugui.datax.admin.tool.database.TableInfo;
+
 /**
  * meta信息interface
  *
@@ -13,6 +15,10 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
     @Override
     public String getSQLQueryFields(String tableName) {
         return "SELECT * FROM " + tableName + " where 1=0";
+    }
+
+    public String getSQLQueryFields(String tableName,String userName) {
+        return "SELECT * FROM " + userName + "." + tableName + " where 1=0";
     }
 
     @Override
@@ -118,5 +124,8 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
         return null;
     }
 
-
+    @Override
+    public boolean createTable(String tableName, TableInfo tableInfo) {
+        return false;
+    }
 }
