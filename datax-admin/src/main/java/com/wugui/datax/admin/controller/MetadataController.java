@@ -159,11 +159,26 @@ public class MetadataController extends BaseController {
 
 //    //TODO createTable
     @PostMapping("/createTable")
-    @ApiOperation("[项目定制]根据不同数据源id和表名获取字段区别")
+    @ApiOperation("[项目定制]单表创建")
     public R<Boolean> createtTable(@RequestBody DatasourceTableBO datasourceTableBO) throws IOException {
       //  return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
         return success(tableService.create(datasourceTableBO));
 
+    }
+
+    //TODO 批量自动建表
+    @PostMapping("/createTables")
+    @ApiOperation("[项目定制]指定表创建")
+    public R<Boolean> createtTables(@RequestBody DatasourceTablesBO tablesBO) throws IOException {
+        //  return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
+            return success(tableService.createMulti(tablesBO));
+
+    }
+
+    @GetMapping("/createAllTables")
+    @ApiOperation("[项目定制]全库建表")
+    public R<Integer> createtAllTables(@RequestParam(value = "sourceId") String sourceId,@RequestParam(value = "targetId") String targetId) throws IOException {
+        return R.ok(tableService.createAllTables(sourceId, targetId));
     }
 
 
@@ -175,5 +190,9 @@ public class MetadataController extends BaseController {
        //TODO 如果是自动构建则查询reader对应的字段/指定字段列表,如果非自动构建则
         return success(datasourceQueryService.getColumns(datasourceId, tableName));
     }
+
+
+
+
 
 }

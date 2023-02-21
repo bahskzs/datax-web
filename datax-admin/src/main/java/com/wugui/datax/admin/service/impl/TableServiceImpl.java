@@ -2,6 +2,7 @@ package com.wugui.datax.admin.service.impl;
 
 import com.google.common.collect.Lists;
 import com.wugui.datax.admin.dto.DatasourceTableBO;
+import com.wugui.datax.admin.dto.DatasourceTablesBO;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.JobDatasourceService;
 import com.wugui.datax.admin.service.TableService;
@@ -41,10 +42,14 @@ public class TableServiceImpl implements TableService {
         //TODO 同源类型直接转换,异源类型需要获取类型映射管理数据获得对应的字段类型转换
         if(datasource.getDatasource().equals(targetDatasource.getDatasource())) {
             BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
-            //获取源tableInfo信息
-            TableInfo tableInfo = qTool.buildTableInfo(tableBO.getReaderTableName(), AESUtil.decrypt(datasource.getJdbcUsername()));
 
-            Map<String, ColumnInfo> columnMap = qTool.getColumnMap(tableBO.getReaderTableName(),AESUtil.decrypt(datasource.getJdbcUsername()));
+            BaseQueryTool targetQTool = QueryToolFactory.getByDbType(targetDatasource);
+
+
+            //获取源tableInfo信息
+            TableInfo tableInfo = qTool.buildTableInfo(tableBO.getReaderTableName(), AESUtil.decrypt(datasource.getJdbcUsername()),qTool.getCharacterSet().equals(targetQTool.getCharacterSet()));
+
+            Map<String, ColumnInfo> columnMap = qTool.getColumnMap(tableBO.getReaderTableName(),AESUtil.decrypt(datasource.getJdbcUsername()),qTool.getCharacterSet().equals(targetQTool.getCharacterSet()));
             List<String> columns = tableBO.getColumnsList();
             // 获取目标表对应的字段及类型
             List<ColumnInfo> targetColumns = Lists.newArrayList();
@@ -58,10 +63,92 @@ public class TableServiceImpl implements TableService {
             tableInfo.setName(tableBO.getTableName());
             List<String> createSqlList = qTool.buildCreateTableSql(tableInfo);
 
-            QueryToolFactory.getByDbType(targetDatasource).executeCreateTableSqls(createSqlList);
+            targetQTool.executeCreateTableSqls(createSqlList);
         }
 
 
         return true;
     }
+
+    @Override
+    public boolean createMulti(DatasourceTablesBO tableBO) {
+
+        //获取数据源对象
+        JobDatasource datasource = jobDatasourceService.getById(tableBO.getSourceId());
+
+        JobDatasource targetDatasource = jobDatasourceService.getById(tableBO.getDatasourceId());
+
+        // 获取table列表
+        List<String> tableList = tableBO.getTableList();
+        boolean flag = false;
+        // 遍历列表构建表
+        if(datasource.getDatasource().equals(targetDatasource.getDatasource())) {
+            BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
+            BaseQueryTool targetQTool = QueryToolFactory.getByDbType(targetDatasource);
+            List<String> targetTables = targetQTool.getTableNames();
+            //获取源tableInfo信息
+            for (String tableName : tableList) {
+                //TODO 此处应传模式名不应该传用户名
+                TableInfo tableInfo = qTool.buildTableInfo(tableName, tableBO.getSourceSchema(),qTool.getCharacterSet().equals(targetQTool.getCharacterSet()));
+
+                //TODO 判断表是否存在,若存在,则当前表追加尾部
+                boolean isExist = true;
+                isExist = targetTables.contains(tableName);
+                if(isExist) {
+                    tableInfo.setName(tableName + "_V1");
+                    flag = true;
+                    continue;
+                }
+                List<String> createSqlList = qTool.buildCreateTableSql(tableInfo);
+                flag = QueryToolFactory.getByDbType(targetDatasource).executeCreateTableSqls(createSqlList);
+
+            }
+            if(!flag){
+                return flag;
+            }
+        }
+        return flag;
+    }
+
+
+    /**
+     *  创建链接数据源的所有表数量
+     * @param sourceId
+     * @param targetId
+     * @return 建表的数量
+     */
+    @Override
+    public int createAllTables(String sourceId, String targetId) {
+
+        //获取数据源对象
+        JobDatasource datasource = jobDatasourceService.getById(sourceId);
+        JobDatasource targetDatasource = jobDatasourceService.getById(targetId);
+
+        // 同源才做处理
+        int tableCounts = 0;
+        if (datasource.getDatasource().equals(targetDatasource.getDatasource())) {
+
+            BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
+            BaseQueryTool targetQTool = QueryToolFactory.getByDbType(targetDatasource);
+
+            // 获取要初始化的全部表
+            List<String> sourceTableList = qTool.getTableNames();
+
+
+            for (String tableName : sourceTableList) {
+                TableInfo tableInfo = qTool.buildTableInfo(tableName, AESUtil.decrypt(datasource.getJdbcUsername()), qTool.getCharacterSet().equals(targetQTool.getCharacterSet()));
+                List<String> createSqlList = qTool.buildCreateTableSql(tableInfo);
+                boolean flag = QueryToolFactory.getByDbType(targetDatasource).executeCreateTableSqls(createSqlList);
+                if (flag) {
+                    tableCounts = tableCounts + 1;
+
+                }
+            }
+
+        }
+
+        return tableCounts;
+    }
+
+
 }

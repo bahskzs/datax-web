@@ -128,4 +128,10 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
     public boolean createTable(String tableName, TableInfo tableInfo) {
         return false;
     }
+
+
+    @Override
+    public String getCharacterSet() {
+        return null;
+    }
 }

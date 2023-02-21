@@ -50,6 +50,8 @@ public interface JobService {
      */
     ReturnT<String> copy(Integer jobId, Long datasourceId);
 
+    ReturnT<String> buildBatchJob(String sourceId, String targetId, String templateId) throws IOException;
+
     /**
      * update job
      *
@@ -186,4 +188,6 @@ public interface JobService {
       * @return:
       */
     JobInfo selectOne(Long id);
+
+
 }

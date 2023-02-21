@@ -17,6 +17,8 @@ import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.*;
 import com.wugui.datax.admin.mapper.*;
 import com.wugui.datax.admin.service.*;
+import com.wugui.datax.admin.tool.query.BaseQueryTool;
+import com.wugui.datax.admin.tool.query.QueryToolFactory;
 import com.wugui.datax.admin.util.CopyUtil;
 import com.wugui.datax.admin.util.DateFormatUtils;
 import com.wugui.datax.admin.util.JSONUtils;
@@ -26,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -466,6 +467,34 @@ public class JobServiceImpl implements JobService {
         String jobJson = JSONUtils.changeJson(json, JSONUtils.decrypt);
         jobInfo.setJobJson(jobJson.replaceAll("\\\"","\""));
         return jobInfo;
+    }
+
+
+
+    @Override
+    public ReturnT<String> buildBatchJob(String sourceId, String targetId, String templateId) throws IOException {
+
+        JobDatasource targetDatasource = jobDatasourceService.getById(targetId);
+
+        BaseQueryTool targetQTool = QueryToolFactory.getByDbType(targetDatasource);
+
+        List<String> sourceTableList = targetQTool.getTableNames();
+
+        CusDataXBatchJsonBuildDTO build = CusDataXBatchJsonBuildDTO.builder()
+                .readerDatasourceId(Long.valueOf(sourceId))
+                .requireDSName(true)
+                .writerDatasourceId(Long.valueOf(targetId))
+                .readerTables(sourceTableList)
+                .writerTables(sourceTableList)
+                .rdbmsReader(new RdbmsReaderDto())
+                .rdbmsWriter(new RdbmsWriterDto(null,null))
+                .templateId(Integer.valueOf(templateId))
+                .build();
+        DataXBatchJsonBuildDto dto = CopyUtil.copy(build, DataXBatchJsonBuildDto.class);
+        if (dto.getTemplateId() ==0) {
+            return new ReturnT<>(ReturnT.FAIL_CODE, (I18nUtil.getString("system_please_choose") + I18nUtil.getString("jobinfo_field_temp")));
+        }
+        return batchAdd(dto);
     }
 
 

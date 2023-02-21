@@ -47,12 +47,14 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     @Override
     public String getSQLQueryTableNameComment() {
-        return "select table_name,comments from all_tab_comments where table_name = ? ";
+        return "select a. table_name, b.comments from all_tables a left join all_tab_comments b " +
+                "on a.TABLE_NAME = b.TABLE_NAME where a.table_name = ? ";
     }
 
     @Override
     public String getSQLQueryTables(String... tableSchema) {
-        return "select OBJECT_NAME as table_name from all_objects where owner='" + tableSchema[0] + "'";
+        //return "select OBJECT_NAME as table_name from all_objects where owner='" + tableSchema[0] + "' and OBJECT_TYPE in ('TABLE','VIEW')";
+        return "select OBJECT_NAME as table_name from all_objects where owner='" + tableSchema[0] + "' and OBJECT_TYPE in ('TABLE')";
     }
 
     @Override
@@ -63,7 +65,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     @Override
     public String getSQLQueryTables() {
-        return "select table_name from user_tab_comments";
+        return "select table_name from user_tables ";
     }
 
     @Override
@@ -119,5 +121,11 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     public String getAlterAdd(String... args){
         //TODO 获取oracle add语句
         return "alter table " + args[0] + " add " + args[1]+ " " + args[2] + "(" + args[3] + ");";
+    }
+
+
+    @Override
+    public String getCharacterSet() {
+        return "select userenv('language') from dual";
     }
 }

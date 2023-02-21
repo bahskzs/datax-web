@@ -118,7 +118,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         //获取表信息
         List<Map<String, Object>> tableInfos = this.getTableInfo(tableName);
         if (tableInfos.isEmpty()) {
-            throw new NullPointerException("查询出错! ");
+            throw new NullPointerException("查询出错! 问题表: " + tableName);
         }
 
         TableInfo tableInfo = new TableInfo();
@@ -149,11 +149,18 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     }
 
 
-    public TableInfo buildTableInfo(String tableName,String userName) {
+    /**
+     * 构建表信息
+     *
+     * @param tableName
+     * @param userName
+     * @return
+     */
+    public TableInfo buildTableInfo(String tableName, String userName, Boolean isSamedCharaSet) {
         //获取表信息
         List<Map<String, Object>> tableInfos = this.getTableInfo(tableName);
         if (tableInfos.isEmpty()) {
-            throw new NullPointerException("查询出错! ");
+            throw new NullPointerException("查询出错! 问题表: " + tableName);
         }
 
         TableInfo tableInfo = new TableInfo();
@@ -164,8 +171,8 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         tableInfo.setComment(StrUtil.toString(tValues.get(1)));
 
 
-        //TODO 获取所有字段
-        List<ColumnInfo> fullColumn = getColumns(tableName,userName);
+        //TODO 获取所有字段 目前还有问题
+        List<ColumnInfo> fullColumn = getColumns(tableName, userName, isSamedCharaSet);
         tableInfo.setColumns(fullColumn);
 
         //获取主键列
@@ -184,16 +191,14 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     }
 
 
-
-
     //无论怎么查，返回结果都应该只有表名和表注释，遍历map拿value值即可
     @Override
     public List<Map<String, Object>> getTableInfo(String tableName) {
         String sqlQueryTableNameComment = sqlBuilder.getSQLQueryTableNameComment();
-        logger.info(sqlQueryTableNameComment);
+        //logger.info(sqlQueryTableNameComment);
         List<Map<String, Object>> res = null;
         try {
-            res = JdbcUtils.executeQuery(connection, sqlQueryTableNameComment, ImmutableList.of( tableName));
+            res = JdbcUtils.executeQuery(connection, sqlQueryTableNameComment, ImmutableList.of(tableName));
         } catch (SQLException e) {
             logger.error("[getTableInfo Exception] --> "
                     + "the exception message is:" + e.getMessage());
@@ -204,7 +209,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     @Override
     public List<Map<String, Object>> getTables() {
         String sqlQueryTables = sqlBuilder.getSQLQueryTables();
-        logger.info(sqlQueryTables);
+        //logger.info(sqlQueryTables);
         List<Map<String, Object>> res = null;
         try {
             res = JdbcUtils.executeQuery(connection, sqlQueryTables, ImmutableList.of(currentSchema));
@@ -224,7 +229,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
             //获取查询指定表所有字段的sql语句
             String querySql = sqlBuilder.getSQLQueryFields(tableName);
-            logger.info("querySql: {}", querySql);
+            //logger.info("querySql: {}", querySql);
 
             //获取所有字段
             Statement statement = connection.createStatement();
@@ -245,14 +250,21 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     }
 
 
-    public List<ColumnInfo> getColumns(String tableName,String userName) {
+    /**
+     * 根据用户名以及表名获取对应字段信息
+     *
+     * @param tableName
+     * @param userName
+     * @return
+     */
+    public List<ColumnInfo> getColumns(String tableName, String userName, Boolean isSameCharaSet) {
 
         List<ColumnInfo> fullColumn = Lists.newArrayList();
         //获取指定表的所有字段
         try {
 
             //获取查询指定表所有字段的sql语句
-            String querySql = sqlBuilder.getSQLQueryFields(tableName,userName);
+            String querySql = sqlBuilder.getSQLQueryFields(tableName, userName);
             logger.info("querySql: {}", querySql);
 
             //获取所有字段
@@ -260,7 +272,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             ResultSet resultSet = statement.executeQuery(querySql);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
-            List<DasColumn> dasColumns = buildCusColumn(tableName, metaData);
+            List<DasColumn> dasColumns = buildCusColumn(tableName, metaData, isSameCharaSet);
             statement.close();
 
             //构建 fullColumn
@@ -275,17 +287,18 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
 
     /**
-     *  返回字段名称,字段信息用于字段比较
+     * 返回字段名称,字段信息用于字段比较
+     *
      * @param tableName
      * @return
      */
-    public Map<String,ColumnInfo> getColumnMap(String tableName, String userName) {
+    public Map<String, ColumnInfo> getColumnMap(String tableName, String userName, Boolean isSamedCharaSet) {
 
-        Map<String,ColumnInfo> res = Maps.newHashMap();
+        Map<String, ColumnInfo> res = Maps.newHashMap();
         //获取指定表的所有字段
         try {
             //获取查询指定表所有字段的sql语句
-            String querySql = sqlBuilder.getSQLQueryFields(tableName,userName);
+            String querySql = sqlBuilder.getSQLQueryFields(tableName, userName);
             logger.info("querySql: {}", querySql);
 
             //获取所有字段
@@ -293,7 +306,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             ResultSet resultSet = statement.executeQuery(querySql);
             ResultSetMetaData metaData = resultSet.getMetaData();
 
-            List<DasColumn> dasColumns = buildCusColumn(tableName, metaData);
+            List<DasColumn> dasColumns = buildCusColumn(tableName, metaData, isSamedCharaSet);
             statement.close();
 
             //构建 fullColumn
@@ -319,8 +332,9 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         });
         return res;
     }
-    private Map<String,ColumnInfo> buildColumnMap(List<DasColumn> dasColumns) {
-        Map<String,ColumnInfo> res = Maps.newHashMap();
+
+    private Map<String, ColumnInfo> buildColumnMap(List<DasColumn> dasColumns) {
+        Map<String, ColumnInfo> res = Maps.newHashMap();
         dasColumns.forEach(e -> {
             ColumnInfo columnInfo = new ColumnInfo();
             columnInfo.setName(e.getColumnName());
@@ -328,7 +342,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             columnInfo.setType(e.getColumnTypeName());
             columnInfo.setIfPrimaryKey(e.isIsprimaryKey());
             columnInfo.setIsnull(e.getIsNull());
-            res.put(e.getColumnName(),columnInfo);
+            res.put(e.getColumnName(), columnInfo);
         });
         return res;
     }
@@ -392,7 +406,15 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     }
 
 
-    private List<DasColumn> buildCusColumn(String tableName, ResultSetMetaData metaData) {
+    /**
+     * 构建定制字段类型,含字段长度,精度等等
+     *
+     * @param tableName
+     * @param metaData
+     * @param isSamedCharaSet 是否相同字符集
+     * @return
+     */
+    private List<DasColumn> buildCusColumn(String tableName, ResultSetMetaData metaData, Boolean isSamedCharaSet) {
         List<DasColumn> res = Lists.newArrayList();
         try {
             int columnCount = metaData.getColumnCount();
@@ -402,24 +424,47 @@ public abstract class BaseQueryTool implements QueryToolInterface {
                 dasColumn.setColumnTypeName(metaData.getColumnTypeName(i));
                 dasColumn.setColumnName(metaData.getColumnName(i));
                 dasColumn.setIsNull(metaData.isNullable(i));
-                //dasColumn.setColumnLength(metaData.getColumnDisplaySize(i));
-                if(!(metaData.getColumnTypeName(i) == "BLOB" || metaData.getColumnTypeName(i) == "CLOB" || metaData.getColumnTypeName(i) == "BLOB")) {
-                   int scale = metaData.getScale(i);
-                   int dataLength = metaData.getColumnDisplaySize(i);
-                   if(scale != 0) {
-                       dasColumn.setColumnTypeName(metaData.getColumnTypeName(i) + "(" + dataLength + "," + scale + ")");
-                   } else {
-                       dasColumn.setColumnTypeName(metaData.getColumnTypeName(i) + "(" + dataLength + ")");
-                   }
+                int scale = metaData.getScale(i);
+                int dataLength = metaData.getColumnDisplaySize(i);
+                String colType = String.valueOf(dataLength);
+
+                // 如果精度为-127,则不需要拼接
+
+                // scale = 0 字符串,日期等  > 0 数字 -127 数字且没有精度
+                if (scale > 0) {
+                    // 数字
+                    colType = colType + "," + scale;
+                    dasColumn.setColumnTypeName(metaData.getColumnTypeName(i) + "(" + colType + ")");
+                } else if (scale == 0) {
+                    //字符串
+                    if (metaData.getColumnTypeName(i).contains("CHAR")) {
+                        if(!isSamedCharaSet) {
+                            dataLength = dataLength * 2;
+                        }
+                        colType = String.valueOf(dataLength);
+                        dasColumn.setColumnTypeName(metaData.getColumnTypeName(i) + "(" + colType + ")");
+                    }
+                    if (metaData.getColumnTypeName(i) == "CLOB"
+                            || metaData.getColumnTypeName(i) == "BLOB"
+                            || metaData.getColumnTypeName(i) == "DATE"
+                            || metaData.getColumnTypeName(i) == "FLOAT"
+                            || metaData.getColumnTypeName(i) == "DOUBLE"
+                            || metaData.getColumnTypeName(i) == "INT"
+                    ) {
+                        dasColumn.setColumnTypeName(metaData.getColumnTypeName(i));
+                    }
+                    if(metaData.getColumnTypeName(i) == "NUMBER") {
+                        dataLength = dataLength-1;
+                        colType = String.valueOf(dataLength);
+                        dasColumn.setColumnTypeName(metaData.getColumnTypeName(i) + "(" + colType + ")");
+                    }
                 }
-                if(metaData.getColumnTypeName(i) == "DATE") {
+                // 39 : NUMBER
+                if (scale == -127 && dataLength == 39) {
                     dasColumn.setColumnTypeName(metaData.getColumnTypeName(i));
                 }
                 res.add(dasColumn);
             }
-
-            //TODO  setColumnTypeName --> 字段类型(长度)
-
 
             Statement statement = connection.createStatement();
 
@@ -430,7 +475,9 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
                 while (resultSet.next()) {
                     String name = resultSet.getString("COLUMN_NAME");
+
                     res.forEach(e -> {
+
                         if (e.getColumnName().equals(name)) {
                             e.setIsprimaryKey(true);
 
@@ -585,9 +632,9 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     public List<TableDetailsResp> getDdlSQL(String tableName, String user) {
         List<TableDetailsResp> tableDetailsResps = new ArrayList<>();
 
-        String[] tables =tableName.split(",");
-        if(tables.length > 1) {
-            return this.getMultiDdlSQL(tableName,user);
+        String[] tables = tableName.split(",");
+        if (tables.length > 1) {
+            return this.getMultiDdlSQL(tableName, user);
         } else {
             // 此处if后续可以考虑替换成策略模式
             String querySql = sqlBuilder.getDdlSQL(this.currentSchema, tableName.toUpperCase());
@@ -648,15 +695,13 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     }
 
 
-
-
-     /**
-      * @author: bahsk
-      * @date: 2021-12-23 9:46
-      * @description: [项目定制] 查询多表建表sql,限oracle
-      * @params:
-      * @return:
-      */
+    /**
+     * @author: bahsk
+     * @date: 2021-12-23 9:46
+     * @description: [项目定制] 查询多表建表sql,限oracle
+     * @params:
+     * @return:
+     */
     public List<TableDetailsResp> getMultiDdlSQL(String tableName, String user) {
         List<TableDetailsResp> tableDetailsResps = new ArrayList<>();
 //        String[] tables = (String[]) tableList.toArray();
@@ -667,7 +712,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
         //oracle数据源比较特殊，是用用户而不是模式
         if (currentDatabase.equals(JdbcConstants.ORACLE)) {
-            querySql = sqlBuilder.getMultiDdlSQL(user.toUpperCase(), "'" + tableName.toUpperCase().replaceAll(",","','") + "'");
+            querySql = sqlBuilder.getMultiDdlSQL(user.toUpperCase(), "'" + tableName.toUpperCase().replaceAll(",", "','") + "'");
         }
 
         if (StringUtils.isBlank(querySql)) {
@@ -775,7 +820,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
             String sql = getSQLQueryTables();
             rs = stmt.executeQuery(sql);
             while (rs.next()) {
-                String tableName = rs.getString("tablename");
+                String tableName = rs.getString("TABLE_NAME");
 //                logger.info("col1 :{},col2: {},col3: {}",
 //                        rs.getString("tablename"),
 //                        rs.getString("namespace"),
@@ -821,8 +866,6 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
     @Override
     public List<String> getColumnsByQuerySql(String querySql) throws SQLException {
-
-
 
 
         List<String> res = Lists.newArrayList();
@@ -887,7 +930,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         return sqlBuilder.getMaxId(tableName, primaryKey);
     }
 
-    public void executeCreateTableSql(String querySql) {
+    public void executeSql(String querySql) {
         if (StringUtils.isBlank(querySql)) {
             return;
         }
@@ -905,11 +948,12 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
     /**
      * 执行建表语句(含注释)
+     *
      * @param sqlList
      */
-    public void executeCreateTableSqls(List<String> sqlList) {
+    public boolean executeCreateTableSqls(List<String> sqlList) {
         if (sqlList == null) {
-            return;
+            return false;
         }
         Statement stmt = null;
         try {
@@ -921,9 +965,11 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         } catch (SQLException e) {
             logger.error("[executeCreateTableSql Exception] --> "
                     + "the exception message is:" + e.getMessage());
+            return  false;
         } finally {
             JdbcUtils.close(stmt);
         }
+        return true;
     }
 
     public List<String> getTableSchema() {
@@ -958,58 +1004,59 @@ public abstract class BaseQueryTool implements QueryToolInterface {
      * @param tableName
      * @description 根据表名返回记录数
      */
-    public TableCountResp getTableCount(String tableName){
+    public TableCountResp getTableCount(String tableName) {
         TableCountResp tableCountResps = new TableCountResp();
 
-            String querySql = sqlBuilder.getTableCount(tableName);
+        String querySql = sqlBuilder.getTableCount(tableName);
 
-            Statement stmt = null;
-            ResultSet resultSet = null;
-            try {
+        Statement stmt = null;
+        ResultSet resultSet = null;
+        try {
 
-                stmt = this.connection.createStatement();
-                resultSet = stmt.executeQuery(querySql);
-                if (resultSet.next()) {
-                    String tableCount = resultSet.getString(1);
-                    tableCountResps = TableCountResp.builder()
-                            .tableName(tableName)
-                            .tableCounts(tableCount)
-                            .build();
+            stmt = this.connection.createStatement();
+            resultSet = stmt.executeQuery(querySql);
+            if (resultSet.next()) {
+                String tableCount = resultSet.getString(1);
+                tableCountResps = TableCountResp.builder()
+                        .tableName(tableName)
+                        .tableCounts(tableCount)
+                        .build();
 
-                } else {
-                    tableCountResps = TableCountResp.builder()
-                            .tableName(tableName)
-                            .tableCounts("获取失败，无记录")
-                            .build();
+            } else {
+                tableCountResps = TableCountResp.builder()
+                        .tableName(tableName)
+                        .tableCounts("获取失败，无记录")
+                        .build();
 
-                }
-
-            } catch (SQLException e) {
-                logger.error("获取记录数失败" + e.getMessage());
-                e.printStackTrace();
-            } finally {
-                JdbcUtils.close(resultSet);
-                JdbcUtils.close(stmt);
             }
 
+        } catch (SQLException e) {
+            logger.error("获取记录数失败" + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            JdbcUtils.close(resultSet);
+            JdbcUtils.close(stmt);
+        }
 
-            return tableCountResps;
-}
+
+        return tableCountResps;
+    }
 
     /**
      * 获取更新语句
+     *
      * @param diffDTO
      * @param tableName
      * @return
      */
-    public String getColumnsAlter(ColumnDetailsDiffRespDTO diffDTO,String tableName){
+    public String getColumnsAlter(ColumnDetailsDiffRespDTO diffDTO, String tableName) {
         // 拼接alter语句
-        String alterType=diffDTO.getAlterType();
+        String alterType = diffDTO.getAlterType();
         String alterString;
-        if(alterType=="a"){
-            alterString = sqlBuilder.getAlterAdd(tableName,diffDTO.getColumn(),diffDTO.getColumnType(),diffDTO.getColumnLength());
-        }else{
-            alterString = sqlBuilder.getAlterModify(tableName,diffDTO.getColumn(),diffDTO.getColumnType(),diffDTO.getColumnLength());
+        if (alterType == "a") {
+            alterString = sqlBuilder.getAlterAdd(tableName, diffDTO.getColumn(), diffDTO.getColumnType(), diffDTO.getColumnLength());
+        } else {
+            alterString = sqlBuilder.getAlterModify(tableName, diffDTO.getColumn(), diffDTO.getColumnType(), diffDTO.getColumnLength());
         }
         return alterString;
     }
@@ -1019,6 +1066,39 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     public List<String> buildCreateTableSql(TableInfo tableInfo) {
         return null;
     }
+
+
+    /**
+     * 获取数据库字符集类型
+     *
+     * @return
+     */
+    public String getCharacterSet() {
+        String charaSet = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = connection.createStatement();
+            //获取sql
+            String sql = getSQLQueryTableSchema();
+            rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                charaSet = rs.getString(1);
+            }
+        } catch (SQLException e) {
+            logger.error("[getTableNames Exception] --> "
+                    + "the exception message is:" + e.getMessage());
+        } finally {
+            JdbcUtils.close(rs);
+            JdbcUtils.close(stmt);
+        }
+        return charaSet;
+    }
+
+    public List<CusColumn> getDbColums() {
+        return null;
+    }
+
 }
 
 

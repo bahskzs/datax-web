@@ -116,4 +116,11 @@ public interface DatabaseInterface {
      * @return 是否完成建表
      */
     boolean createTable(String tableName, TableInfo tableInfo);
+
+
+    /**
+     *
+     * @return 获取数据库字符集
+     */
+    String getCharacterSet();
 }

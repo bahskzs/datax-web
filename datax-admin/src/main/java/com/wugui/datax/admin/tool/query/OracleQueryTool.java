@@ -26,7 +26,7 @@ public class OracleQueryTool extends BaseQueryTool implements QueryToolInterface
     /**
      * 构建建表语句
      *
-     * @param tableInfo  table 注释及字段信息
+     * @param tableInfo table 注释及字段信息
      * @return
      */
     @Override
@@ -55,17 +55,20 @@ public class OracleQueryTool extends BaseQueryTool implements QueryToolInterface
                     .append(column.getName())
                     .append("\" ")
                     .append(column.getType());
-            if(i<columns.size()-1) {
+            if (i < columns.size() - 1) {
                 createTable.append(",");
             }
 
             // 字段注释
             StringBuffer columnComment = new StringBuffer();
-            columnComment.append("comment on column  ")
-                    .append("\"").append(name).append("\".")
-                    .append("\"").append(column.getName()).append("\" ")
-                    .append("is").append("'").append(column.getComment()).append("'");
-            columnCommentList.add(columnComment.toString());
+            if (column.getComment() != null) {
+                columnComment.append("comment on column  ")
+                        .append("\"").append(name).append("\".")
+                        .append("\"").append(column.getName()).append("\" ")
+                        .append("is").append("'").append(column.getComment()).append("'");
+                columnCommentList.add(columnComment.toString());
+            }
+
 
         }
         createTable.append(")");
@@ -73,15 +76,17 @@ public class OracleQueryTool extends BaseQueryTool implements QueryToolInterface
 
 
 
-        // 表注释部分
-        tableComment.append("comment on table ")
-                .append("\"").append(name).append("\"")
-                .append("is").append("'").append(comment).append("'");
-
 
         //组装待执行的sql
         sqlList.add(createTable.toString());
-        sqlList.add(tableComment.toString());
+        if (comment != null) {
+            // 表注释部分
+            tableComment.append("comment on table ")
+                    .append("\"").append(name).append("\"")
+                    .append("is").append("'").append(comment).append("'");
+            sqlList.add(tableComment.toString());
+        }
+
         sqlList.addAll(columnCommentList);
         return sqlList;
     }

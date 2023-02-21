@@ -269,6 +269,15 @@ public class JobInfoController extends BaseController{
         return new ReturnT<>();
     }
 
+
+    @GetMapping("/autoBulidJob")
+    @ApiOperation("[项目定制]自动构建全库迁移任务")
+    public ReturnT<String> bulidBatchAdd(@RequestParam(required = true) String source,
+                                                            @RequestParam(required = true) String target,
+                                                            @RequestParam(required = true) String templateId) throws IOException {
+        return jobService.buildBatchJob(source,target,templateId);
+
+    }
      /**
       * @author: bahsk
       * @date: 2021-11-01 15:24

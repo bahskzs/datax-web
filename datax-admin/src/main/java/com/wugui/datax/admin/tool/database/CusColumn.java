@@ -21,8 +21,10 @@ public class CusColumn {
 
     private String columnTypeName;
 
-    private String columnClassName;
     private int columnLength;
+
+    private int dataPrecision;
+    private int dataScale;
 
     private String columnComment;
     private int isNull;
