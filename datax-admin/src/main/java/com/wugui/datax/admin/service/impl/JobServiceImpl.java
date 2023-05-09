@@ -765,7 +765,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public ReturnT<String> batchAdd(DataXBatchJsonBuildDto dto) throws IOException {
 
-        String key = "system_please_choose";
+         String key = "system_please_choose";
         List<String> rdTables = dto.getReaderTables();
         List<String> wrTables = dto.getWriterTables();
         if (dto.getReaderDatasourceId() == null) {
@@ -783,7 +783,7 @@ public class JobServiceImpl implements JobService {
         List<String> rColumns;
         List<String> wColumns;
         for (int i = 0; i < rdTables.size(); i++) {
-                rColumns = datasourceQueryService.getColumns(dto.getReaderDatasourceId(), rdTables.get(i));
+            rColumns = datasourceQueryService.getColumns(dto.getReaderDatasourceId(), rdTables.get(i));
             wColumns = datasourceQueryService.getColumns(dto.getWriterDatasourceId(), wrTables.get(i));
 
             jsonBuild.setReaderDatasourceId(dto.getReaderDatasourceId());

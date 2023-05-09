@@ -90,4 +90,7 @@ public class OracleQueryTool extends BaseQueryTool implements QueryToolInterface
         sqlList.addAll(columnCommentList);
         return sqlList;
     }
+
+    //TODO 自动构建注释
+
 }

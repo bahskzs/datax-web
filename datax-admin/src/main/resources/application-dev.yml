@@ -19,7 +19,7 @@ spring:
 
 # hadoop配置
 hadoop:
-  mode: HA
+  mode: none
   nameNodes: namenode55,namenode109
   nameService: nameservice1
   address: 10.96.10.128:8020,10.96.10.127:8020

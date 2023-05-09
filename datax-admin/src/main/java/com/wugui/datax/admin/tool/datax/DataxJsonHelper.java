@@ -17,13 +17,20 @@ import com.wugui.datax.admin.tool.pojo.DataxHbasePojo;
 import com.wugui.datax.admin.tool.pojo.DataxHivePojo;
 import com.wugui.datax.admin.tool.pojo.DataxMongoDBPojo;
 import com.wugui.datax.admin.tool.pojo.DataxRdbmsPojo;
+import com.wugui.datax.admin.tool.query.BaseQueryTool;
+import com.wugui.datax.admin.util.AESUtil;
 import com.wugui.datax.admin.util.JdbcConstants;
 import lombok.Data;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,11 +47,15 @@ import static com.wugui.datax.admin.util.JdbcConstants.*;
 @Data
 public class DataxJsonHelper implements DataxJsonInterface {
 
-    @Resource
-    private JobDsEnvironmentService jobDsEnvironmentService;
+    protected static final Logger logger = LoggerFactory.getLogger(DataxJsonHelper.class);
+
+    private JobDsEnvironment env;
+
+
+    private HadoopConfig hadoopConfig;
 
     @Resource
-    private HadoopConfig hadoopConfig;
+    private JobDsEnvironmentService jobDsEnvironmentService;
 
     /**
      * 读取的表，根据datax示例，支持多个表（先不考虑，后面再去实现， 这里先用list保存吧）
@@ -140,10 +151,59 @@ public class DataxJsonHelper implements DataxJsonInterface {
         }
     }
 
+
+
+    public void initReader(DataXJsonBuildDto dataxJsonDto, JobDatasource readerDatasource, HadoopConfig hadoopConfig,JobDsEnvironment env) {
+
+        this.readerDatasource = readerDatasource;
+        this.readerTables = dataxJsonDto.getReaderTables();
+        this.readerColumns = dataxJsonDto.getReaderColumns();
+        this.hiveReaderDto = dataxJsonDto.getHiveReader();
+        this.rdbmsReaderDto = dataxJsonDto.getRdbmsReader();
+        this.hbaseReaderDto = dataxJsonDto.getHbaseReader();
+        // reader 插件
+        String datasource = readerDatasource.getDatasource();
+
+        this.readerColumns = convertKeywordsColumns(datasource, this.readerColumns);
+        if (MYSQL.equals(datasource)) {
+            readerPlugin = new MysqlReader();
+            buildReader = buildReader();
+        } else if (ORACLE.equals(datasource)) {
+            readerPlugin = new OracleReader();
+            buildReader = buildReader();
+        } else if (SQL_SERVER.equals(datasource)) {
+            readerPlugin = new SqlServerReader();
+            buildReader = buildReader();
+        } else if (POSTGRESQL.equals(datasource)) {
+            readerPlugin = new PostgresqlReader();
+            buildReader = buildReader();
+        } else if (CLICKHOUSE.equals(datasource)) {
+            readerPlugin = new ClickHouseReader();
+            buildReader = buildReader();
+        } else if (HIVE.equals(datasource)) {
+            this.hadoopConfig = hadoopConfig;
+            this.env = env;
+            readerPlugin = new HiveReader();
+            buildReader = buildHiveReader();
+        } else if (HBASE.equals(datasource)) {
+            readerPlugin = new HBaseReader();
+            buildReader = buildHBaseReader();
+        } else if (MONGODB.equals(datasource)) {
+            readerPlugin = new MongoDBReader();
+            buildReader = buildMongoDBReader();
+        }
+    }
+
+
+
+
     public void initWriter(DataXJsonBuildDto dataxJsonDto, JobDatasource readerDatasource) {
         this.writerDatasource = readerDatasource;
         this.writerTables = dataxJsonDto.getWriterTables();
         this.writerColumns = dataxJsonDto.getWriterColumns();
+
+        logger.info("# initWriter - writerColumns.size: {}",this.writerColumns.size());
+
         this.hiveWriterDto = dataxJsonDto.getHiveWriter();
         this.rdbmsWriterDto = dataxJsonDto.getRdbmsWriter();
         this.hbaseWriterDto = dataxJsonDto.getHbaseWriter();
@@ -175,6 +235,35 @@ public class DataxJsonHelper implements DataxJsonInterface {
         } else if (JdbcConstants.MONGODB.equals(datasource)) {
             writerPlugin = new MongoDBWriter();
             buildWriter = this.buildMongoDBWriter();
+        }
+    }
+
+    /**
+     *  构造hiveWriter 特制
+     * @param dataxJsonDto
+     * @param writerDatasource
+     * @param hadoopConfig
+     * @param env
+     */
+    public void initWriter(DataXJsonBuildDto dataxJsonDto, JobDatasource writerDatasource, HadoopConfig hadoopConfig,JobDsEnvironment env) {
+        this.writerDatasource = writerDatasource;
+        this.writerTables = dataxJsonDto.getWriterTables();
+        this.writerColumns = dataxJsonDto.getWriterColumns();
+
+        logger.info("# initWriter - writerColumns.size: {}",this.writerColumns.size());
+
+        this.hiveWriterDto = dataxJsonDto.getHiveWriter();
+        this.rdbmsWriterDto = dataxJsonDto.getRdbmsWriter();
+        this.hbaseWriterDto = dataxJsonDto.getHbaseWriter();
+        this.mongoDBWriterDto = dataxJsonDto.getMongoDBWriter();
+        // writer
+        String datasource = writerDatasource.getDatasource();
+        this.writerColumns = convertKeywordsColumns(datasource, this.writerColumns);
+        if (JdbcConstants.HIVE.equals(datasource)) {
+            this.hadoopConfig = hadoopConfig;
+            this.env = env;
+            writerPlugin = new HiveWriter();
+            buildWriter = this.buildHiveWriter();
         }
     }
 
@@ -248,6 +337,15 @@ public class DataxJsonHelper implements DataxJsonInterface {
     @Override
     public Map<String, Object> buildReader() {
         DataxRdbmsPojo dataxPluginPojo = new DataxRdbmsPojo();
+
+        // back 如果是配置模式的数据源 , 解密
+        if("config".equals(readerDatasource.getComments())) {
+            String userName = AESUtil.decrypt(readerDatasource.getJdbcUsername());
+            String passwd = AESUtil.decrypt(readerDatasource.getJdbcPassword());
+            readerDatasource.setJdbcUsername(userName);
+            readerDatasource.setJdbcPassword(passwd);
+        }
+
         dataxPluginPojo.setJobDatasource(readerDatasource);
         dataxPluginPojo.setTables(readerTables);
         dataxPluginPojo.setRdbmsColumns(readerColumns);
@@ -266,6 +364,9 @@ public class DataxJsonHelper implements DataxJsonInterface {
     public Map<String, Object> buildHiveReader() {
         DataxHivePojo dataxHivePojo = new DataxHivePojo();
         dataxHivePojo.setJdbcDatasource(readerDatasource);
+
+        logger.info("# buildHiveReader()-readerColumns.size :  {}",readerColumns.size());
+
         List<Map<String, Object>> columns = Lists.newArrayList();
         readerColumns.forEach(c -> {
             Map<String, Object> column = Maps.newLinkedHashMap();
@@ -274,7 +375,9 @@ public class DataxJsonHelper implements DataxJsonInterface {
             columns.add(column);
         });
 
-        JobDsEnvironment jobDsEnvironment = jobDsEnvironmentService.queryByDataSourceId(writerDatasource.getId());
+        logger.info("# buildHiveReader() - readerColumns.size :  {}",readerColumns.size());
+        logger.info("# buildHiveReader() - readerColumns.getId :  {}",readerDatasource.getId());
+
 //        JobDsEnvironment jobDsEnvironment = JobDsEnvironment.builder().defaultFs("hdfs://10.100.32.144:9000")
 //                .datasourceId(725)
 //                .datasourceType(1)
@@ -283,10 +386,11 @@ public class DataxJsonHelper implements DataxJsonInterface {
 
         if(hiveReaderDto == null) {
             hiveReaderDto = new HiveReaderDto();
-            hiveReaderDto.setReaderDefaultFS(jobDsEnvironment.getDefaultFs());
-            hiveReaderDto.setReaderPath(jobDsEnvironment.getPath() + writerTables.get(0));
-            hiveReaderDto.setReaderFieldDelimiter(jobDsEnvironment.getFieldDelimiter());
+            hiveReaderDto.setReaderDefaultFS(env.getDefaultFs());
+            hiveReaderDto.setReaderPath(env.getPath() + readerTables.get(0));
+            hiveReaderDto.setReaderFieldDelimiter(env.getFieldDelimiter());
         }
+        logger.info("# buildHiveReader()-writerTables.size :  {}",readerTables.size());
 
         dataxHivePojo.setColumns(columns);
         dataxHivePojo.setReaderDefaultFS(hiveReaderDto.getReaderDefaultFS());
@@ -294,6 +398,15 @@ public class DataxJsonHelper implements DataxJsonInterface {
         dataxHivePojo.setReaderFileType(hiveReaderDto.getReaderFileType());
         dataxHivePojo.setReaderPath(hiveReaderDto.getReaderPath());
         dataxHivePojo.setSkipHeader(hiveReaderDto.getReaderSkipHeader());
+
+        Map<String, Object> values = new HashMap<>();
+        if(hadoopConfig != null) {
+            if("HA".equals(hadoopConfig.getMode())) {
+                values = hadoopConfig.getParameters();
+                dataxHivePojo.setHadoopConfig(values);
+            }
+        }
+
         return readerPlugin.buildHive(dataxHivePojo);
     }
 
@@ -334,6 +447,14 @@ public class DataxJsonHelper implements DataxJsonInterface {
     @Override
     public Map<String, Object> buildWriter() {
         DataxRdbmsPojo dataxPluginPojo = new DataxRdbmsPojo();
+
+        if("config".equals(writerDatasource.getComments())) {
+            String userName = AESUtil.decrypt(writerDatasource.getJdbcUsername());
+            String passwd = AESUtil.decrypt(writerDatasource.getJdbcPassword());
+            writerDatasource.setJdbcUsername(userName);
+            writerDatasource.setJdbcPassword(passwd);
+        }
+
         dataxPluginPojo.setJobDatasource(writerDatasource);
         dataxPluginPojo.setTables(writerTables);
         dataxPluginPojo.setRdbmsColumns(writerColumns);
@@ -354,21 +475,24 @@ public class DataxJsonHelper implements DataxJsonInterface {
             columns.add(column);
         });
         dataxHivePojo.setColumns(columns);
+
         //hiveWriterDto 引用自job_ds_environment
-        JobDsEnvironment jobDsEnvironment = jobDsEnvironmentService.queryByDataSourceId(writerDatasource.getId());
+        //JobDsEnvironment jobDsEnvironment = jobDsEnvironmentService.queryByDataSourceId(writerDatasource.getId());
 //        JobDsEnvironment jobDsEnvironment = JobDsEnvironment.builder().defaultFs("hdfs://10.100.32.144:9000")
 //                .datasourceId(725)
 //                .datasourceType(1)
 //                .fieldDelimiter("\u0001")
 //                .path("/user/hive/warehouse/dw_pay.db/").build();
+        logger.info("# buildHiveWriter - hiveWriterDto : {} ", hiveWriterDto.toString());
 
         if(hiveWriterDto == null) {
             hiveWriterDto = new HiveWriterDto();
-            hiveWriterDto.setWriterDefaultFS(jobDsEnvironment.getDefaultFs());
-            hiveWriterDto.setWriterPath(jobDsEnvironment.getPath() + writerTables.get(0));
+            hiveWriterDto.setWriterDefaultFS(env.getDefaultFs());
+            hiveWriterDto.setWriterPath(env.getPath() + writerTables.get(0));
             hiveWriterDto.setWriterFileName("data");
-            hiveWriterDto.setWriteFieldDelimiter(jobDsEnvironment.getFieldDelimiter());
+            hiveWriterDto.setWriteFieldDelimiter(env.getFieldDelimiter());
             hiveWriterDto.setWriteMode("append");
+            hiveWriterDto.setWriterFileType(env.getFileType());
         }
         dataxHivePojo.setWriterDefaultFS(hiveWriterDto.getWriterDefaultFS());
         dataxHivePojo.setWriteFieldDelimiter(hiveWriterDto.getWriteFieldDelimiter());
@@ -376,6 +500,14 @@ public class DataxJsonHelper implements DataxJsonInterface {
         dataxHivePojo.setWriterPath(hiveWriterDto.getWriterPath());
         dataxHivePojo.setWriteMode(hiveWriterDto.getWriteMode());
         dataxHivePojo.setWriterFileName(hiveWriterDto.getWriterFileName());
+
+        Map<String, Object> values = new HashMap<>();
+        if(hadoopConfig != null) {
+            if("HA".equals(hadoopConfig.getMode())) {
+                values = hadoopConfig.getParameters();
+                dataxHivePojo.setHadoopConfig(values);
+            }
+        }
         return writerPlugin.buildHive(dataxHivePojo);
     }
 

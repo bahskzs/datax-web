@@ -11,6 +11,7 @@ import com.wugui.datax.admin.service.JobDatasourceService;
 import com.wugui.datax.admin.tool.query.*;
 import com.wugui.datax.admin.util.AESUtil;
 import com.wugui.datax.admin.util.JdbcConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ import java.util.concurrent.*;
  * @since 2019/7/31 20:51
  */
 @Service
+@Slf4j
 public class DatasourceQueryServiceImpl implements DatasourceQueryService {
 
     private final JobDatasourceService jobDatasourceService;
@@ -60,10 +62,16 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
             return new MongoDBQueryTool(datasource).getCollectionNames(datasource.getDatabaseName());
         } else {
             BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
-            if(StringUtils.isBlank(tableSchema)){
-                return qTool.getTableNames();
-            }else{
-                return qTool.getTableNames(tableSchema);
+            if (StringUtils.isBlank(tableSchema)) {
+                List<String> tableNameList = qTool.getTableNames();
+                log.info(" tableSchema {} , getTables.size {}", tableSchema, tableNameList.size());
+                tableNameList.forEach(table -> log.info("table:{}", table));
+                return tableNameList;
+            } else {
+                List<String> tableNameList = qTool.getTableNames(tableSchema);
+                log.info(" tableSchema {} , getTables.size {}", tableSchema, tableNameList.size());
+                tableNameList.forEach(table -> log.info("table:{}", table));
+                return tableNameList;
             }
         }
     }
@@ -88,7 +96,7 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
      * @description: [项目定制]根据数据源id和表名获取所有字段明细/仅限
      */
     @Override
-    public List<ColumnDetailsRespDTO> getColumnsDetails(Long datasourceId, String tableName)  {
+    public List<ColumnDetailsRespDTO> getColumnsDetails(Long datasourceId, String tableName) {
         //获取数据源对象
         JobDatasource datasource = jobDatasourceService.getById(datasourceId);
         //queryTool组装
@@ -131,14 +139,13 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         List<TableCountResp> tableCountResp = new ArrayList<>();
 
         //数据源id A 进入循环 count表数据 ； B进入循环 count表数据
-        for (Integer datasource : datasourceList){
+        for (Integer datasource : datasourceList) {
             for (String table : tableList) {
                 tableCountResp.add(getTableCount(table, Long.valueOf(datasource)));
             }
         }
-        return  tableCountResp;
+        return tableCountResp;
     }
-
 
 
     @Override
@@ -172,6 +179,7 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
             return queryTool.getColumnNames(tableName, datasource.getDatasource());
         }
     }
+
 
     @Override
     public List<String> getColumnsByQuerySql(Long datasourceId, String querySql) throws SQLException {
@@ -215,11 +223,11 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
             //3.比较  -- 开线程池处理多表字段比对
             for (String tableName : tableNameList) {
                 // 线程池
-                Callable<List<ColumnDetailsDiffRespDTO>> callable= ()->{
-                    result.addAll(getDiffList(sourceDatasource,targetDatasource, tableName));
-                    return  result;
+                Callable<List<ColumnDetailsDiffRespDTO>> callable = () -> {
+                    result.addAll(getDiffList(sourceDatasource, targetDatasource, tableName));
+                    return result;
                 };
-                Future<List<ColumnDetailsDiffRespDTO>> future=newFixedThreadPool.submit(callable);
+                Future<List<ColumnDetailsDiffRespDTO>> future = newFixedThreadPool.submit(callable);
                 try {
                     future.get();
                 } catch (ExecutionException e) {
@@ -230,17 +238,17 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
             }
         } else {
             //2.2 非同源不处理
-            throw  new RuntimeException("不支持非同源处理!");
+            throw new RuntimeException("不支持非同源处理!");
         }
         newFixedThreadPool.shutdown();
         //4.构造返回DTO
-        return  result;
+        return result;
 
     }
 
-    private Boolean compareDatasource(JobDatasource sourceDatasource,JobDatasource targetDatasource){
+    private Boolean compareDatasource(JobDatasource sourceDatasource, JobDatasource targetDatasource) {
 
-        if(sourceDatasource.getDatasource().equals(targetDatasource.getDatasource())){
+        if (sourceDatasource.getDatasource().equals(targetDatasource.getDatasource())) {
             return true;
         }
         return false;
@@ -248,13 +256,11 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
     }
 
 
-
-
     /**
      * 对比取出不一样的字段信息
      *
-     * @param sourceList
-     * @param targetList
+     * @param sourceDatasource
+     * @param targetDatasource
      * @return List<ColumnDetailsDiffRespDTO>
      */
     private List<ColumnDetailsDiffRespDTO> getDiffList(JobDatasource sourceDatasource, JobDatasource targetDatasource, String tableName) {
@@ -270,25 +276,26 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         Set<ColumnDetailsRespDTO> difference = Sets.difference(sourceSet, targetSet);
         //把difference,targetSet转为map
         HashMap<String, ArrayList<String>> diffMap = setToHashMap(difference);
-        HashMap<String, ArrayList<String>> targetMap =setToHashMap(targetSet);
+        HashMap<String, ArrayList<String>> targetMap = setToHashMap(targetSet);
         //根据key，合并value ArrayList的值
-        HashMap<String, ArrayList<String>> resultMap=mergeValueByKey(diffMap,targetMap);
+        HashMap<String, ArrayList<String>> resultMap = mergeValueByKey(diffMap, targetMap);
         //将map结果转换为list
         List<ColumnDetailsDiffRespDTO> resultList;
-        resultList=mapToList(resultMap);
+        resultList = mapToList(resultMap);
 
         //更新对象中的alter语句
-        resultList=updateAlterString(resultList,sourceDatasource,tableName);
+        resultList = updateAlterString(resultList, sourceDatasource, tableName);
 
         return resultList;
     }
 
     /**
      * 将set转为hashmap
+     *
      * @param set
      * @return
      */
-    private HashMap<String, ArrayList<String>> setToHashMap(Set<ColumnDetailsRespDTO> set){
+    private HashMap<String, ArrayList<String>> setToHashMap(Set<ColumnDetailsRespDTO> set) {
         HashMap<String, ArrayList<String>> resultMap = new HashMap<>();
         for (ColumnDetailsRespDTO diffDTO : set) {
             ArrayList<String> resultList = new ArrayList<>();
@@ -301,11 +308,12 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
 
     /**
      * 根据diffmap中的key去找targetmap中相同key的value  并合并到value的list中
+     *
      * @param sourceMap
      * @param targetMap
-     * @return HashMap<String, ArrayList<String>>
+     * @return HashMap<String, ArrayList < String>>
      */
-    private HashMap<String, ArrayList<String>> mergeValueByKey(HashMap<String, ArrayList<String>> sourceMap,HashMap<String, ArrayList<String>> targetMap){
+    private HashMap<String, ArrayList<String>> mergeValueByKey(HashMap<String, ArrayList<String>> sourceMap, HashMap<String, ArrayList<String>> targetMap) {
         //根据diffmap中的key去找targetmap中相同key的value  并合并
         for (String key : sourceMap.keySet()) {
             ArrayList<String> targetValueList = targetMap.get(key);
@@ -332,11 +340,10 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
     }
 
     /**
-     *
      * @param resultMap
      * @return
      */
-    private List<ColumnDetailsDiffRespDTO> mapToList(HashMap<String, ArrayList<String>> resultMap){
+    private List<ColumnDetailsDiffRespDTO> mapToList(HashMap<String, ArrayList<String>> resultMap) {
         //结果对象
         List<ColumnDetailsDiffRespDTO> resultList = new ArrayList<>();
         //把diffmap的数据填入resultList
@@ -357,13 +364,12 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
 
 
     /**
-     *
      * @param resultList
      * @param sourceDatasource
      * @param tableName
      * @return List<ColumnDetailsDiffRespDTO>
      */
-    private List<ColumnDetailsDiffRespDTO> updateAlterString(List<ColumnDetailsDiffRespDTO> resultList,JobDatasource sourceDatasource,String tableName){
+    private List<ColumnDetailsDiffRespDTO> updateAlterString(List<ColumnDetailsDiffRespDTO> resultList, JobDatasource sourceDatasource, String tableName) {
         for (int i = 0; i < resultList.size(); i++) {
             ColumnDetailsDiffRespDTO columnDetailsDiffRespDTO = resultList.get(i);
             BaseQueryTool queryTool = QueryToolFactory.getByDbType(sourceDatasource);
@@ -374,8 +380,6 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         return resultList;
 
     }
-
-
 
 
 }

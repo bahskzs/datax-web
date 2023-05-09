@@ -2,6 +2,7 @@ package com.wugui.datax.admin.tool.query;
 
 import com.wugui.datax.admin.tool.database.ColumnInfo;
 import com.wugui.datax.admin.tool.database.TableInfo;
+import com.wugui.datax.admin.tool.database.TableInfoV2;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -22,6 +23,8 @@ public interface QueryToolInterface {
      * @return
      */
     TableInfo buildTableInfo(String tableName);
+
+    TableInfoV2 buildTableInfoV2(String tableName,String userName);
 
     /**
      *  构建建表语句

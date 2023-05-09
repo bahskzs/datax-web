@@ -7,7 +7,9 @@ import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.JobDatasourceService;
 import com.wugui.datax.admin.service.TableService;
 import com.wugui.datax.admin.tool.database.ColumnInfo;
+import com.wugui.datax.admin.tool.database.ColumnInfoV2;
 import com.wugui.datax.admin.tool.database.TableInfo;
+import com.wugui.datax.admin.tool.database.TableInfoV2;
 import com.wugui.datax.admin.tool.query.BaseQueryTool;
 import com.wugui.datax.admin.tool.query.MongoDBQueryTool;
 import com.wugui.datax.admin.tool.query.QueryToolFactory;
@@ -38,6 +40,49 @@ public class TableServiceImpl implements TableService {
         JobDatasource datasource = jobDatasourceService.getById(tableBO.getSourceId());
 
         JobDatasource targetDatasource = jobDatasourceService.getById(tableBO.getDatasourceId());
+
+
+//        // 获取源表对应的BaseQueryTool
+//        BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
+//
+//        // 获取目标表对应的BaseQueryTool
+//        BaseQueryTool targetQTool = QueryToolFactory.getByDbType(targetDatasource);
+//
+//        // 获取源tableInfo信息
+//        TableInfoV2 tableInfo = qTool.buildTableInfoV2(tableBO.getReaderTableName(), AESUtil.decrypt(datasource.getJdbcUsername()));
+//
+//        // 根据tableBO传入的字段在tableInfo中遍历得到需要建表的字段
+//        List<ColumnInfoV2> columns = Lists.newArrayList();
+//        for (String column : tableBO.getColumnsList()) {
+//            for (ColumnInfoV2 columnInfo : tableInfo.getColumns()) {
+//                if (columnInfo.getColumnName().equals(column)) {
+//                    columns.add(columnInfo);
+//                }
+//            }
+//        }
+//
+//        // 根据获取到的columns对目标源的类型进行转换
+//        List<ColumnInfo> targetColumns = Lists.newArrayList();
+//
+//        // 遍历源字段,获取字段类型转换为目标源的字段类型
+////        for (ColumnInfo columnInfo : columns) {
+////            ColumnInfo targetColumnInfo = new ColumnInfo();
+////            targetColumnInfo.setName(columnInfo.getName());
+////            targetColumnInfo.setType(targetQTool.getTargetColumnType(columnInfo.getType()));
+////            targetColumnInfo.setComment(columnInfo.getComment());
+////            targetColumns.add(targetColumnInfo);
+////        }
+//
+//
+//        // 构造目标表的完整table信息
+//        tableInfo.setColumns(targetColumns);
+//
+//        // 调用目标源的构造建表语句的方法
+//        List<String> createSqlList = targetQTool.buildCreateTableSql(tableInfo);
+//        targetQTool.executeCreateTableSqls(createSqlList);
+//
+
+
 
         //TODO 同源类型直接转换,异源类型需要获取类型映射管理数据获得对应的字段类型转换
         if(datasource.getDatasource().equals(targetDatasource.getDatasource())) {

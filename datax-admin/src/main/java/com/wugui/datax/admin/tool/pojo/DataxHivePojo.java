@@ -48,4 +48,6 @@ public class DataxHivePojo {
     private String writeFieldDelimiter;
 
     private Boolean skipHeader;
+
+    private Map<String, Object> hadoopConfig;
 }

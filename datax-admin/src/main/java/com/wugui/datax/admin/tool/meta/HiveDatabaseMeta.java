@@ -38,4 +38,10 @@ public class HiveDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterf
     public String getDdlSQL(String ...args) {
         return "SHOW CREATE TABLE " + args[0] + "." + args[1];
     }
+
+
+//    @Override
+//    public String getSQLQueryFields(String tableName) {
+//        // return "show columns from " + tableName ;
+//    }
 }

@@ -8,6 +8,7 @@ import com.wugui.datax.admin.dto.DatasourceGroupRespDTO;
 import com.wugui.datax.admin.dto.JobDatasourceRespDTO;
 import com.wugui.datax.admin.entity.JobDatasource;
 import com.wugui.datax.admin.service.JobDatasourceService;
+import com.wugui.datax.admin.util.AESUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -61,6 +62,8 @@ public class JobDatasourceController extends BaseController {
 
     }
 
+
+
     /**
      * 获取所有数据源
      * @return
@@ -97,6 +100,17 @@ public class JobDatasourceController extends BaseController {
     public R<JobDatasource> selectOne(@PathVariable Serializable id) {
         return success(this.jobJdbcDatasourceService.getById(id));
     }
+
+
+
+    @GetMapping("/user/{id}")
+    @ApiOperation("根据数据源id查询解密后的用户名")
+    public R<String> selectWithUserName(@PathVariable Serializable id) {
+        JobDatasource jobDatasource = this.jobJdbcDatasourceService.getById(id);
+        String userName = AESUtil.decrypt(jobDatasource.getJdbcUsername());
+        return success(userName);
+    }
+
 
     /**
      * 新增数据

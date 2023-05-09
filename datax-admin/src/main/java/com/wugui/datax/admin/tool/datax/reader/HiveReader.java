@@ -36,6 +36,11 @@ public class HiveReader extends BaseReaderPlugin implements DataxReaderInterface
         parameterObj.put("fieldDelimiter", plugin.getReaderFieldDelimiter());
         parameterObj.put("skipHeader", plugin.getSkipHeader());
         parameterObj.put("column", plugin.getColumns());
+
+        if(! plugin.getHadoopConfig().isEmpty()) {
+            parameterObj.put("hadoopConfig", plugin.getHadoopConfig());
+        }
+
         readerObj.put("parameter", parameterObj);
         return readerObj;
     }

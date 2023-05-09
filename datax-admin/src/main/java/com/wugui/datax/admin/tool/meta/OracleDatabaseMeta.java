@@ -65,7 +65,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     @Override
     public String getSQLQueryTables() {
-        return "select table_name from user_tables ";
+            return "select table_name from user_tables ";
     }
 
     @Override

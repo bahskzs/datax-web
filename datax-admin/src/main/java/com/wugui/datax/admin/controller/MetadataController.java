@@ -82,6 +82,7 @@ public class MetadataController extends BaseController {
     @ApiOperation("根据数据源id获取可用表名")
     public R<List<String>> getTableNames(Long datasourceId,String tableSchema) throws IOException {
         return success(datasourceQueryService.getTables(datasourceId,tableSchema));
+
     }
 
     /**
@@ -157,14 +158,17 @@ public class MetadataController extends BaseController {
     }
 
 
-//    //TODO createTable
+//}
+
+
     @PostMapping("/createTable")
     @ApiOperation("[项目定制]单表创建")
     public R<Boolean> createtTable(@RequestBody DatasourceTableBO datasourceTableBO) throws IOException {
-      //  return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
+        //  return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
         return success(tableService.create(datasourceTableBO));
 
     }
+
 
     //TODO 批量自动建表
     @PostMapping("/createTables")

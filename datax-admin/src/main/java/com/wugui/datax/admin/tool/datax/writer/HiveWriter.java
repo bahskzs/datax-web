@@ -37,6 +37,11 @@ public class HiveWriter extends BaseWriterPlugin implements DataxWriterInterface
         parameterObj.put("writeMode", plugin.getWriteMode());
         parameterObj.put("fieldDelimiter", plugin.getWriteFieldDelimiter());
         parameterObj.put("column", plugin.getColumns());
+
+        if(! plugin.getHadoopConfig().isEmpty()) {
+            parameterObj.put("hadoopConfig", plugin.getHadoopConfig());
+        }
+
         writerObj.put("parameter", parameterObj);
         return writerObj;
     }
