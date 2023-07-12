@@ -1,7 +1,11 @@
 package com.wugui.datax.admin.tool.meta;
 
 import com.wugui.datax.admin.tool.database.ColumnInfo;
+import com.wugui.datax.admin.tool.database.ColumnInfoV2;
 import com.wugui.datax.admin.tool.database.TableInfo;
+import com.wugui.datax.admin.tool.database.TableInfoV2;
+
+import java.util.List;
 
 public interface DatabaseInterface {
 
@@ -123,4 +127,16 @@ public interface DatabaseInterface {
      * @return 获取数据库字符集
      */
     String getCharacterSet();
+
+    //根据tableName,tableComment建表
+    String createTable(String tableName,List<ColumnInfo> columnInfoList,String comment);
+
+    // 根据TableInfoV2构建建表语句
+    List<String> createTable(TableInfoV2 tableInfoV2);
+
+    String getColumnDefinition(ColumnInfoV2 columnInfo);
+
+
+    // 根据ColumnInfoV2添加字段
+    String addColumn(String tableName, ColumnInfoV2 columnInfo);
 }

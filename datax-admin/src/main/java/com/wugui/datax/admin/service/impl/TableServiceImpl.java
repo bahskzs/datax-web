@@ -15,6 +15,7 @@ import com.wugui.datax.admin.tool.query.MongoDBQueryTool;
 import com.wugui.datax.admin.tool.query.QueryToolFactory;
 import com.wugui.datax.admin.util.AESUtil;
 import com.wugui.datax.admin.util.JdbcConstants;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -27,6 +28,7 @@ import java.util.Map;
  * @description
  */
 @Service
+@Slf4j
 public class TableServiceImpl implements TableService {
 
     @Resource
@@ -42,53 +44,53 @@ public class TableServiceImpl implements TableService {
         JobDatasource targetDatasource = jobDatasourceService.getById(tableBO.getDatasourceId());
 
 
-//        // 获取源表对应的BaseQueryTool
-//        BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
-//
-//        // 获取目标表对应的BaseQueryTool
-//        BaseQueryTool targetQTool = QueryToolFactory.getByDbType(targetDatasource);
-//
-//        // 获取源tableInfo信息
-//        TableInfoV2 tableInfo = qTool.buildTableInfoV2(tableBO.getReaderTableName(), AESUtil.decrypt(datasource.getJdbcUsername()));
-//
-//        // 根据tableBO传入的字段在tableInfo中遍历得到需要建表的字段
-//        List<ColumnInfoV2> columns = Lists.newArrayList();
-//        for (String column : tableBO.getColumnsList()) {
-//            for (ColumnInfoV2 columnInfo : tableInfo.getColumns()) {
-//                if (columnInfo.getColumnName().equals(column)) {
-//                    columns.add(columnInfo);
-//                }
-//            }
+        // 获取源表对应的BaseQueryTool
+        BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
+
+        // 获取目标表对应的BaseQueryTool
+        BaseQueryTool targetQTool = QueryToolFactory.getByDbType(targetDatasource);
+
+        // 获取源tableInfo信息
+        TableInfoV2 tableInfoV2 = qTool.buildTableInfoV2(tableBO.getReaderTableName(), AESUtil.decrypt(datasource.getJdbcUsername()));
+
+        // 根据tableBO传入的字段在tableInfo中遍历得到需要建表的字段
+        List<ColumnInfoV2> columnList = Lists.newArrayList();
+        for (String column : tableBO.getColumnsList()) {
+            for (ColumnInfoV2 columnInfo : tableInfoV2.getColumns()) {
+                if (columnInfo.getColumnName().equals(column)) {
+                    columnList.add(columnInfo);
+                }
+            }
+        }
+
+        // 根据获取到的columns对目标源的类型进行转换
+        List<ColumnInfoV2> targetColumnList = Lists.newArrayList();
+
+        // 字段类型映射的Map
+
+        // 遍历源字段,获取字段类型转换为目标源的字段类型
+//        for (ColumnInfo columnInfo : columns) {
+//            ColumnInfo targetColumnInfo = new ColumnInfo();
+//            targetColumnInfo.setName(columnInfo.getName());
+//            targetColumnInfo.setType(targetQTool.getTargetColumnType(columnInfo.getType()));
+//            targetColumnInfo.setComment(columnInfo.getComment());
+//            targetColumns.add(targetColumnInfo);
 //        }
-//
-//        // 根据获取到的columns对目标源的类型进行转换
-//        List<ColumnInfo> targetColumns = Lists.newArrayList();
-//
-//        // 遍历源字段,获取字段类型转换为目标源的字段类型
-////        for (ColumnInfo columnInfo : columns) {
-////            ColumnInfo targetColumnInfo = new ColumnInfo();
-////            targetColumnInfo.setName(columnInfo.getName());
-////            targetColumnInfo.setType(targetQTool.getTargetColumnType(columnInfo.getType()));
-////            targetColumnInfo.setComment(columnInfo.getComment());
-////            targetColumns.add(targetColumnInfo);
-////        }
-//
-//
-//        // 构造目标表的完整table信息
-//        tableInfo.setColumns(targetColumns);
-//
-//        // 调用目标源的构造建表语句的方法
-//        List<String> createSqlList = targetQTool.buildCreateTableSql(tableInfo);
+
+
+
+        // 构造目标表的完整table信息
+        tableInfoV2.setColumns(targetColumnList);
+
+        // 调用目标源的构造建表语句的方法
+//        List<String> createSqlList = targetQTool.buildCreateTableSql(tableInfoV2);
 //        targetQTool.executeCreateTableSqls(createSqlList);
-//
+
 
 
 
         //TODO 同源类型直接转换,异源类型需要获取类型映射管理数据获得对应的字段类型转换
         if(datasource.getDatasource().equals(targetDatasource.getDatasource())) {
-            BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
-
-            BaseQueryTool targetQTool = QueryToolFactory.getByDbType(targetDatasource);
 
 
             //获取源tableInfo信息
@@ -107,7 +109,6 @@ public class TableServiceImpl implements TableService {
             tableInfo.setColumns(targetColumns);
             tableInfo.setName(tableBO.getTableName());
             List<String> createSqlList = qTool.buildCreateTableSql(tableInfo);
-
             targetQTool.executeCreateTableSqls(createSqlList);
         }
 
@@ -136,6 +137,7 @@ public class TableServiceImpl implements TableService {
                 //TODO 此处应传模式名不应该传用户名
                 TableInfo tableInfo = qTool.buildTableInfo(tableName, tableBO.getSourceSchema(),qTool.getCharacterSet().equals(targetQTool.getCharacterSet()));
 
+
                 //TODO 判断表是否存在,若存在,则当前表追加尾部
                 boolean isExist = true;
                 isExist = targetTables.contains(tableName);
@@ -144,7 +146,9 @@ public class TableServiceImpl implements TableService {
                     flag = true;
                     continue;
                 }
+                tableInfo.setName(tableBO.getTargetSchema() + "." + tableInfo.getName());
                 List<String> createSqlList = qTool.buildCreateTableSql(tableInfo);
+
                 flag = QueryToolFactory.getByDbType(targetDatasource).executeCreateTableSqls(createSqlList);
 
             }

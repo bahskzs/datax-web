@@ -838,10 +838,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
                         tableName = hiveTbl;
                     }
                 }
-//                logger.info("col1 :{},col2: {},col3: {}",
-//                        rs.getString("tablename"),
-//                        rs.getString("namespace"),
-//                        rs.getString("istemporaary"));
+
                 tables.add(tableName);
             }
         } catch (SQLException e) {
@@ -976,6 +973,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         try {
             stmt = connection.createStatement();
             for (String sql : sqlList) {
+                logger.info("executeCreateTableSqls --sql: " + sql);
                 stmt.executeUpdate(sql);
             }
 
@@ -1079,11 +1077,6 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     }
 
 
-    @Override
-    public List<String> buildCreateTableSql(TableInfo tableInfo) {
-        return null;
-    }
-
 
     /**
      * 获取数据库字符集类型
@@ -1116,13 +1109,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         return null;
     }
 
-    /**
-     * 构建table info
-     * @param tableName 表名
-     * @param userName 用户名
-     * @return
-     */
-    @Override
+
     public TableInfoV2 buildTableInfoV2(String tableName,String userName) {
         //获取表信息
         List<Map<String, Object>> tableInfos = this.getTableInfo(tableName);
@@ -1209,6 +1196,17 @@ public abstract class BaseQueryTool implements QueryToolInterface {
                     + "the exception message is:" + e.getMessage());
         }
         return fullColumn;
+    }
+
+    /**
+     * 构建建表语句
+     *
+     * @param tableInfo table 注释及字段信息
+     * @return
+     */
+    @Override
+    public List<String> buildCreateTableSql(TableInfo tableInfo) {
+        return null;
     }
 }
 

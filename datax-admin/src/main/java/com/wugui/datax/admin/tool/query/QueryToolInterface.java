@@ -1,6 +1,7 @@
 package com.wugui.datax.admin.tool.query;
 
 import com.wugui.datax.admin.tool.database.ColumnInfo;
+import com.wugui.datax.admin.tool.database.ColumnInfoV2;
 import com.wugui.datax.admin.tool.database.TableInfo;
 import com.wugui.datax.admin.tool.database.TableInfoV2;
 
@@ -24,7 +25,7 @@ public interface QueryToolInterface {
      */
     TableInfo buildTableInfo(String tableName);
 
-    TableInfoV2 buildTableInfoV2(String tableName,String userName);
+//    TableInfoV2 buildTableInfoV2(String tableName,String userName);
 
     /**
      *  构建建表语句
@@ -93,5 +94,9 @@ public interface QueryToolInterface {
      * @return
      */
     long getMaxIdVal(String tableName,String primaryKey);
+
+
+
+
 
 }

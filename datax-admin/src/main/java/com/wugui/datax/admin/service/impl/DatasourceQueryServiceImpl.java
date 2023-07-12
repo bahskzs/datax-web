@@ -64,7 +64,7 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
             BaseQueryTool qTool = QueryToolFactory.getByDbType(datasource);
             if (StringUtils.isBlank(tableSchema)) {
                 List<String> tableNameList = qTool.getTableNames();
-                log.info(" tableSchema {} , getTables.size {}", tableSchema, tableNameList.size());
+               // log.info(" tableSchema {} , getTables.size {}", tableSchema, tableNameList.size());
                 tableNameList.forEach(table -> log.info("table:{}", table));
                 return tableNameList;
             } else {

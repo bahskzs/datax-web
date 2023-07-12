@@ -1,8 +1,10 @@
 package com.wugui.datax.admin.tool.query;
 
 import com.wugui.datax.admin.entity.JobDatasource;
+import com.wugui.datax.admin.tool.database.TableInfo;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * sql server
@@ -15,4 +17,6 @@ public class SqlServerQueryTool extends BaseQueryTool implements QueryToolInterf
     public SqlServerQueryTool(JobDatasource jobDatasource) throws SQLException {
         super(jobDatasource);
     }
+
+
 }

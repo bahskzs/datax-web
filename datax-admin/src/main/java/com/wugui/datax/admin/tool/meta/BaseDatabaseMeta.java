@@ -1,6 +1,9 @@
 package com.wugui.datax.admin.tool.meta;
 
-import com.wugui.datax.admin.tool.database.TableInfo;
+import com.wugui.datax.admin.tool.database.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * meta信息interface
@@ -134,4 +137,27 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
     public String getCharacterSet() {
         return null;
     }
+
+    @Override
+    public String createTable(String tableName, List<ColumnInfo> columnInfoList, String comment) {
+        return null;
+    }
+
+    @Override
+    public List<String> createTable(TableInfoV2 tableInfo) {
+        return new ArrayList<>();
+    }
+
+    // 根据ColumnInfoV2添加字段
+    @Override
+    public String addColumn(String tableName, ColumnInfoV2 columnInfo) {
+        return null;
+    }
+
+    @Override
+    public String getColumnDefinition(ColumnInfoV2 columnInfo) {
+      return null;
+    };
+
+
 }
