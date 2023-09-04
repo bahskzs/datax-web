@@ -96,7 +96,8 @@ public interface QueryToolInterface {
     long getMaxIdVal(String tableName,String primaryKey);
 
 
+    void execute(String sql,String schema);
 
-
+    String getDBObjectDefinitionSql(String objectName,String objectType,String schemaName);
 
 }

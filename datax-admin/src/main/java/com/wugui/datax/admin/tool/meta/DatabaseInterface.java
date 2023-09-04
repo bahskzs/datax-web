@@ -139,4 +139,12 @@ public interface DatabaseInterface {
 
     // 根据ColumnInfoV2添加字段
     String addColumn(String tableName, ColumnInfoV2 columnInfo);
+
+
+    /**
+     *  获取数据库对象的定义语句
+     * @param args 数据库对象名,类型,模式名
+     * @return
+     */
+     String getDatabaseObjectDefinition(String... args);
 }

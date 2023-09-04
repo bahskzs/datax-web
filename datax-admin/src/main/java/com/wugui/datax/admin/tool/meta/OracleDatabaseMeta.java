@@ -11,7 +11,7 @@ import java.util.List;
  * Oracle数据库 meta信息查询
  *
  * @author zhouhongfa@gz-yibo.com
- * @ClassName MySQLDatabaseMeta
+ * @ClassName OracleDatabaseMeta
  * @Version 1.0
  * @since 2019/7/17 15:48
  */
@@ -55,14 +55,14 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     @Override
     public String getSQLQueryTableNameComment() {
-        return "select a. table_name, b.comments from all_tables a left join all_tab_comments b " +
-                "on a.TABLE_NAME = b.TABLE_NAME where a.table_name = ? ";
+        return "select a.OBJECT_NAME table_name, b.comments from all_objects a left join all_tab_comments b " +
+                "on a.OBJECT_NAME = b.TABLE_NAME where a.OBJECT_NAME = ? ";
     }
 
     @Override
     public String getSQLQueryTables(String... tableSchema) {
         //return "select OBJECT_NAME as table_name from all_objects where owner='" + tableSchema[0] + "' and OBJECT_TYPE in ('TABLE','VIEW')";
-        return "select OBJECT_NAME as table_name from all_objects where owner='" + tableSchema[0] + "' and OBJECT_TYPE in ('TABLE')";
+        return "select OBJECT_NAME as table_name from all_objects where owner='" + tableSchema[0] + "' and OBJECT_TYPE in ('TABLE','VIEW')";
     }
 
     @Override
@@ -73,7 +73,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     @Override
     public String getSQLQueryTables() {
-            return "select table_name from user_tables ";
+            return "select OBJECT_NAME table_name from user_objects where  object_type in ('TABLE','VIEW')";
     }
 
     @Override
@@ -246,5 +246,10 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         }
 
         return columnDefinition;
+    }
+
+    @Override
+    public String getDatabaseObjectDefinition(String... args) {
+        return String.format("SELECT text FROM all_source WHERE type = '%s' AND name ='%s' AND owner='%s'",args[1],args[0],args[2]);
     }
 }

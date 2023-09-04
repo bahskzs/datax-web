@@ -160,4 +160,8 @@ public abstract class BaseDatabaseMeta implements DatabaseInterface {
     };
 
 
+    @Override
+    public String getDatabaseObjectDefinition(String... args) {
+        return "show create " + args[1] + " " + args[0];
+    }
 }

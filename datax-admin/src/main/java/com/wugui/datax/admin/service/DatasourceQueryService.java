@@ -115,9 +115,13 @@ public interface DatasourceQueryService {
      */
     List<ColumnDetailsDiffRespDTO> getColumnsDiffDetails(Long sourceDatasourceId,Long targetDatasourceId,List<String> tableNameList) throws IOException;
 
+    /**
+     * 同步数据库对象(函数,存储过程等)
+     * @param dto
+     * @return
+     */
+    boolean syncDBObjects(DBObjectDTO dto);
 
-    //TODO 建表
-     // DatasourceTableBO
 
 
 }

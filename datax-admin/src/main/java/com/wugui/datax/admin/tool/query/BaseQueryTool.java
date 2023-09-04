@@ -1,6 +1,7 @@
 package com.wugui.datax.admin.tool.query;
 
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -265,7 +266,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
             //获取查询指定表所有字段的sql语句
             String querySql = sqlBuilder.getSQLQueryFields(tableName, userName);
-            logger.info("querySql: {}", querySql);
+//            logger.info("querySql: {}", querySql);
 
             //获取所有字段
             Statement statement = connection.createStatement();
@@ -299,7 +300,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         try {
             //获取查询指定表所有字段的sql语句
             String querySql = sqlBuilder.getSQLQueryFields(tableName, userName);
-            logger.info("querySql: {}", querySql);
+//            logger.info("querySql: {}", querySql);
 
             //获取所有字段
             Statement statement = connection.createStatement();
@@ -441,7 +442,8 @@ public abstract class BaseQueryTool implements QueryToolInterface {
                         if (!isSamedCharaSet) {
                             // 字符集不一致状态下,防止字符串超长转CLOB问题
                             if (dataLength * 2 <= 3000) {
-                                dataLength = dataLength * 2;
+                                // 若dataLength == 0, 则内置默认长度
+                                dataLength = dataLength == 0 ? 20 : dataLength * 2;
                             }
                         }
                         colType = String.valueOf(dataLength);
@@ -538,7 +540,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         try {
             //获取查询指定表所有字段的sql语句
             String querySql = sqlBuilder.getSQLQueryFields(tableName);
-            logger.info("querySql: {}", querySql);
+//            logger.info("querySql: {}", querySql);
 
             //获取所有字段
             stmt = connection.createStatement();
@@ -593,7 +595,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         try {
             //获取查询指定表所有字段的sql语句
             String querySql = sqlBuilder.getSQLQueryFields(tableName);
-            logger.info("querySql: {}", querySql);
+//            logger.info("querySql: {}", querySql);
 
             //获取所有字段
             stmt = connection.createStatement();
@@ -774,7 +776,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         try {
             //获取查询指定表所有字段的sql语句
             String querySql = sqlBuilder.getSQLQueryFields(tableName);
-            logger.info("querySql: {}", querySql);
+//            logger.info("querySql: {}", querySql);
 
             //获取所有字段
             stmt = connection.createStatement();
@@ -1148,7 +1150,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
 
             //获取查询指定表所有字段的sql语句
             String querySql = sqlBuilder.getSQLQueryFields(tableName, userName);
-            logger.info("querySql: {}", querySql);
+//            logger.info("querySql: {}", querySql);
 
             //获取所有字段
             Statement statement = connection.createStatement();
@@ -1208,6 +1210,63 @@ public abstract class BaseQueryTool implements QueryToolInterface {
     public List<String> buildCreateTableSql(TableInfo tableInfo) {
         return null;
     }
+
+
+    @Override
+    public void execute(String sql,String schema) {
+        // 获取可执行数据库对象
+        try (Statement statement = connection.createStatement()) {
+
+            String executeSql = String.format("create or replace %s",sql);
+            // logger.info("{}#execute : {}",this.getClass().getName(), executeSql);
+            statement.executeQuery(executeSql);
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 获取数据库对象定义sql
+     * @param objectName
+     * @param objectType
+     * @param schemaName
+     * @return
+     */
+    public String getDBObjectDefinitionSql(String objectName,String objectType,String schemaName) {
+
+        String procedureDefinition = "";
+
+        List<String> procedureDefinitions = new ArrayList<>();
+        if (currentDatabase.equalsIgnoreCase(DbType.ORACLE.getDb())) {
+            // 获取oracle对象定义sql
+            String sql = sqlBuilder.getDatabaseObjectDefinition(objectType,objectName, schemaName.toUpperCase());
+            //logger.info("{} # getDBObjectDefinitionSql的sql{} ", this.getClass().getName(),sql);
+
+            try (
+                    PreparedStatement statement = connection.prepareStatement(sql);
+
+            ) {
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+
+                    String definition = resultSet.getString("text");
+                    procedureDefinitions.add(definition);
+                }
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+        if(procedureDefinitions != null & procedureDefinitions.size() > 0) {
+            procedureDefinition = String.join("\n", procedureDefinitions);
+        }
+
+        return procedureDefinition;
+    }
+
+
 }
 
 

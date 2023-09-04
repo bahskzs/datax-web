@@ -176,7 +176,14 @@ public class MetadataController extends BaseController {
     public R<Boolean> createtTables(@RequestBody DatasourceTablesBO tablesBO) throws IOException {
         //  return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
             return success(tableService.createMulti(tablesBO));
+    }
 
+
+    @PostMapping("/createTables/multiTarget")
+    @ApiOperation("[项目定制]指定表创建")
+    public R<Boolean> createtTables(@RequestBody MultiTargetBO tablesBO) throws IOException {
+        //  return success(datasourceQueryService.getColumnsDiffDetails(sourceDatasourceId, targetDatasourceId,tableNameList));
+        return success(tableService.createMultiTargetTables(tablesBO));
     }
 
     @GetMapping("/createAllTables")
@@ -196,6 +203,12 @@ public class MetadataController extends BaseController {
     }
 
 
+
+    @PostMapping("/syncDBObjects")
+    @ApiOperation("[项目定制]同步数据库对象(函数,存储等)")
+    public R<Boolean> syncDBObjects(@RequestBody DBObjectDTO dto)  {
+        return success(datasourceQueryService.syncDBObjects(dto));
+    }
 
 
 

@@ -2,6 +2,7 @@ package com.wugui.datax.admin.service;
 
 import com.wugui.datax.admin.dto.DatasourceTableBO;
 import com.wugui.datax.admin.dto.DatasourceTablesBO;
+import com.wugui.datax.admin.dto.MultiTargetBO;
 
 /**
  * @author Cat
@@ -14,6 +15,8 @@ public interface TableService {
 
 
     boolean createMulti(DatasourceTablesBO tableBO);
+
+    boolean createMultiTargetTables(MultiTargetBO multiTargetBO);
 
     int createAllTables(String sourceId,String targetId);
 

@@ -65,12 +65,12 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
             if (StringUtils.isBlank(tableSchema)) {
                 List<String> tableNameList = qTool.getTableNames();
                // log.info(" tableSchema {} , getTables.size {}", tableSchema, tableNameList.size());
-                tableNameList.forEach(table -> log.info("table:{}", table));
+//                tableNameList.forEach(table -> log.info("table:{}", table));
                 return tableNameList;
             } else {
                 List<String> tableNameList = qTool.getTableNames(tableSchema);
                 log.info(" tableSchema {} , getTables.size {}", tableSchema, tableNameList.size());
-                tableNameList.forEach(table -> log.info("table:{}", table));
+//                tableNameList.forEach(table -> log.info("table:{}", table));
                 return tableNameList;
             }
         }
@@ -244,6 +244,53 @@ public class DatasourceQueryServiceImpl implements DatasourceQueryService {
         //4.构造返回DTO
         return result;
 
+    }
+
+    /**
+     * 同步数据库对象(函数,存储过程等)
+     *
+     * @param dto
+     * @return
+     */
+    @Override
+    public boolean syncDBObjects(DBObjectDTO dto) {
+        List<DatasourceDTO> dsList = dto.getDsList();
+        ExecutorService executor = Executors.newFixedThreadPool(10); // 创建一个线程池
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        dsList.forEach(
+                datasourceDTO -> {
+                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                            try {
+                            //获取数据源对象
+                            JobDatasource datasource = jobDatasourceService.getById(datasourceDTO.getSource());
+                            //queryTool组装
+                            if (ObjectUtil.isNull(datasource)) {
+                                return;
+                            }
+                            BaseQueryTool queryTool = QueryToolFactory.getByDbType(datasource);
+                            String sql = queryTool.getDBObjectDefinitionSql(dto.getDatabaseObjectType(), dto.getDatabaseObjectName(), AESUtil.decrypt(datasource.getJdbcUsername()));
+
+                            // log.info("{}:syncDBObjects 待执行sql: {}",this.getClass().getName(), sql);
+                            //获取目标数据源对象
+                            JobDatasource targetDatasource = jobDatasourceService.getById(datasourceDTO.getTargetSource());
+                            //queryTool组装
+                            if (ObjectUtil.isNull(targetDatasource)) {
+                                return;
+                            }
+                            BaseQueryTool targetQueryTool = QueryToolFactory.getByDbType(targetDatasource);
+                            targetQueryTool.execute(sql,AESUtil.decrypt(targetDatasource.getJdbcUsername()));
+
+
+                        } catch (Exception e) {
+                            log.error("同步数据库对象异常", e);
+                        }
+                    }, executor);
+                }
+        );
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+        executor.shutdown(); // 关闭线程池
+
+        return true;
     }
 
     private Boolean compareDatasource(JobDatasource sourceDatasource, JobDatasource targetDatasource) {
