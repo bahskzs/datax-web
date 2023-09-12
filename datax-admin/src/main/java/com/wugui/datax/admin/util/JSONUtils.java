@@ -3,6 +3,8 @@ package com.wugui.datax.admin.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wugui.datax.admin.config.HadoopConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,8 @@ public class JSONUtils {
      */
     public static Integer encrypt = 1;
 
+
+    private static ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * @param content
@@ -330,6 +334,24 @@ public class JSONUtils {
         jsonStr = json.toJSONString();
 
         return jsonStr;
+    }
+
+    public static <T> String toJson(T obj) {
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // json转List
+    public static <T> List<T> toList(String json,Class<T> clazz) {
+        try {
+            return objectMapper.readValue(json, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

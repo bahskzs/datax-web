@@ -1,42 +1,94 @@
 package com.wugui.datax.admin.controller;
 
+
 import com.wugui.datax.admin.dto.CommonResp;
-import com.wugui.datax.admin.dto.JobResourceDTO;
-import com.wugui.datax.admin.dto.PageResp;
-import com.wugui.datax.admin.entity.JobResource;
-import com.wugui.datax.admin.service.JobResourceService;
+import com.wugui.datax.admin.dto.ReportCreateReq;
+import com.wugui.datax.admin.dto.ReportQueryResp;
+import com.wugui.datax.admin.entity.AreaList;
+import com.wugui.datax.admin.entity.ReportModule;
+import com.wugui.datax.admin.service.AreaListService;
+import com.wugui.datax.admin.service.ReportModuleService;
+import com.wugui.datax.admin.service.ReportService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author bahsk
- * @createTime 2022-01-25 17:04
- * @description 资源配置接口
+ * @createTime 2023-09-07 17:04
+ * @description 菜单配置接口
  */
 @RestController
-@RequestMapping("/api/menu")
+@RequestMapping("/api/metadata/menu")
 @Api(tags = "菜单配置接口")
 public class MenuController {
 
     @Resource
-    private JobResourceService jobResourceService;
+    private ReportService reportService;
 
-    @ApiOperation("报表菜单查询接口")
+    @Resource
+    private ReportModuleService reportModuleService;
+
+    @Resource
+    private AreaListService areaListService;
+
     @GetMapping("/list")
-    public CommonResp list(JobResourceDTO jobResourceDTO) {
-        CommonResp<PageResp<JobResource>> listCommonResp = new CommonResp<>();
-        PageResp<JobResource> list = jobResourceService.list(jobResourceDTO);
-        listCommonResp.setContent(list);
-        return listCommonResp;
+    @ApiOperation("全部报表列表")
+    public CommonResp getAllReports(){
+        CommonResp<List<ReportQueryResp>> resp = new CommonResp<>();
+        List<ReportQueryResp> list = reportService.getAllReports();
+        resp.setSuccess(true);
+        resp.setContent(list);
+        return resp;
     }
 
-    @ApiOperation("报表菜单保存")
-    @PostMapping("/save")
-    public CommonResp save(@RequestBody JobResource jobResource) {
-        CommonResp commonResp = jobResourceService.save(jobResource);
-        return  commonResp;
+    @GetMapping("/modules")
+    @ApiOperation("模块列表")
+    public CommonResp getAllModules(){
+        CommonResp<List<ReportModule>> resp = new CommonResp<>();
+        List<ReportModule> list = reportModuleService.getAllModules();
+        resp.setSuccess(true);
+        resp.setContent(list);
+        return resp;
+    }
+
+    @GetMapping("/area")
+    @ApiOperation("区划")
+    public CommonResp getArea(){
+        CommonResp<List<AreaList>> resp = new CommonResp<>();
+        List<AreaList> list = areaListService.getArea();
+        resp.setSuccess(true);
+        resp.setContent(list);
+        return resp;
+    }
+
+    @PostMapping("/create")
+    @ApiOperation("添加报表")
+    public CommonResp createReport(@RequestBody ReportCreateReq report) {
+        CommonResp resp = new CommonResp<>();
+        reportService.insertSelective(report);
+        resp.setSuccess(true);
+        return resp;
+    }
+
+    @PostMapping("/update/{id}")
+    @ApiOperation("修改报表")
+    public CommonResp updateReport(@RequestBody ReportCreateReq report, @PathVariable Integer id) {
+        CommonResp resp = new CommonResp<>();
+        reportService.updateByPrimaryKey(report, id);
+        resp.setSuccess(true);
+        return resp;
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @ApiOperation("删除报表")
+    public CommonResp deleteReport(@PathVariable Integer id) {
+        CommonResp resp = new CommonResp<>();
+        reportService.deleteByPrimaryKey(id);
+        resp.setSuccess(true);
+        return resp;
     }
 }
