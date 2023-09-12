@@ -156,14 +156,15 @@
 
         <dependency>
             <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.3</version>
+            <artifactId>ojdbc8</artifactId>
+            <version>${oracle.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.microsoft</groupId>
             <artifactId>sqljdbc4</artifactId>
             <version>3.0</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

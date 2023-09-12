@@ -34,6 +34,7 @@
         <junit4.version>4.13.2</junit4.version>
         <hutool.version>4.5.1</hutool.version>
         <postgresql.version>42.3.5</postgresql.version>
+        <oracle.version>12.2.0.1.0</oracle.version>
         <mysql-connector.version>8.0.29</mysql-connector.version>
         <jna.version>4.1.0</jna.version>
         <groovy.version>2.5.14</groovy.version>
