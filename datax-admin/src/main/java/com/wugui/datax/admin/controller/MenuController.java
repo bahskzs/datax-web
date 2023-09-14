@@ -22,7 +22,7 @@ import java.util.List;
  * @description 菜单配置接口
  */
 @RestController
-@RequestMapping("/api/metadata/menu")
+@RequestMapping("/api/menu")
 @Api(tags = "菜单配置接口")
 public class MenuController {
 
