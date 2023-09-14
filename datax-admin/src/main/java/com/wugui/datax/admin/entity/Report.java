@@ -23,9 +23,9 @@ public class Report {
 
     private String areaList;
 
-    private String sort;
+    private int sort;
 
-    private String status;
+    private int status;
 
     @Override
     public String toString() {

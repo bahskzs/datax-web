@@ -510,3 +510,36 @@ CREATE TABLE `job_log_snapshot` (
                                     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
+
+-- auto-generated definition
+create table t_composite_query
+(
+    FMODULE_ID   varchar(20)  null comment '模块id',
+    FMODULE_NAME varchar(100) null comment '模块名称',
+    FTABLE_NAME  varchar(100) null comment '报表名称',
+    FROW         varchar(10)  null comment '所在行',
+    FR_NAME      varchar(50)  null comment '报表地址',
+    FMODULE_CODE varchar(50)  null comment '模块代码',
+    SORT_ID      int          null comment '排序',
+    RN           decimal(4)   null,
+    AREA_LIST    text         null comment '区划信息',
+    STATUS       varchar(20)  null comment '状态;1启用，0禁用',
+    id           int auto_increment comment 'id'
+        primary key
+)
+    comment '历史数据模块报表明细表';
+
+
+-- auto-generated definition
+create table t_composite_query_all
+(
+    FMODULE_ID   varchar(20) null comment '模块id',
+    FMODULE_NAME varchar(20) null comment '模块名称',
+    FMODULE_CODE varchar(20) null comment '模块代码',
+    F_STATUS     varchar(20) null comment '状态',
+    SORT_ID      varchar(20) null comment '排序'
+)
+    comment '历史数据模块表';
+
+
+

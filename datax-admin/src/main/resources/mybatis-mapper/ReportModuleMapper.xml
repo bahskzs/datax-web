@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.ReportModuleMapper">
+  <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.ReportModule">
+    <!--@mbg.generated-->
+    <!--@Table t_composite_query_all-->
+    <result column="FMODULE_ID" jdbcType="VARCHAR" property="moduleId" />
+    <result column="FMODULE_NAME" jdbcType="VARCHAR" property="moduleName" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    FMODULE_ID, FMODULE_NAME
+  </sql>
+  <select id="getAllModules" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from t_composite_query_all
+  </select>
+</mapper>

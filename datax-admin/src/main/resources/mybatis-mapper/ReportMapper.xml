@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.ReportMapper">
+  <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.Report">
+    <!--@mbg.generated-->
+    <!--@Table t_composite_query-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="FMODULE_ID" jdbcType="VARCHAR" property="moduleId" />
+    <result column="FMODULE_NAME" jdbcType="VARCHAR" property="moduleName" />
+    <result column="FTABLE_NAME" jdbcType="VARCHAR" property="reportName" />
+    <result column="FR_NAME" jdbcType="VARCHAR" property="reportAddress" />
+    <result column="AREA_LIST" jdbcType="VARCHAR" property="areaList" />
+    <result column="SORT_ID" jdbcType="INTEGER" property="sort" />
+    <result column="STATUS" jdbcType="INTEGER" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, FMODULE_ID, FMODULE_NAME, FTABLE_NAME, FR_NAME, AREA_LIST, SORT_ID,
+    `STATUS`
+  </sql>
+  <select id="getAllReports" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from t_composite_query
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select 
+    <include refid="Base_Column_List" />
+    from t_composite_query
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from t_composite_query
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wugui.datax.admin.entity.Report" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into t_composite_query (id, FMODULE_ID, FMODULE_NAME, FTABLE_NAME, FR_NAME, AREA_LIST, SORT_ID,
+    `STATUS`)
+    values (#{moduleId,jdbcType=VARCHAR}, #{moduleName,jdbcType=VARCHAR}, #{reportName,jdbcType=VARCHAR}, 
+      #{reportAddress,jdbcType=VARCHAR},  #{areaList,jdbcType=VARCHAR},
+     #{sort,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wugui.datax.admin.entity.Report" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into t_composite_query
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="moduleId != null">
+        FMODULE_ID,
+      </if>
+      <if test="moduleName != null">
+        FMODULE_NAME,
+      </if>
+      <if test="reportName != null">
+        FTABLE_NAME,
+      </if>
+      <if test="reportAddress != null">
+        FR_NAME,
+      </if>
+      <if test="areaList != null">
+        AREA_LIST,
+      </if>
+      <if test="sort != null">
+        SORT_ID,
+      </if>
+      <if test="status != null">
+        `STATUS`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="moduleId != null">
+        #{moduleId,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleName != null">
+        #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="reportName != null">
+        #{reportName,jdbcType=VARCHAR},
+      </if>
+      <if test="reportAddress != null">
+        #{reportAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="areaList != null">
+        #{areaList,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wugui.datax.admin.entity.Report">
+    <!--@mbg.generated-->
+    update t_composite_query
+    <set>
+      <if test="moduleId != null">
+        FMODULE_ID = #{moduleId,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleName != null">
+        FMODULE_NAME = #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="reportName != null">
+        FTABLE_NAME = #{reportName,jdbcType=VARCHAR},
+      </if>
+      <if test="reportAddress != null">
+        FR_NAME = #{reportAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="areaList != null">
+        AREA_LIST = #{areaList,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        `STATUS` = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        SORT_ID = #{sort,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wugui.datax.admin.entity.Report">
+    <!--@mbg.generated-->
+    update t_composite_query
+    set FMODULE_ID = #{moduleId,jdbcType=VARCHAR},
+      FMODULE_NAME = #{moduleName,jdbcType=VARCHAR},
+      FTABLE_NAME = #{reportName,jdbcType=VARCHAR},
+      FR_NAME = #{reportAddress,jdbcType=VARCHAR},
+      AREA_LIST = #{areaList,jdbcType=VARCHAR},
+      SORT_ID = #{sort,jdbcType=VARCHAR},
+      `STATUS` = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
