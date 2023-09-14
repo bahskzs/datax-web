@@ -21,9 +21,9 @@ public class ReportQueryResp {
 
     private List<AreaList> areaList;
 
-    private String sort;
+    private int sort;
 
-    private String status;
+    private int status;
 
 
     @Override
