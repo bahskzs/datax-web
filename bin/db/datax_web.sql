@@ -543,3 +543,11 @@ create table t_composite_query_all
 
 
 
+-- auto-generated definition
+create table area_list
+(
+    area_code varchar(20) null comment '区划代码',
+    area_name varchar(50) null comment '区划名称'
+)
+    comment '区划表';
+

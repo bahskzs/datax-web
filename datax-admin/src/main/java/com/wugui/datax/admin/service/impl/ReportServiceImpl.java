@@ -69,8 +69,6 @@ public class ReportServiceImpl implements ReportService {
             // rep 其他字段填充, moduleName,areaList
             rep.setAreaList(JSONUtils.toJson(report.getAreaList()));
             List<ReportModule> allModules = reportModuleMapper.getAllModules();
-//            rep.setSort(String.valueOf(report.getSort()));
-//            rep.setStatus(String.valueOf(report.getStatus()));
 
 
             // 比对模块表的id和新增的记录模块id 匹配就添加对应模块名称
