@@ -63,6 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/callback","/api/processCallback","/api/registry","/api/registryRemove").permitAll()
                 .antMatchers("/doc.html","/swagger-resources/**","/webjars/**","/*/api-docs").permitAll()
                 .antMatchers("/api/jobJdbcDatasource**","/api/jobJdbcDatasource/**,","/api/job/**").permitAll()
+                .antMatchers("/api/menu**").permitAll()
                 .antMatchers("/api/jobJdbcDatasource/batch").permitAll()
                 .antMatchers("/copy/**").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()
