@@ -39,7 +39,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public void insertSelective(ReportCreateReq report) {
+    public Integer insertSelective(ReportCreateReq report) {
 
         Report rep = CopyUtil.copy(report, Report.class);
 
@@ -55,11 +55,12 @@ public class ReportServiceImpl implements ReportService {
                     rep.setModuleName(reportModule.getModuleName());
                 }
         );
-            reportMapper.insertSelective(rep);
+          int flag=   reportMapper.insert(rep);
+          return  flag;
     }
 
     @Override
-    public void updateByPrimaryKey(ReportCreateReq report, Integer id) {
+    public Integer updateByPrimaryKey(ReportCreateReq report, Integer id) {
         Report rept = reportMapper.selectByPrimaryKey(id);
         if(rept==null){
             throw new IllegalArgumentException();
@@ -80,13 +81,15 @@ public class ReportServiceImpl implements ReportService {
                     }
             );
             rep.setId(id);
-            reportMapper.updateByPrimaryKey(rep);
+            int flag = reportMapper.updateByPrimaryKey(rep);
+            return flag;
         }
     }
 
 
     @Override
-    public void deleteByPrimaryKey(Integer id) {
-        reportMapper.deleteByPrimaryKey(id);
+    public Integer deleteByPrimaryKey(Integer id) {
+        int flag = reportMapper.deleteByPrimaryKey(id);
+        return flag;
     }
 }

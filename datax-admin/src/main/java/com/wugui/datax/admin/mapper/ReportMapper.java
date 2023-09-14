@@ -8,7 +8,7 @@ import java.util.List;
 @Mapper
 public interface ReportMapper {
 
-    void deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKey(Integer id);
 
     int insert(Report record);
 

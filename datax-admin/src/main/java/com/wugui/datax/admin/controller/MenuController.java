@@ -1,6 +1,7 @@
 package com.wugui.datax.admin.controller;
 
 
+import com.baomidou.mybatisplus.extension.api.R;
 import com.wugui.datax.admin.dto.CommonResp;
 import com.wugui.datax.admin.dto.ReportCreateReq;
 import com.wugui.datax.admin.dto.ReportQueryResp;
@@ -24,7 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/menu")
 @Api(tags = "菜单配置接口")
-public class MenuController {
+public class MenuController extends BaseController{
 
     @Resource
     private ReportService reportService;
@@ -37,58 +38,40 @@ public class MenuController {
 
     @GetMapping("/list")
     @ApiOperation("全部报表列表")
-    public CommonResp getAllReports(){
-        CommonResp<List<ReportQueryResp>> resp = new CommonResp<>();
+    public R<List<ReportQueryResp>> getAllReports(){
         List<ReportQueryResp> list = reportService.getAllReports();
-        resp.setSuccess(true);
-        resp.setContent(list);
-        return resp;
+        return success(list);
     }
 
     @GetMapping("/modules")
     @ApiOperation("模块列表")
-    public CommonResp getAllModules(){
-        CommonResp<List<ReportModule>> resp = new CommonResp<>();
+    public R<List<ReportModule>> getAllModules(){
         List<ReportModule> list = reportModuleService.getAllModules();
-        resp.setSuccess(true);
-        resp.setContent(list);
-        return resp;
+        return success(list);
     }
 
     @GetMapping("/area")
     @ApiOperation("区划")
-    public CommonResp getArea(){
-        CommonResp<List<AreaList>> resp = new CommonResp<>();
+    public R<List<AreaList>> getArea(){
         List<AreaList> list = areaListService.getArea();
-        resp.setSuccess(true);
-        resp.setContent(list);
-        return resp;
+        return success(list);
     }
 
     @PostMapping("/create")
     @ApiOperation("添加报表")
-    public CommonResp createReport(@RequestBody ReportCreateReq report) {
-        CommonResp resp = new CommonResp<>();
-        reportService.insertSelective(report);
-        resp.setSuccess(true);
-        return resp;
+    public R<Integer> createReport(@RequestBody ReportCreateReq report) {
+        return success(this.reportService.insertSelective(report));
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @ApiOperation("修改报表")
-    public CommonResp updateReport(@RequestBody ReportCreateReq report, @PathVariable Integer id) {
-        CommonResp resp = new CommonResp<>();
-        reportService.updateByPrimaryKey(report, id);
-        resp.setSuccess(true);
-        return resp;
+    public R<Integer> updateReport(@RequestBody ReportCreateReq report, @PathVariable Integer id) {
+        return success(this.reportService.updateByPrimaryKey(report, id));
     }
 
     @DeleteMapping("/delete/{id}")
     @ApiOperation("删除报表")
-    public CommonResp deleteReport(@PathVariable Integer id) {
-        CommonResp resp = new CommonResp<>();
-        reportService.deleteByPrimaryKey(id);
-        resp.setSuccess(true);
-        return resp;
+    public R<Integer> deleteReport(@PathVariable Integer id) {
+        return success(this.reportService.deleteByPrimaryKey(id));
     }
 }
