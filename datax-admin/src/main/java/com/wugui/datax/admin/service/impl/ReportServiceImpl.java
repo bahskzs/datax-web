@@ -1,7 +1,7 @@
 package com.wugui.datax.admin.service.impl;
 
 import com.wugui.datax.admin.dto.ReportCreateReq;
-import com.wugui.datax.admin.dto.ReportEditResp;
+import com.wugui.datax.admin.dto.ReportDetailResp;
 import com.wugui.datax.admin.dto.ReportQueryReq;
 import com.wugui.datax.admin.dto.ReportQueryResp;
 import com.wugui.datax.admin.entity.AreaList;
@@ -52,11 +52,11 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    public List<ReportEditResp> getReportById(Integer id) {
+    public List<ReportDetailResp> getReportById(Integer id) {
         List<Report> list = reportMapper.getReportById(id);
-        List<ReportEditResp> respList = new ArrayList<>();
+        List<ReportDetailResp> respList = new ArrayList<>();
         for (Report report : list) {
-            ReportEditResp resp = CopyUtil.copy(report, ReportEditResp.class);
+            ReportDetailResp resp = CopyUtil.copy(report, ReportDetailResp.class);
             resp.setAreaList(JSONUtils.toList(report.getAreaList(), AreaList.class));
 //            resp.setModuleList(JSONUtils.toList(report.getModuleName(), ReportModule.class));
             respList.add(resp);

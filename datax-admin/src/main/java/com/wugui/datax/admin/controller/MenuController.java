@@ -44,8 +44,8 @@ public class MenuController extends BaseController{
 
     @GetMapping("/{id}")
     @ApiOperation("id查询报表")
-    public R<List<ReportEditResp>> getReportById(@PathVariable Integer id){
-        List<ReportEditResp> list = reportService.getReportById(id);
+    public R<List<ReportDetailResp>> getReportById(@PathVariable Integer id){
+        List<ReportDetailResp> list = reportService.getReportById(id);
         return success(list);
     }
 
