@@ -2,9 +2,7 @@ package com.wugui.datax.admin.controller;
 
 
 import com.baomidou.mybatisplus.extension.api.R;
-import com.wugui.datax.admin.dto.CommonResp;
-import com.wugui.datax.admin.dto.ReportCreateReq;
-import com.wugui.datax.admin.dto.ReportQueryResp;
+import com.wugui.datax.admin.dto.*;
 import com.wugui.datax.admin.entity.AreaList;
 import com.wugui.datax.admin.entity.ReportModule;
 import com.wugui.datax.admin.service.AreaListService;
@@ -38,10 +36,19 @@ public class MenuController extends BaseController{
 
     @GetMapping("/list")
     @ApiOperation("全部报表列表")
-    public R<List<ReportQueryResp>> getAllReports(){
-        List<ReportQueryResp> list = reportService.getAllReports();
+    public R<List<ReportQueryResp>> list(ReportQueryReq req){
+        List<ReportQueryResp> list = reportService.list(req);
         return success(list);
     }
+
+
+    @GetMapping("/{id}")
+    @ApiOperation("id查询报表")
+    public R<List<ReportEditResp>> getReportById(@PathVariable Integer id){
+        List<ReportEditResp> list = reportService.getReportById(id);
+        return success(list);
+    }
+
 
     @GetMapping("/modules")
     @ApiOperation("模块列表")

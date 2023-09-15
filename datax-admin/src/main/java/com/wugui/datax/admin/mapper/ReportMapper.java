@@ -22,4 +22,8 @@ public interface ReportMapper {
 
     List<Report> getAllReports();
 
+    List<Report> getReportById(Integer id);
+
+    List<Report> getReportByName(String moduleName);
+
 }

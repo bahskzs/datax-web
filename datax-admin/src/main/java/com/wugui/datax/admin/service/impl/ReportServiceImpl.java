@@ -1,6 +1,8 @@
 package com.wugui.datax.admin.service.impl;
 
 import com.wugui.datax.admin.dto.ReportCreateReq;
+import com.wugui.datax.admin.dto.ReportEditResp;
+import com.wugui.datax.admin.dto.ReportQueryReq;
 import com.wugui.datax.admin.dto.ReportQueryResp;
 import com.wugui.datax.admin.entity.AreaList;
 import com.wugui.datax.admin.entity.Report;
@@ -26,10 +28,20 @@ public class ReportServiceImpl implements ReportService {
     @Resource
     private ReportModuleMapper reportModuleMapper;
 
+
     @Override
-    public List<ReportQueryResp> getAllReports() {
-        List<Report> list = reportMapper.getAllReports();
+    public List<ReportQueryResp> list(ReportQueryReq req) {
+
+        List<Report> list;
         List<ReportQueryResp> respList = new ArrayList<>();
+
+        // 不为空 模糊查询对应模块报表
+        if (!ObjectUtils.isEmpty(req.getModuleName())) {
+            list = reportMapper.getReportByName("%" + req.getModuleName() + "%");
+
+        } else {
+            list = reportMapper.getAllReports();
+        }
         for (Report report : list) {
             ReportQueryResp resp = CopyUtil.copy(report, ReportQueryResp.class);
             resp.setAreaList(JSONUtils.toList(report.getAreaList(), AreaList.class));
@@ -37,6 +49,21 @@ public class ReportServiceImpl implements ReportService {
         }
         return respList;
     }
+
+
+    @Override
+    public List<ReportEditResp> getReportById(Integer id) {
+        List<Report> list = reportMapper.getReportById(id);
+        List<ReportEditResp> respList = new ArrayList<>();
+        for (Report report : list) {
+            ReportEditResp resp = CopyUtil.copy(report, ReportEditResp.class);
+            resp.setAreaList(JSONUtils.toList(report.getAreaList(), AreaList.class));
+//            resp.setModuleList(JSONUtils.toList(report.getModuleName(), ReportModule.class));
+            respList.add(resp);
+        }
+        return respList;
+    }
+
 
     @Override
     public Integer insertSelective(ReportCreateReq report) {

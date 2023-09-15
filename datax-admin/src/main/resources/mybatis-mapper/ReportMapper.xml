@@ -24,6 +24,20 @@
     <include refid="Base_Column_List" />
     from t_composite_query
   </select>
+  <select id="getReportById" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from t_composite_query
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getReportByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from t_composite_query
+    where fmodule_name like #{moduleName,jdbcType=VARCHAR}
+  </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select 
