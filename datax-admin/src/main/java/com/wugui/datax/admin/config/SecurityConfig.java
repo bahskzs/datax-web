@@ -71,6 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/jobJdbcDatasource/**").permitAll()
                 .antMatchers("/api/metadata/**").permitAll()
                 .antMatchers("/api/timetask/**").permitAll()
+                .antMatchers("/api/history/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JWTAuthenticationFilter(authenticationManager()))
