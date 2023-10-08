@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.AgencyMapper">
+  <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.Agency">
+    <!--@mbg.generated-->
+    <!--@Table t_pubagency-->
+    <result column="ITEMID" jdbcType="DECIMAL" property="itemid" />
+    <result column="ELEMENTCODE" jdbcType="LONGVARCHAR" property="elementcode" />
+    <result column="STARTDATE" jdbcType="TIMESTAMP" property="startdate" />
+    <result column="CODE" jdbcType="LONGVARCHAR" property="code" />
+    <result column="NAME" jdbcType="LONGVARCHAR" property="name" />
+    <result column="SHORTNAME" jdbcType="LONGVARCHAR" property="shortname" />
+    <result column="WHOLENAME" jdbcType="LONGVARCHAR" property="wholename" />
+    <result column="ISBNCODE" jdbcType="LONGVARCHAR" property="isbncode" />
+    <result column="LEVELNO" jdbcType="DECIMAL" property="levelno" />
+    <result column="ISLEAF" jdbcType="DECIMAL" property="isleaf" />
+    <result column="SUPERITEMID" jdbcType="DECIMAL" property="superitemid" />
+    <result column="ENDDATE" jdbcType="TIMESTAMP" property="enddate" />
+    <result column="TYPE" jdbcType="DECIMAL" property="type" />
+    <result column="SYSTEMPRETAG" jdbcType="DECIMAL" property="systempretag" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="FROMITEMID" jdbcType="DECIMAL" property="fromitemid" />
+    <result column="TOITEMID" jdbcType="DECIMAL" property="toitemid" />
+    <result column="CODEALIAS" jdbcType="LONGVARCHAR" property="codealias" />
+    <result column="BILLPROMISE" jdbcType="LONGVARCHAR" property="billpromise" />
+    <result column="GUID" jdbcType="LONGVARCHAR" property="guid" />
+    <result column="EMWCODE" jdbcType="DECIMAL" property="emwcode" />
+    <result column="BGTLEVEL" jdbcType="DECIMAL" property="bgtlevel" />
+    <result column="BGTLEVELMARK" jdbcType="DECIMAL" property="bgtlevelmark" />
+    <result column="BGTCODE" jdbcType="LONGVARCHAR" property="bgtcode" />
+    <result column="MOFDEPMANAGER" jdbcType="DECIMAL" property="mofdepmanager" />
+    <result column="ISCENTRALIZEDPAY" jdbcType="DECIMAL" property="iscentralizedpay" />
+    <result column="ISBNCODEBAK" jdbcType="LONGVARCHAR" property="isbncodebak" />
+    <result column="SECRETDEGREE" jdbcType="DECIMAL" property="secretdegree" />
+    <result column="ISVIRTUAL" jdbcType="DECIMAL" property="isvirtual" />
+    <result column="MOFDEPMANAGER1" jdbcType="DECIMAL" property="mofdepmanager1" />
+    <result column="MOFDEPMANAGER2" jdbcType="DECIMAL" property="mofdepmanager2" />
+    <result column="MOFDEPMANAGER3" jdbcType="DECIMAL" property="mofdepmanager3" />
+    <result column="MOFDEPMANAGER4" jdbcType="DECIMAL" property="mofdepmanager4" />
+    <result column="MOFDEPMANAGER5" jdbcType="DECIMAL" property="mofdepmanager5" />
+    <result column="ISCAPITALOPERATE" jdbcType="DECIMAL" property="iscapitaloperate" />
+    <result column="ORGCODE" jdbcType="DECIMAL" property="orgcode" />
+    <result column="IND" jdbcType="DECIMAL" property="ind" />
+    <result column="TEL" jdbcType="LONGVARCHAR" property="tel" />
+    <result column="FAX" jdbcType="LONGVARCHAR" property="fax" />
+    <result column="ADDRESS" jdbcType="VARCHAR" property="address" />
+    <result column="ZIP" jdbcType="LONGVARCHAR" property="zip" />
+    <result column="PERKIND" jdbcType="DECIMAL" property="perkind" />
+    <result column="MOFDEP" jdbcType="DECIMAL" property="mofdep" />
+    <result column="FUNDSUP" jdbcType="DECIMAL" property="fundsup" />
+    <result column="ADMINPLAN" jdbcType="DECIMAL" property="adminplan" />
+    <result column="ADMINFACT" jdbcType="DECIMAL" property="adminfact" />
+    <result column="ENTPRPLAN" jdbcType="DECIMAL" property="entprplan" />
+    <result column="ENTPRFACT" jdbcType="DECIMAL" property="entprfact" />
+    <result column="ELSEFACT" jdbcType="DECIMAL" property="elsefact" />
+    <result column="ISUNIFIED" jdbcType="DECIMAL" property="isunified" />
+    <result column="ISLOCAL" jdbcType="DECIMAL" property="islocal" />
+    <result column="AGENCYTYPE" jdbcType="DECIMAL" property="agencytype" />
+    <result column="ISHSAGENCY" jdbcType="DECIMAL" property="ishsagency" />
+    <result column="ADMINCODE" jdbcType="LONGVARCHAR" property="admincode" />
+    <result column="GOVYEAR" jdbcType="DECIMAL" property="govyear" />
+    <result column="GOVID" jdbcType="DECIMAL" property="govid" />
+    <result column="ISYSBZAGENCY" jdbcType="DECIMAL" property="isysbzagency" />
+    <result column="ISYSZXAGENCY" jdbcType="DECIMAL" property="isyszxagency" />
+    <result column="ISZJZHAGENCY" jdbcType="DECIMAL" property="iszjzhagency" />
+    <result column="ISGDZCAGENCY" jdbcType="DECIMAL" property="isgdzcagency" />
+    <result column="AGENCYNATURE" jdbcType="DECIMAL" property="agencynature" />
+    <result column="SRC_DATA_NAME" jdbcType="LONGVARCHAR" property="srcDataName" />
+    <result column="SRC_SYSTEM_ID" jdbcType="LONGVARCHAR" property="srcSystemId" />
+    <result column="SRC_SYSTEM_NAME" jdbcType="VARCHAR" property="srcSystemName" />
+    <result column="DATA_PROVIDER" jdbcType="VARCHAR" property="dataProvider" />
+    <result column="DATA_SRC_ID" jdbcType="LONGVARCHAR" property="dataSrcId" />
+    <result column="DATA_COLLECTION_DATETIME" jdbcType="TIMESTAMP" property="dataCollectionDatetime" />
+    <result column="DATA_COLLECTION_DEVICE_NUMBER" jdbcType="LONGVARCHAR" property="dataCollectionDeviceNumber" />
+    <result column="DATA_COLLECTION_PERSON_NAME" jdbcType="LONGVARCHAR" property="dataCollectionPersonName" />
+    <result column="BELONG_YEAR" jdbcType="INTEGER" property="belongYear" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ITEMID, ELEMENTCODE, STARTDATE, CODE, `NAME`, SHORTNAME, WHOLENAME, ISBNCODE, LEVELNO,
+    ISLEAF, SUPERITEMID, ENDDATE, `TYPE`, SYSTEMPRETAG, REMARK, `STATUS`, FROMITEMID,
+    TOITEMID, CODEALIAS, BILLPROMISE, GUID, EMWCODE, BGTLEVEL, BGTLEVELMARK, BGTCODE,
+    MOFDEPMANAGER, ISCENTRALIZEDPAY, ISBNCODEBAK, SECRETDEGREE, ISVIRTUAL, MOFDEPMANAGER1,
+    MOFDEPMANAGER2, MOFDEPMANAGER3, MOFDEPMANAGER4, MOFDEPMANAGER5, ISCAPITALOPERATE,
+    ORGCODE, IND, TEL, FAX, ADDRESS, ZIP, PERKIND, MOFDEP, FUNDSUP, ADMINPLAN, ADMINFACT,
+    ENTPRPLAN, ENTPRFACT, ELSEFACT, ISUNIFIED, ISLOCAL, AGENCYTYPE, ISHSAGENCY, ADMINCODE,
+    GOVYEAR, GOVID, ISYSBZAGENCY, ISYSZXAGENCY, ISZJZHAGENCY, ISGDZCAGENCY, AGENCYNATURE,
+    SRC_DATA_NAME, SRC_SYSTEM_ID, SRC_SYSTEM_NAME, DATA_PROVIDER, DATA_SRC_ID, DATA_COLLECTION_DATETIME,
+    DATA_COLLECTION_DEVICE_NUMBER, DATA_COLLECTION_PERSON_NAME, BELONG_YEAR
+  </sql>
+  <insert id="insert" parameterType="com.wugui.datax.admin.entity.Agency">
+    <!--@mbg.generated-->
+    insert into t_pubagency (ITEMID, ELEMENTCODE, STARTDATE,
+      CODE, `NAME`, SHORTNAME,
+      WHOLENAME, ISBNCODE, LEVELNO,
+      ISLEAF, SUPERITEMID, ENDDATE,
+      `TYPE`, SYSTEMPRETAG, REMARK,
+      `STATUS`, FROMITEMID, TOITEMID,
+      CODEALIAS, BILLPROMISE, GUID,
+      EMWCODE, BGTLEVEL, BGTLEVELMARK,
+      BGTCODE, MOFDEPMANAGER, ISCENTRALIZEDPAY,
+      ISBNCODEBAK, SECRETDEGREE, ISVIRTUAL,
+      MOFDEPMANAGER1, MOFDEPMANAGER2, MOFDEPMANAGER3,
+      MOFDEPMANAGER4, MOFDEPMANAGER5, ISCAPITALOPERATE,
+      ORGCODE, IND, TEL,
+      FAX, ADDRESS, ZIP,
+      PERKIND, MOFDEP, FUNDSUP,
+      ADMINPLAN, ADMINFACT, ENTPRPLAN,
+      ENTPRFACT, ELSEFACT, ISUNIFIED,
+      ISLOCAL, AGENCYTYPE, ISHSAGENCY,
+      ADMINCODE, GOVYEAR, GOVID,
+      ISYSBZAGENCY, ISYSZXAGENCY, ISZJZHAGENCY,
+      ISGDZCAGENCY, AGENCYNATURE, SRC_DATA_NAME,
+      SRC_SYSTEM_ID, SRC_SYSTEM_NAME, DATA_PROVIDER,
+      DATA_SRC_ID, DATA_COLLECTION_DATETIME,
+      DATA_COLLECTION_DEVICE_NUMBER, DATA_COLLECTION_PERSON_NAME,
+      BELONG_YEAR)
+    values (#{itemid,jdbcType=DECIMAL}, #{elementcode,jdbcType=LONGVARCHAR}, #{startdate,jdbcType=TIMESTAMP},
+      #{code,jdbcType=LONGVARCHAR}, #{name,jdbcType=LONGVARCHAR}, #{shortname,jdbcType=LONGVARCHAR},
+      #{wholename,jdbcType=LONGVARCHAR}, #{isbncode,jdbcType=LONGVARCHAR}, #{levelno,jdbcType=DECIMAL},
+      #{isleaf,jdbcType=DECIMAL}, #{superitemid,jdbcType=DECIMAL}, #{enddate,jdbcType=TIMESTAMP},
+      #{type,jdbcType=DECIMAL}, #{systempretag,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR},
+      #{status,jdbcType=DECIMAL}, #{fromitemid,jdbcType=DECIMAL}, #{toitemid,jdbcType=DECIMAL},
+      #{codealias,jdbcType=LONGVARCHAR}, #{billpromise,jdbcType=LONGVARCHAR}, #{guid,jdbcType=LONGVARCHAR},
+      #{emwcode,jdbcType=DECIMAL}, #{bgtlevel,jdbcType=DECIMAL}, #{bgtlevelmark,jdbcType=DECIMAL},
+      #{bgtcode,jdbcType=LONGVARCHAR}, #{mofdepmanager,jdbcType=DECIMAL}, #{iscentralizedpay,jdbcType=DECIMAL},
+      #{isbncodebak,jdbcType=LONGVARCHAR}, #{secretdegree,jdbcType=DECIMAL}, #{isvirtual,jdbcType=DECIMAL},
+      #{mofdepmanager1,jdbcType=DECIMAL}, #{mofdepmanager2,jdbcType=DECIMAL}, #{mofdepmanager3,jdbcType=DECIMAL},
+      #{mofdepmanager4,jdbcType=DECIMAL}, #{mofdepmanager5,jdbcType=DECIMAL}, #{iscapitaloperate,jdbcType=DECIMAL},
+      #{orgcode,jdbcType=DECIMAL}, #{ind,jdbcType=DECIMAL}, #{tel,jdbcType=LONGVARCHAR},
+      #{fax,jdbcType=LONGVARCHAR}, #{address,jdbcType=VARCHAR}, #{zip,jdbcType=LONGVARCHAR},
+      #{perkind,jdbcType=DECIMAL}, #{mofdep,jdbcType=DECIMAL}, #{fundsup,jdbcType=DECIMAL},
+      #{adminplan,jdbcType=DECIMAL}, #{adminfact,jdbcType=DECIMAL}, #{entprplan,jdbcType=DECIMAL},
+      #{entprfact,jdbcType=DECIMAL}, #{elsefact,jdbcType=DECIMAL}, #{isunified,jdbcType=DECIMAL},
+      #{islocal,jdbcType=DECIMAL}, #{agencytype,jdbcType=DECIMAL}, #{ishsagency,jdbcType=DECIMAL},
+      #{admincode,jdbcType=LONGVARCHAR}, #{govyear,jdbcType=DECIMAL}, #{govid,jdbcType=DECIMAL},
+      #{isysbzagency,jdbcType=DECIMAL}, #{isyszxagency,jdbcType=DECIMAL}, #{iszjzhagency,jdbcType=DECIMAL},
+      #{isgdzcagency,jdbcType=DECIMAL}, #{agencynature,jdbcType=DECIMAL}, #{srcDataName,jdbcType=LONGVARCHAR},
+      #{srcSystemId,jdbcType=LONGVARCHAR}, #{srcSystemName,jdbcType=VARCHAR}, #{dataProvider,jdbcType=VARCHAR},
+      #{dataSrcId,jdbcType=LONGVARCHAR}, #{dataCollectionDatetime,jdbcType=TIMESTAMP},
+      #{dataCollectionDeviceNumber,jdbcType=LONGVARCHAR}, #{dataCollectionPersonName,jdbcType=LONGVARCHAR},
+      #{belongYear,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wugui.datax.admin.entity.Agency">
+    <!--@mbg.generated-->
+    insert into t_pubagency
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="itemid != null">
+        ITEMID,
+      </if>
+      <if test="elementcode != null">
+        ELEMENTCODE,
+      </if>
+      <if test="startdate != null">
+        STARTDATE,
+      </if>
+      <if test="code != null">
+        CODE,
+      </if>
+      <if test="name != null">
+        `NAME`,
+      </if>
+      <if test="shortname != null">
+        SHORTNAME,
+      </if>
+      <if test="wholename != null">
+        WHOLENAME,
+      </if>
+      <if test="isbncode != null">
+        ISBNCODE,
+      </if>
+      <if test="levelno != null">
+        LEVELNO,
+      </if>
+      <if test="isleaf != null">
+        ISLEAF,
+      </if>
+      <if test="superitemid != null">
+        SUPERITEMID,
+      </if>
+      <if test="enddate != null">
+        ENDDATE,
+      </if>
+      <if test="type != null">
+        `TYPE`,
+      </if>
+      <if test="systempretag != null">
+        SYSTEMPRETAG,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="status != null">
+        `STATUS`,
+      </if>
+      <if test="fromitemid != null">
+        FROMITEMID,
+      </if>
+      <if test="toitemid != null">
+        TOITEMID,
+      </if>
+      <if test="codealias != null">
+        CODEALIAS,
+      </if>
+      <if test="billpromise != null">
+        BILLPROMISE,
+      </if>
+      <if test="guid != null">
+        GUID,
+      </if>
+      <if test="emwcode != null">
+        EMWCODE,
+      </if>
+      <if test="bgtlevel != null">
+        BGTLEVEL,
+      </if>
+      <if test="bgtlevelmark != null">
+        BGTLEVELMARK,
+      </if>
+      <if test="bgtcode != null">
+        BGTCODE,
+      </if>
+      <if test="mofdepmanager != null">
+        MOFDEPMANAGER,
+      </if>
+      <if test="iscentralizedpay != null">
+        ISCENTRALIZEDPAY,
+      </if>
+      <if test="isbncodebak != null">
+        ISBNCODEBAK,
+      </if>
+      <if test="secretdegree != null">
+        SECRETDEGREE,
+      </if>
+      <if test="isvirtual != null">
+        ISVIRTUAL,
+      </if>
+      <if test="mofdepmanager1 != null">
+        MOFDEPMANAGER1,
+      </if>
+      <if test="mofdepmanager2 != null">
+        MOFDEPMANAGER2,
+      </if>
+      <if test="mofdepmanager3 != null">
+        MOFDEPMANAGER3,
+      </if>
+      <if test="mofdepmanager4 != null">
+        MOFDEPMANAGER4,
+      </if>
+      <if test="mofdepmanager5 != null">
+        MOFDEPMANAGER5,
+      </if>
+      <if test="iscapitaloperate != null">
+        ISCAPITALOPERATE,
+      </if>
+      <if test="orgcode != null">
+        ORGCODE,
+      </if>
+      <if test="ind != null">
+        IND,
+      </if>
+      <if test="tel != null">
+        TEL,
+      </if>
+      <if test="fax != null">
+        FAX,
+      </if>
+      <if test="address != null">
+        ADDRESS,
+      </if>
+      <if test="zip != null">
+        ZIP,
+      </if>
+      <if test="perkind != null">
+        PERKIND,
+      </if>
+      <if test="mofdep != null">
+        MOFDEP,
+      </if>
+      <if test="fundsup != null">
+        FUNDSUP,
+      </if>
+      <if test="adminplan != null">
+        ADMINPLAN,
+      </if>
+      <if test="adminfact != null">
+        ADMINFACT,
+      </if>
+      <if test="entprplan != null">
+        ENTPRPLAN,
+      </if>
+      <if test="entprfact != null">
+        ENTPRFACT,
+      </if>
+      <if test="elsefact != null">
+        ELSEFACT,
+      </if>
+      <if test="isunified != null">
+        ISUNIFIED,
+      </if>
+      <if test="islocal != null">
+        ISLOCAL,
+      </if>
+      <if test="agencytype != null">
+        AGENCYTYPE,
+      </if>
+      <if test="ishsagency != null">
+        ISHSAGENCY,
+      </if>
+      <if test="admincode != null">
+        ADMINCODE,
+      </if>
+      <if test="govyear != null">
+        GOVYEAR,
+      </if>
+      <if test="govid != null">
+        GOVID,
+      </if>
+      <if test="isysbzagency != null">
+        ISYSBZAGENCY,
+      </if>
+      <if test="isyszxagency != null">
+        ISYSZXAGENCY,
+      </if>
+      <if test="iszjzhagency != null">
+        ISZJZHAGENCY,
+      </if>
+      <if test="isgdzcagency != null">
+        ISGDZCAGENCY,
+      </if>
+      <if test="agencynature != null">
+        AGENCYNATURE,
+      </if>
+      <if test="srcDataName != null">
+        SRC_DATA_NAME,
+      </if>
+      <if test="srcSystemId != null">
+        SRC_SYSTEM_ID,
+      </if>
+      <if test="srcSystemName != null">
+        SRC_SYSTEM_NAME,
+      </if>
+      <if test="dataProvider != null">
+        DATA_PROVIDER,
+      </if>
+      <if test="dataSrcId != null">
+        DATA_SRC_ID,
+      </if>
+      <if test="dataCollectionDatetime != null">
+        DATA_COLLECTION_DATETIME,
+      </if>
+      <if test="dataCollectionDeviceNumber != null">
+        DATA_COLLECTION_DEVICE_NUMBER,
+      </if>
+      <if test="dataCollectionPersonName != null">
+        DATA_COLLECTION_PERSON_NAME,
+      </if>
+      <if test="belongYear != null">
+        BELONG_YEAR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="itemid != null">
+        #{itemid,jdbcType=DECIMAL},
+      </if>
+      <if test="elementcode != null">
+        #{elementcode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="startdate != null">
+        #{startdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="shortname != null">
+        #{shortname,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="wholename != null">
+        #{wholename,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="isbncode != null">
+        #{isbncode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="levelno != null">
+        #{levelno,jdbcType=DECIMAL},
+      </if>
+      <if test="isleaf != null">
+        #{isleaf,jdbcType=DECIMAL},
+      </if>
+      <if test="superitemid != null">
+        #{superitemid,jdbcType=DECIMAL},
+      </if>
+      <if test="enddate != null">
+        #{enddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=DECIMAL},
+      </if>
+      <if test="systempretag != null">
+        #{systempretag,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="fromitemid != null">
+        #{fromitemid,jdbcType=DECIMAL},
+      </if>
+      <if test="toitemid != null">
+        #{toitemid,jdbcType=DECIMAL},
+      </if>
+      <if test="codealias != null">
+        #{codealias,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="billpromise != null">
+        #{billpromise,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="guid != null">
+        #{guid,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="emwcode != null">
+        #{emwcode,jdbcType=DECIMAL},
+      </if>
+      <if test="bgtlevel != null">
+        #{bgtlevel,jdbcType=DECIMAL},
+      </if>
+      <if test="bgtlevelmark != null">
+        #{bgtlevelmark,jdbcType=DECIMAL},
+      </if>
+      <if test="bgtcode != null">
+        #{bgtcode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="mofdepmanager != null">
+        #{mofdepmanager,jdbcType=DECIMAL},
+      </if>
+      <if test="iscentralizedpay != null">
+        #{iscentralizedpay,jdbcType=DECIMAL},
+      </if>
+      <if test="isbncodebak != null">
+        #{isbncodebak,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="secretdegree != null">
+        #{secretdegree,jdbcType=DECIMAL},
+      </if>
+      <if test="isvirtual != null">
+        #{isvirtual,jdbcType=DECIMAL},
+      </if>
+      <if test="mofdepmanager1 != null">
+        #{mofdepmanager1,jdbcType=DECIMAL},
+      </if>
+      <if test="mofdepmanager2 != null">
+        #{mofdepmanager2,jdbcType=DECIMAL},
+      </if>
+      <if test="mofdepmanager3 != null">
+        #{mofdepmanager3,jdbcType=DECIMAL},
+      </if>
+      <if test="mofdepmanager4 != null">
+        #{mofdepmanager4,jdbcType=DECIMAL},
+      </if>
+      <if test="mofdepmanager5 != null">
+        #{mofdepmanager5,jdbcType=DECIMAL},
+      </if>
+      <if test="iscapitaloperate != null">
+        #{iscapitaloperate,jdbcType=DECIMAL},
+      </if>
+      <if test="orgcode != null">
+        #{orgcode,jdbcType=DECIMAL},
+      </if>
+      <if test="ind != null">
+        #{ind,jdbcType=DECIMAL},
+      </if>
+      <if test="tel != null">
+        #{tel,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="fax != null">
+        #{fax,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="address != null">
+        #{address,jdbcType=VARCHAR},
+      </if>
+      <if test="zip != null">
+        #{zip,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="perkind != null">
+        #{perkind,jdbcType=DECIMAL},
+      </if>
+      <if test="mofdep != null">
+        #{mofdep,jdbcType=DECIMAL},
+      </if>
+      <if test="fundsup != null">
+        #{fundsup,jdbcType=DECIMAL},
+      </if>
+      <if test="adminplan != null">
+        #{adminplan,jdbcType=DECIMAL},
+      </if>
+      <if test="adminfact != null">
+        #{adminfact,jdbcType=DECIMAL},
+      </if>
+      <if test="entprplan != null">
+        #{entprplan,jdbcType=DECIMAL},
+      </if>
+      <if test="entprfact != null">
+        #{entprfact,jdbcType=DECIMAL},
+      </if>
+      <if test="elsefact != null">
+        #{elsefact,jdbcType=DECIMAL},
+      </if>
+      <if test="isunified != null">
+        #{isunified,jdbcType=DECIMAL},
+      </if>
+      <if test="islocal != null">
+        #{islocal,jdbcType=DECIMAL},
+      </if>
+      <if test="agencytype != null">
+        #{agencytype,jdbcType=DECIMAL},
+      </if>
+      <if test="ishsagency != null">
+        #{ishsagency,jdbcType=DECIMAL},
+      </if>
+      <if test="admincode != null">
+        #{admincode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="govyear != null">
+        #{govyear,jdbcType=DECIMAL},
+      </if>
+      <if test="govid != null">
+        #{govid,jdbcType=DECIMAL},
+      </if>
+      <if test="isysbzagency != null">
+        #{isysbzagency,jdbcType=DECIMAL},
+      </if>
+      <if test="isyszxagency != null">
+        #{isyszxagency,jdbcType=DECIMAL},
+      </if>
+      <if test="iszjzhagency != null">
+        #{iszjzhagency,jdbcType=DECIMAL},
+      </if>
+      <if test="isgdzcagency != null">
+        #{isgdzcagency,jdbcType=DECIMAL},
+      </if>
+      <if test="agencynature != null">
+        #{agencynature,jdbcType=DECIMAL},
+      </if>
+      <if test="srcDataName != null">
+        #{srcDataName,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="srcSystemId != null">
+        #{srcSystemId,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="srcSystemName != null">
+        #{srcSystemName,jdbcType=VARCHAR},
+      </if>
+      <if test="dataProvider != null">
+        #{dataProvider,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSrcId != null">
+        #{dataSrcId,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="dataCollectionDatetime != null">
+        #{dataCollectionDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dataCollectionDeviceNumber != null">
+        #{dataCollectionDeviceNumber,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="dataCollectionPersonName != null">
+        #{dataCollectionPersonName,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="belongYear != null">
+        #{belongYear,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="findByYear" resultType="com.wugui.datax.admin.dto.ElementDTO">
+      select ITEMID id,SUPERITEMID pid ,code,name,BELONG_YEAR year,GOVID areaCode from t_pubagency
+      where 1 = 1
+    <if test="areaCodes != null">
+      <foreach collection="areaCodes" item="areaCodeItem" index="index" open="and concat(belong_year,'-',GOVID) in (" close=")" separator=",">
+        #{areaCodeItem}
+      </foreach>
+    </if>
+  </select>
+</mapper>

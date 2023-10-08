@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.RegionMapper">
+  <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.Region">
+    <!--@mbg.generated-->
+    <!--@Table t_pubgov-->
+    <result column="GOVID" jdbcType="DECIMAL" property="govid" />
+    <result column="CODE" jdbcType="LONGVARCHAR" property="code" />
+    <result column="NAME" jdbcType="LONGVARCHAR" property="name" />
+    <result column="SUPERID" jdbcType="DECIMAL" property="superid" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="GUID" jdbcType="LONGVARCHAR" property="guid" />
+    <result column="TYPE" jdbcType="DECIMAL" property="type" />
+    <result column="LEVELNO" jdbcType="DECIMAL" property="levelno" />
+    <result column="SHORTCODE" jdbcType="LONGVARCHAR" property="shortcode" />
+    <result column="SRC_DATA_NAME" jdbcType="LONGVARCHAR" property="srcDataName" />
+    <result column="SRC_SYSTEM_ID" jdbcType="LONGVARCHAR" property="srcSystemId" />
+    <result column="SRC_SYSTEM_NAME" jdbcType="VARCHAR" property="srcSystemName" />
+    <result column="DATA_PROVIDER" jdbcType="VARCHAR" property="dataProvider" />
+    <result column="DATA_SRC_ID" jdbcType="LONGVARCHAR" property="dataSrcId" />
+    <result column="DATA_COLLECTION_DATETIME" jdbcType="TIMESTAMP" property="dataCollectionDatetime" />
+    <result column="DATA_COLLECTION_DEVICE_NUMBER" jdbcType="LONGVARCHAR" property="dataCollectionDeviceNumber" />
+    <result column="DATA_COLLECTION_PERSON_NAME" jdbcType="LONGVARCHAR" property="dataCollectionPersonName" />
+    <result column="BELONG_YEAR" jdbcType="INTEGER" property="belongYear" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    GOVID, CODE, `NAME`, SUPERID, `STATUS`, GUID, `TYPE`, LEVELNO, SHORTCODE, SRC_DATA_NAME,
+    SRC_SYSTEM_ID, SRC_SYSTEM_NAME, DATA_PROVIDER, DATA_SRC_ID, DATA_COLLECTION_DATETIME,
+    DATA_COLLECTION_DEVICE_NUMBER, DATA_COLLECTION_PERSON_NAME, BELONG_YEAR
+  </sql>
+  <insert id="insert" parameterType="com.wugui.datax.admin.entity.Region">
+    <!--@mbg.generated-->
+    insert into t_pubgov (GOVID, CODE, `NAME`,
+      SUPERID, `STATUS`, GUID,
+      `TYPE`, LEVELNO, SHORTCODE,
+      SRC_DATA_NAME, SRC_SYSTEM_ID, SRC_SYSTEM_NAME,
+      DATA_PROVIDER, DATA_SRC_ID, DATA_COLLECTION_DATETIME,
+      DATA_COLLECTION_DEVICE_NUMBER, DATA_COLLECTION_PERSON_NAME,
+      BELONG_YEAR)
+    values (#{govid,jdbcType=DECIMAL}, #{code,jdbcType=LONGVARCHAR}, #{name,jdbcType=LONGVARCHAR},
+      #{superid,jdbcType=DECIMAL}, #{status,jdbcType=DECIMAL}, #{guid,jdbcType=LONGVARCHAR},
+      #{type,jdbcType=DECIMAL}, #{levelno,jdbcType=DECIMAL}, #{shortcode,jdbcType=LONGVARCHAR},
+      #{srcDataName,jdbcType=LONGVARCHAR}, #{srcSystemId,jdbcType=LONGVARCHAR}, #{srcSystemName,jdbcType=VARCHAR},
+      #{dataProvider,jdbcType=VARCHAR}, #{dataSrcId,jdbcType=LONGVARCHAR}, #{dataCollectionDatetime,jdbcType=TIMESTAMP},
+      #{dataCollectionDeviceNumber,jdbcType=LONGVARCHAR}, #{dataCollectionPersonName,jdbcType=LONGVARCHAR},
+      #{belongYear,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wugui.datax.admin.entity.Region">
+    <!--@mbg.generated-->
+    insert into t_pubgov
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="govid != null">
+        GOVID,
+      </if>
+      <if test="code != null">
+        CODE,
+      </if>
+      <if test="name != null">
+        `NAME`,
+      </if>
+      <if test="superid != null">
+        SUPERID,
+      </if>
+      <if test="status != null">
+        `STATUS`,
+      </if>
+      <if test="guid != null">
+        GUID,
+      </if>
+      <if test="type != null">
+        `TYPE`,
+      </if>
+      <if test="levelno != null">
+        LEVELNO,
+      </if>
+      <if test="shortcode != null">
+        SHORTCODE,
+      </if>
+      <if test="srcDataName != null">
+        SRC_DATA_NAME,
+      </if>
+      <if test="srcSystemId != null">
+        SRC_SYSTEM_ID,
+      </if>
+      <if test="srcSystemName != null">
+        SRC_SYSTEM_NAME,
+      </if>
+      <if test="dataProvider != null">
+        DATA_PROVIDER,
+      </if>
+      <if test="dataSrcId != null">
+        DATA_SRC_ID,
+      </if>
+      <if test="dataCollectionDatetime != null">
+        DATA_COLLECTION_DATETIME,
+      </if>
+      <if test="dataCollectionDeviceNumber != null">
+        DATA_COLLECTION_DEVICE_NUMBER,
+      </if>
+      <if test="dataCollectionPersonName != null">
+        DATA_COLLECTION_PERSON_NAME,
+      </if>
+      <if test="belongYear != null">
+        BELONG_YEAR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="govid != null">
+        #{govid,jdbcType=DECIMAL},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="superid != null">
+        #{superid,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="guid != null">
+        #{guid,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=DECIMAL},
+      </if>
+      <if test="levelno != null">
+        #{levelno,jdbcType=DECIMAL},
+      </if>
+      <if test="shortcode != null">
+        #{shortcode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="srcDataName != null">
+        #{srcDataName,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="srcSystemId != null">
+        #{srcSystemId,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="srcSystemName != null">
+        #{srcSystemName,jdbcType=VARCHAR},
+      </if>
+      <if test="dataProvider != null">
+        #{dataProvider,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSrcId != null">
+        #{dataSrcId,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="dataCollectionDatetime != null">
+        #{dataCollectionDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dataCollectionDeviceNumber != null">
+        #{dataCollectionDeviceNumber,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="dataCollectionPersonName != null">
+        #{dataCollectionPersonName,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="belongYear != null">
+        #{belongYear,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="findByYear" resultType="com.wugui.datax.admin.dto.ElementDTO">
+    select CODE id,SUPERID pid ,code,name,BELONG_YEAR year,GOVID areaCode from t_pubgov
+    where 1 = 1
+    <if test="year != null" >
+      and BELONG_YEAR = #{year}
+    </if>
+    <!--areaCode 后两位是 00则 and GOVID like concat(substring(#{areaCode},1,4),'%') 否则 GOVID = #{areaCode}-->
+    <if test="areaCode != null" >
+      <if test="areaCode.endsWith('00')">
+        and GOVID like concat(substring(#{areaCode},1,4),'%')
+      </if>
+      <if test="!areaCode.endsWith('00')">
+        and GOVID = #{areaCode}
+      </if>
+    </if>
+    </select>
+</mapper>

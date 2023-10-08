@@ -5,8 +5,8 @@ spring:
     #password: root
     #url: jdbc:mysql://localhost:3306/datax_web?serverTimezone=Asia/Shanghai&useLegacyDatetimeCode=false&useSSL=false&nullNamePatternMatchesAll=true&useUnicode=true&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.100.32.144:9009/datax_web
-    password: Bosssoft@2021
+    url: jdbc:mysql://10.100.58.52:8088/db_history_datax
+    password: Bosssoft@2022
     username: root
     hikari:
       ## 最小空闲连接数量

@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.OfficeMapper">
+  <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.Office">
+    <!--@mbg.generated-->
+    <!--@Table t_pubbdgmanagedivision-->
+    <result column="ITEMID" jdbcType="DECIMAL" property="itemid" />
+    <result column="ELEMENTCODE" jdbcType="LONGVARCHAR" property="elementcode" />
+    <result column="STARTDATE" jdbcType="TIMESTAMP" property="startdate" />
+    <result column="CODE" jdbcType="LONGVARCHAR" property="code" />
+    <result column="NAME" jdbcType="LONGVARCHAR" property="name" />
+    <result column="SHORTNAME" jdbcType="LONGVARCHAR" property="shortname" />
+    <result column="WHOLENAME" jdbcType="LONGVARCHAR" property="wholename" />
+    <result column="ISBNCODE" jdbcType="LONGVARCHAR" property="isbncode" />
+    <result column="ENDDATE" jdbcType="TIMESTAMP" property="enddate" />
+    <result column="TYPE" jdbcType="DECIMAL" property="type" />
+    <result column="SYSTEMPRETAG" jdbcType="DECIMAL" property="systempretag" />
+    <result column="REMARK" jdbcType="VARCHAR" property="remark" />
+    <result column="STATUS" jdbcType="DECIMAL" property="status" />
+    <result column="FROMITEMID" jdbcType="DECIMAL" property="fromitemid" />
+    <result column="TOITEMID" jdbcType="DECIMAL" property="toitemid" />
+    <result column="CODEALIAS" jdbcType="LONGVARCHAR" property="codealias" />
+    <result column="BILLPROMISE" jdbcType="LONGVARCHAR" property="billpromise" />
+    <result column="GUID" jdbcType="LONGVARCHAR" property="guid" />
+    <result column="BGTLEVEL" jdbcType="DECIMAL" property="bgtlevel" />
+    <result column="BGTLEVELMARK" jdbcType="DECIMAL" property="bgtlevelmark" />
+    <result column="BGTCODE" jdbcType="LONGVARCHAR" property="bgtcode" />
+    <result column="SECRETDEGREE" jdbcType="LONGVARCHAR" property="secretdegree" />
+    <result column="SUPPLYTYPE" jdbcType="DECIMAL" property="supplytype" />
+    <result column="AGENCYKIND" jdbcType="DECIMAL" property="agencykind" />
+    <result column="AGENCYLEVEL" jdbcType="DECIMAL" property="agencylevel" />
+    <result column="GOVID" jdbcType="DECIMAL" property="govid" />
+    <result column="GOVYEAR" jdbcType="DECIMAL" property="govyear" />
+    <result column="SRC_DATA_NAME" jdbcType="LONGVARCHAR" property="srcDataName" />
+    <result column="SRC_SYSTEM_ID" jdbcType="LONGVARCHAR" property="srcSystemId" />
+    <result column="SRC_SYSTEM_NAME" jdbcType="VARCHAR" property="srcSystemName" />
+    <result column="DATA_PROVIDER" jdbcType="VARCHAR" property="dataProvider" />
+    <result column="DATA_SRC_ID" jdbcType="LONGVARCHAR" property="dataSrcId" />
+    <result column="DATA_COLLECTION_DATETIME" jdbcType="TIMESTAMP" property="dataCollectionDatetime" />
+    <result column="DATA_COLLECTION_DEVICE_NUMBER" jdbcType="LONGVARCHAR" property="dataCollectionDeviceNumber" />
+    <result column="DATA_COLLECTION_PERSON_NAME" jdbcType="LONGVARCHAR" property="dataCollectionPersonName" />
+    <result column="BELONG_YEAR" jdbcType="INTEGER" property="belongYear" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ITEMID, ELEMENTCODE, STARTDATE, CODE, `NAME`, SHORTNAME, WHOLENAME, ISBNCODE, ENDDATE,
+    `TYPE`, SYSTEMPRETAG, REMARK, `STATUS`, FROMITEMID, TOITEMID, CODEALIAS, BILLPROMISE,
+    GUID, BGTLEVEL, BGTLEVELMARK, BGTCODE, SECRETDEGREE, SUPPLYTYPE, AGENCYKIND, AGENCYLEVEL,
+    GOVID, GOVYEAR, SRC_DATA_NAME, SRC_SYSTEM_ID, SRC_SYSTEM_NAME, DATA_PROVIDER, DATA_SRC_ID,
+    DATA_COLLECTION_DATETIME, DATA_COLLECTION_DEVICE_NUMBER, DATA_COLLECTION_PERSON_NAME,
+    BELONG_YEAR
+  </sql>
+  <insert id="insert" parameterType="com.wugui.datax.admin.entity.Office">
+    <!--@mbg.generated-->
+    insert into t_pubbdgmanagedivision (ITEMID, ELEMENTCODE, STARTDATE,
+      CODE, `NAME`, SHORTNAME,
+      WHOLENAME, ISBNCODE, ENDDATE,
+      `TYPE`, SYSTEMPRETAG, REMARK,
+      `STATUS`, FROMITEMID, TOITEMID,
+      CODEALIAS, BILLPROMISE, GUID,
+      BGTLEVEL, BGTLEVELMARK, BGTCODE,
+      SECRETDEGREE, SUPPLYTYPE, AGENCYKIND,
+      AGENCYLEVEL, GOVID, GOVYEAR,
+      SRC_DATA_NAME, SRC_SYSTEM_ID, SRC_SYSTEM_NAME,
+      DATA_PROVIDER, DATA_SRC_ID, DATA_COLLECTION_DATETIME,
+      DATA_COLLECTION_DEVICE_NUMBER, DATA_COLLECTION_PERSON_NAME,
+      BELONG_YEAR)
+    values (#{itemid,jdbcType=DECIMAL}, #{elementcode,jdbcType=LONGVARCHAR}, #{startdate,jdbcType=TIMESTAMP},
+      #{code,jdbcType=LONGVARCHAR}, #{name,jdbcType=LONGVARCHAR}, #{shortname,jdbcType=LONGVARCHAR},
+      #{wholename,jdbcType=LONGVARCHAR}, #{isbncode,jdbcType=LONGVARCHAR}, #{enddate,jdbcType=TIMESTAMP},
+      #{type,jdbcType=DECIMAL}, #{systempretag,jdbcType=DECIMAL}, #{remark,jdbcType=VARCHAR},
+      #{status,jdbcType=DECIMAL}, #{fromitemid,jdbcType=DECIMAL}, #{toitemid,jdbcType=DECIMAL},
+      #{codealias,jdbcType=LONGVARCHAR}, #{billpromise,jdbcType=LONGVARCHAR}, #{guid,jdbcType=LONGVARCHAR},
+      #{bgtlevel,jdbcType=DECIMAL}, #{bgtlevelmark,jdbcType=DECIMAL}, #{bgtcode,jdbcType=LONGVARCHAR},
+      #{secretdegree,jdbcType=LONGVARCHAR}, #{supplytype,jdbcType=DECIMAL}, #{agencykind,jdbcType=DECIMAL},
+      #{agencylevel,jdbcType=DECIMAL}, #{govid,jdbcType=DECIMAL}, #{govyear,jdbcType=DECIMAL},
+      #{srcDataName,jdbcType=LONGVARCHAR}, #{srcSystemId,jdbcType=LONGVARCHAR}, #{srcSystemName,jdbcType=VARCHAR},
+      #{dataProvider,jdbcType=VARCHAR}, #{dataSrcId,jdbcType=LONGVARCHAR}, #{dataCollectionDatetime,jdbcType=TIMESTAMP},
+      #{dataCollectionDeviceNumber,jdbcType=LONGVARCHAR}, #{dataCollectionPersonName,jdbcType=LONGVARCHAR},
+      #{belongYear,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wugui.datax.admin.entity.Office">
+    <!--@mbg.generated-->
+    insert into t_pubbdgmanagedivision
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="itemid != null">
+        ITEMID,
+      </if>
+      <if test="elementcode != null">
+        ELEMENTCODE,
+      </if>
+      <if test="startdate != null">
+        STARTDATE,
+      </if>
+      <if test="code != null">
+        CODE,
+      </if>
+      <if test="name != null">
+        `NAME`,
+      </if>
+      <if test="shortname != null">
+        SHORTNAME,
+      </if>
+      <if test="wholename != null">
+        WHOLENAME,
+      </if>
+      <if test="isbncode != null">
+        ISBNCODE,
+      </if>
+      <if test="enddate != null">
+        ENDDATE,
+      </if>
+      <if test="type != null">
+        `TYPE`,
+      </if>
+      <if test="systempretag != null">
+        SYSTEMPRETAG,
+      </if>
+      <if test="remark != null">
+        REMARK,
+      </if>
+      <if test="status != null">
+        `STATUS`,
+      </if>
+      <if test="fromitemid != null">
+        FROMITEMID,
+      </if>
+      <if test="toitemid != null">
+        TOITEMID,
+      </if>
+      <if test="codealias != null">
+        CODEALIAS,
+      </if>
+      <if test="billpromise != null">
+        BILLPROMISE,
+      </if>
+      <if test="guid != null">
+        GUID,
+      </if>
+      <if test="bgtlevel != null">
+        BGTLEVEL,
+      </if>
+      <if test="bgtlevelmark != null">
+        BGTLEVELMARK,
+      </if>
+      <if test="bgtcode != null">
+        BGTCODE,
+      </if>
+      <if test="secretdegree != null">
+        SECRETDEGREE,
+      </if>
+      <if test="supplytype != null">
+        SUPPLYTYPE,
+      </if>
+      <if test="agencykind != null">
+        AGENCYKIND,
+      </if>
+      <if test="agencylevel != null">
+        AGENCYLEVEL,
+      </if>
+      <if test="govid != null">
+        GOVID,
+      </if>
+      <if test="govyear != null">
+        GOVYEAR,
+      </if>
+      <if test="srcDataName != null">
+        SRC_DATA_NAME,
+      </if>
+      <if test="srcSystemId != null">
+        SRC_SYSTEM_ID,
+      </if>
+      <if test="srcSystemName != null">
+        SRC_SYSTEM_NAME,
+      </if>
+      <if test="dataProvider != null">
+        DATA_PROVIDER,
+      </if>
+      <if test="dataSrcId != null">
+        DATA_SRC_ID,
+      </if>
+      <if test="dataCollectionDatetime != null">
+        DATA_COLLECTION_DATETIME,
+      </if>
+      <if test="dataCollectionDeviceNumber != null">
+        DATA_COLLECTION_DEVICE_NUMBER,
+      </if>
+      <if test="dataCollectionPersonName != null">
+        DATA_COLLECTION_PERSON_NAME,
+      </if>
+      <if test="belongYear != null">
+        BELONG_YEAR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="itemid != null">
+        #{itemid,jdbcType=DECIMAL},
+      </if>
+      <if test="elementcode != null">
+        #{elementcode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="startdate != null">
+        #{startdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="shortname != null">
+        #{shortname,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="wholename != null">
+        #{wholename,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="isbncode != null">
+        #{isbncode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="enddate != null">
+        #{enddate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=DECIMAL},
+      </if>
+      <if test="systempretag != null">
+        #{systempretag,jdbcType=DECIMAL},
+      </if>
+      <if test="remark != null">
+        #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=DECIMAL},
+      </if>
+      <if test="fromitemid != null">
+        #{fromitemid,jdbcType=DECIMAL},
+      </if>
+      <if test="toitemid != null">
+        #{toitemid,jdbcType=DECIMAL},
+      </if>
+      <if test="codealias != null">
+        #{codealias,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="billpromise != null">
+        #{billpromise,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="guid != null">
+        #{guid,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="bgtlevel != null">
+        #{bgtlevel,jdbcType=DECIMAL},
+      </if>
+      <if test="bgtlevelmark != null">
+        #{bgtlevelmark,jdbcType=DECIMAL},
+      </if>
+      <if test="bgtcode != null">
+        #{bgtcode,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="secretdegree != null">
+        #{secretdegree,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="supplytype != null">
+        #{supplytype,jdbcType=DECIMAL},
+      </if>
+      <if test="agencykind != null">
+        #{agencykind,jdbcType=DECIMAL},
+      </if>
+      <if test="agencylevel != null">
+        #{agencylevel,jdbcType=DECIMAL},
+      </if>
+      <if test="govid != null">
+        #{govid,jdbcType=DECIMAL},
+      </if>
+      <if test="govyear != null">
+        #{govyear,jdbcType=DECIMAL},
+      </if>
+      <if test="srcDataName != null">
+        #{srcDataName,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="srcSystemId != null">
+        #{srcSystemId,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="srcSystemName != null">
+        #{srcSystemName,jdbcType=VARCHAR},
+      </if>
+      <if test="dataProvider != null">
+        #{dataProvider,jdbcType=VARCHAR},
+      </if>
+      <if test="dataSrcId != null">
+        #{dataSrcId,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="dataCollectionDatetime != null">
+        #{dataCollectionDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dataCollectionDeviceNumber != null">
+        #{dataCollectionDeviceNumber,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="dataCollectionPersonName != null">
+        #{dataCollectionPersonName,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="belongYear != null">
+        #{belongYear,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="findByYear" resultType="com.wugui.datax.admin.dto.ElementDTO" >
+    select ITEMID id,-1 pid ,code,name,BELONG_YEAR year,GOVID areaCode from t_pubbdgmanagedivision
+    where 1 = 1
+    <if test="year != null" >
+      and BELONG_YEAR = #{year}
+    </if>
+    <if test="areaCode != null">
+      and GOVID = #{areaCode}
+    </if>
+  </select>
+
+  <select id="findByArea" resultType="com.wugui.datax.admin.dto.ElementDTO">
+    select ITEMID id,-1 pid ,code,name,BELONG_YEAR year,GOVID areaCode from t_pubbdgmanagedivision
+    where 1 = 1
+    <!--!= null 且 size>0-->
+    <if test="areaCodes != null">
+        <foreach collection="areaCodes" item="areaCodeItem" index="index" open="and concat(belong_year,'-',GOVID) in (" close=")" separator=",">
+            #{areaCodeItem}
+        </foreach>
+    </if>
+    order by year desc,code asc
+    </select>
+</mapper>

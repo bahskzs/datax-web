@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.HistoryUserRoleMapper">
+  <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.HistoryUserRole">
+    <!--@mbg.generated-->
+    <!--@Table t_history_user_role-->
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="userid" jdbcType="VARCHAR" property="userid" />
+    <result column="user_info" jdbcType="LONGVARCHAR" property="userInfo" />
+    <result column="modules" jdbcType="VARCHAR" property="modules" />
+    <result column="regions" jdbcType="LONGVARCHAR" property="regions" />
+    <result column="agencies" jdbcType="LONGVARCHAR" property="agencies" />
+    <result column="offices" jdbcType="VARCHAR" property="offices" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, userid, user_info, modules, regions, agencies, offices, `status`
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from t_history_user_role
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from t_history_user_role
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.wugui.datax.admin.entity.HistoryUserRole" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into t_history_user_role (userid, user_info, modules,
+      regions, agencies, offices,
+      `status`)
+    values (#{userid,jdbcType=VARCHAR}, #{userInfo,jdbcType=LONGVARCHAR}, #{modules,jdbcType=VARCHAR},
+      #{regions,jdbcType=LONGVARCHAR}, #{agencies,jdbcType=LONGVARCHAR}, #{offices,jdbcType=VARCHAR},
+      #{status,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.wugui.datax.admin.entity.HistoryUserRole" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into t_history_user_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userid != null">
+        userid,
+      </if>
+      <if test="userInfo != null">
+        user_info,
+      </if>
+      <if test="modules != null">
+        modules,
+      </if>
+      <if test="regions != null">
+        regions,
+      </if>
+      <if test="agencies != null">
+        agencies,
+      </if>
+      <if test="offices != null">
+        offices,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userid != null">
+        #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="userInfo != null">
+        #{userInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="modules != null">
+        #{modules,jdbcType=VARCHAR},
+      </if>
+      <if test="regions != null">
+        #{regions,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="agencies != null">
+        #{agencies,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="offices != null">
+        #{offices,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wugui.datax.admin.entity.HistoryUserRole">
+    <!--@mbg.generated-->
+    update t_history_user_role
+    <set>
+      <if test="userid != null">
+        userid = #{userid,jdbcType=VARCHAR},
+      </if>
+      <if test="userInfo != null">
+        user_info = #{userInfo,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="modules != null">
+        modules = #{modules,jdbcType=VARCHAR},
+      </if>
+      <if test="regions != null">
+        regions = #{regions,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="agencies != null">
+        agencies = #{agencies,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="offices != null">
+        offices = #{offices,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wugui.datax.admin.entity.HistoryUserRole">
+    <!--@mbg.generated-->
+    update t_history_user_role
+    set userid = #{userid,jdbcType=VARCHAR},
+      user_info = #{userInfo,jdbcType=LONGVARCHAR},
+      modules = #{modules,jdbcType=VARCHAR},
+      regions = #{regions,jdbcType=LONGVARCHAR},
+      agencies = #{agencies,jdbcType=LONGVARCHAR},
+      offices = #{offices,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="list" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from t_history_user_role
+    </select>
+
+  <select id="listByUserId" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from t_history_user_role
+    where userid = #{userId,jdbcType=VARCHAR}
+    order by id desc
+  </select>
+
+  <select id="pageList" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from t_history_user_role
+    where userid = #{userId,jdbcType=VARCHAR}
+    order by id desc
+    LIMIT #{offset}, #{pagesize}
+  </select>
+</mapper>

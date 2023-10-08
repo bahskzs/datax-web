@@ -10,6 +10,7 @@ import com.wugui.datax.admin.mapper.OfficeMapper;
 import com.wugui.datax.admin.mapper.RegionMapper;
 import com.wugui.datax.admin.service.HistoryElementService;
 import com.wugui.datax.admin.util.CopyUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -38,6 +39,9 @@ public class HistoryElementServiceImpl implements HistoryElementService {
     @Resource
     private CacheWithScheduledExecutor cache;
 
+    @Value("${yth.history.enable}")
+    private Boolean enableHistory;
+
 
     @Override
     public List<ElementDTO> getRegions(String areaCode,String year) {
@@ -65,9 +69,25 @@ public class HistoryElementServiceImpl implements HistoryElementService {
          // 从缓存中获取
         // 若cache中没有，则从模拟数据中取数
         List<YTHUserDTO> list =  null;
-        if (cache.getCachedSize() == 0 ) {
+        if (!enableHistory) {
             list = getMockUsers(areaCode,code,name);
         } else  {
+            if (name.contains("/") ) {
+                String[] nameStr = name.split("/");
+                if(nameStr.length > 1) {
+                    name = nameStr[0];
+                    code = nameStr[1];
+                }
+
+                if (nameStr.length == 3) {
+                    areaCode = nameStr[2];
+                }
+
+                if(nameStr.length == 1 && name.endsWith("/")) {
+                    name = name.replace("/","");
+                }
+            }
+
             list = cache.getUsers(areaCode,code,name);
         }
         List<YTHUserVO> res = CopyUtil.copyList(list, YTHUserVO.class);

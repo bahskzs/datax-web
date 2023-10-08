@@ -26,4 +26,3 @@ hadoop:
   nameService: nameservice1
   address: 10.96.10.128:8020,10.96.10.127:8020
 
-

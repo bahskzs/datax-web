@@ -3,9 +3,7 @@ package com.wugui.datax.admin.controller;
 
 import com.baomidou.mybatisplus.extension.api.R;
 import com.wugui.datax.admin.dto.*;
-import com.wugui.datax.admin.entity.AreaList;
-import com.wugui.datax.admin.entity.ReportModule;
-import com.wugui.datax.admin.exector.CacheWithScheduledExecutor;
+import com.wugui.datatx.core.biz.model.ReturnT;
 import com.wugui.datax.admin.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,6 +40,17 @@ public class UserRoleController extends BaseController{
     }
 
 
+    @GetMapping("/pageList")
+    @ApiOperation("用户配置列表")
+    public R<List<HistoryUserRoleDTO>> pageList(@RequestParam(required = false, defaultValue = "0") int current,
+                                                @RequestParam(required = false, defaultValue = "10") int size,
+                                                @RequestParam(required = false) String userName
+                                                ){
+        List<HistoryUserRoleDTO> list = userRoleService.pageList(current,size,userName);
+        return success(list);
+    }
+
+
     @GetMapping("/{id}")
     @ApiOperation("用户配置明细")
     public R<HistoryUserRoleDTO> getById(@PathVariable Integer id){
@@ -50,21 +59,21 @@ public class UserRoleController extends BaseController{
     }
 
     @PostMapping("/create")
-    @ApiOperation("用户配置")
+    @ApiOperation("用户配置创建")
     public R<Integer> create(@RequestBody HistoryUserRoleBO userRoleBO){
         Integer flag = userRoleService.create(userRoleBO);
         return success(flag);
     }
 
     @PutMapping("/update/{id}")
-    @ApiOperation("用户配置")
+    @ApiOperation("用户配置更新")
     public R<Integer> update(@PathVariable String id,@RequestBody HistoryUserRoleBO userRoleBO){
         Integer flag = userRoleService.update(Integer.valueOf(id),userRoleBO);
         return success(flag);
     }
 
     @DeleteMapping("/delete/{id}")
-    @ApiOperation("用户配置")
+    @ApiOperation("用户配置删除")
     public R<Integer> create(@PathVariable Integer id){
         Integer flag = userRoleService.deleteById(id);
         return success(flag);

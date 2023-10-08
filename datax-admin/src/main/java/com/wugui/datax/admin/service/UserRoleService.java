@@ -11,6 +11,7 @@ import java.util.List;
  */
 public interface UserRoleService {
     List<HistoryUserRoleDTO> list(UserQueryDTO vo);
+    List<HistoryUserRoleDTO> pageList(int current,int size,String userName);
 
     HistoryUserRoleDTO getById(Integer id);
 

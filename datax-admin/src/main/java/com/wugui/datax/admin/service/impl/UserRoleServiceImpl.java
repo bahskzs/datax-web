@@ -41,6 +41,13 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
+    public List<HistoryUserRoleDTO> pageList(int current, int size, String userName) {
+        List<HistoryUserRole>  list = historyUserRoleMapper.pageList(userName,(current-1)*size, size);
+        List<HistoryUserRoleDTO> res = CopyUtil.copyList(list, HistoryUserRoleDTO.class);
+        return res;
+    }
+
+    @Override
     public HistoryUserRoleDTO getById(Integer id) {
         HistoryUserRole historyUserRole = historyUserRoleMapper.selectByPrimaryKey(id);
         HistoryUserRoleDTO dto = CopyUtil.copy(historyUserRole, HistoryUserRoleDTO.class);
