@@ -44,7 +44,9 @@ public class ReportServiceImpl implements ReportService {
         }
         for (Report report : list) {
             ReportQueryResp resp = CopyUtil.copy(report, ReportQueryResp.class);
-            resp.setAreaList(JSONUtils.toList(report.getAreaList(), AreaList.class));
+            if (!ObjectUtils.isEmpty(report.getAreaList())) {
+                resp.setAreaList(JSONUtils.toList(report.getAreaList(), AreaList.class));
+            }
             respList.add(resp);
         }
         return respList;
