@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wugui.datax.admin.mapper.HistoryUserRoleOfficeMapper">
+  <resultMap id="BaseResultMap" type="com.wugui.datax.admin.entity.HistoryUserRoleOffice">
+    <!--@mbg.generated-->
+    <!--@Table t_history_user_role_office-->
+    <id column="ID" jdbcType="INTEGER" property="id" />
+    <result column="USER_GUID" jdbcType="VARCHAR" property="userGuid" />
+    <result column="ITEMID" jdbcType="DECIMAL" property="itemid" />
+    <result column="CODE" jdbcType="VARCHAR" property="code" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="GOVID" jdbcType="DECIMAL" property="govid" />
+    <result column="BELONG_YEAR" jdbcType="INTEGER" property="belongYear" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    ID, USER_GUID, ITEMID, CODE, `NAME`, GOVID, BELONG_YEAR
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <!--@mbg.generated-->
+    select
+    <include refid="Base_Column_List" />
+    from t_history_user_role_office
+    where ID = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    <!--@mbg.generated-->
+    delete from t_history_user_role_office
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" keyColumn="ID" keyProperty="id" parameterType="com.wugui.datax.admin.entity.HistoryUserRoleOffice" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into t_history_user_role_office (USER_GUID, ITEMID, CODE,
+      `NAME`, GOVID, BELONG_YEAR
+      )
+    values (#{userGuid,jdbcType=VARCHAR}, #{itemid,jdbcType=DECIMAL}, #{code,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR}, #{govid,jdbcType=DECIMAL}, #{belongYear,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="com.wugui.datax.admin.entity.HistoryUserRoleOffice" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into t_history_user_role_office
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userGuid != null">
+        USER_GUID,
+      </if>
+      <if test="itemid != null">
+        ITEMID,
+      </if>
+      <if test="code != null">
+        CODE,
+      </if>
+      <if test="name != null">
+        `NAME`,
+      </if>
+      <if test="govid != null">
+        GOVID,
+      </if>
+      <if test="belongYear != null">
+        BELONG_YEAR,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userGuid != null">
+        #{userGuid,jdbcType=VARCHAR},
+      </if>
+      <if test="itemid != null">
+        #{itemid,jdbcType=DECIMAL},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="govid != null">
+        #{govid,jdbcType=DECIMAL},
+      </if>
+      <if test="belongYear != null">
+        #{belongYear,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wugui.datax.admin.entity.HistoryUserRoleOffice">
+    <!--@mbg.generated-->
+    update t_history_user_role_office
+    <set>
+      <if test="userGuid != null">
+        USER_GUID = #{userGuid,jdbcType=VARCHAR},
+      </if>
+      <if test="itemid != null">
+        ITEMID = #{itemid,jdbcType=DECIMAL},
+      </if>
+      <if test="code != null">
+        CODE = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        `NAME` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="govid != null">
+        GOVID = #{govid,jdbcType=DECIMAL},
+      </if>
+      <if test="belongYear != null">
+        BELONG_YEAR = #{belongYear,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wugui.datax.admin.entity.HistoryUserRoleOffice">
+    <!--@mbg.generated-->
+    update t_history_user_role_office
+    set USER_GUID = #{userGuid,jdbcType=VARCHAR},
+      ITEMID = #{itemid,jdbcType=DECIMAL},
+      CODE = #{code,jdbcType=VARCHAR},
+      `NAME` = #{name,jdbcType=VARCHAR},
+      GOVID = #{govid,jdbcType=DECIMAL},
+      BELONG_YEAR = #{belongYear,jdbcType=INTEGER}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+
+  <delete id="deleteByUserId">
+    delete from t_history_user_role_office where USER_GUID = #{userId}
+  </delete>
+
+  <insert id="insertBatch">
+    insert into t_history_user_role_office (USER_GUID, CODE,
+      `NAME`, GOVID, BELONG_YEAR
+      )
+    values
+    <foreach collection="list" item="item" index="index" separator=",">
+      (#{item.userGuid,jdbcType=VARCHAR},#{item.code,jdbcType=VARCHAR},
+      #{item.name,jdbcType=VARCHAR}, #{item.govid,jdbcType=DECIMAL}, #{item.belongYear,jdbcType=INTEGER}
+      )
+    </foreach>
+  </insert>
+</mapper>

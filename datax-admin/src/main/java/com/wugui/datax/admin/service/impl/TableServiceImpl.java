@@ -18,12 +18,14 @@ import com.wugui.datax.admin.util.AESUtil;
 import com.wugui.datax.admin.util.CopyUtil;
 import com.wugui.datax.admin.util.JdbcConstants;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -140,7 +142,16 @@ public class TableServiceImpl implements TableService {
                     tableInfo.setName(tableName + "_V1");
                     flag = true;
                 }
-                tableInfo.setName(tableBO.getTargetSchema() + "." + tableInfo.getName());
+
+                String userSchema = tableBO.getTargetSchema();
+                if (StringUtils.isBlank(userSchema)) {
+                    userSchema = AESUtil.decrypt(targetDatasource.getJdbcUsername());
+                }
+
+                        // .orElse(targetDatasource.getJdbcUsername());
+                log.info("userSchema: {}", userSchema);
+
+                tableInfo.setName(userSchema + "." + tableInfo.getName());
                 List<String> createSqlList = qTool.buildCreateTableSql(tableInfo);
 
                 log.info("create: {}", createSqlList.get(0));

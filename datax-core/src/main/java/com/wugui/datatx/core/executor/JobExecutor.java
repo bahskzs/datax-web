@@ -166,7 +166,6 @@ public class JobExecutor {
         serviceRegistryParam.put("address", address);
 
         xxlRpcProviderFactory = new XxlRpcProviderFactory();
-
         xxlRpcProviderFactory.setServer(NettyHttpServer.class);
         xxlRpcProviderFactory.setSerializer(HessianSerializer.class);
         xxlRpcProviderFactory.setCorePoolSize(20);

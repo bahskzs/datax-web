@@ -44,18 +44,38 @@ public class JobTrigger {
      * @param executorParam         null: use job param
      *                              not null: cover job param
      */
-    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam) {
+    public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam, Integer methodType) {
         JobInfo jobInfo = JobAdminConfig.getAdminConfig().getJobInfoMapper().loadById(jobId);
         if (jobInfo == null) {
             logger.warn(">>>>>>>>>>>> trigger fail, jobId invalid，jobId={}", jobId);
             return;
         }
+
         if (GlueTypeEnum.BEAN.getDesc().equals(jobInfo.getGlueType())) {
             //解密账密
             String json = JSONUtils.changeJson(jobInfo.getJobJson(), JSONUtils.decrypt);
+            if (StringUtils.isNotBlank(executorParam) && methodType == 2) {
+                String[] params = executorParam.split("&");
+                logger.info(">>>>>>>>>>>> trigger success, jobId={}, executorParam={}", jobId, executorParam);
+//                String[] var9 = params;
+//                i = params.length;
+//
+//                for(int var11 = 0; var11 < i; ++var11) {
+//                    String param = var9[var11];
+//                    String[] kv = param.split("=");
+//                    json = json.replace("${" + kv[0] + "}", kv[1]);
+//                    logger.info("kv[0] = " + kv[0] + " kv[1] = " + kv[1]);
+//                }
+                for (String param : params) {
+                    String[] kv = param.split("=");
+                    json = json.replace("${" + kv[0] + "}", kv[1]);
+                    logger.info("kv[0] = " + kv[0] + " kv[1] = " + kv[1]);
+
+                }
+            }
             jobInfo.setJobJson(json);
         }
-        if (StringUtils.isNotBlank(executorParam)) {
+        if (StringUtils.isNotBlank(executorParam) && methodType == 1) {
             jobInfo.setExecutorParam(executorParam);
         }
         int finalFailRetryCount = failRetryCount >= 0 ? failRetryCount : jobInfo.getExecutorFailRetryCount();

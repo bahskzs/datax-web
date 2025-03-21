@@ -24,6 +24,10 @@ public class JobTriggerPoolHelper {
     private ThreadPoolExecutor fastTriggerPool = null;
     private ThreadPoolExecutor slowTriggerPool = null;
 
+    public static void triggerWithParam(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam) {
+        helper.addTrigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam, 2);
+    }
+
     public void start() {
         fastTriggerPool = new ThreadPoolExecutor(
                 10,
@@ -69,7 +73,8 @@ public class JobTriggerPoolHelper {
     /**
      * add trigger
      */
-    public void addTrigger(final int jobId, final TriggerTypeEnum triggerType, final int failRetryCount, final String executorShardingParam, final String executorParam) {
+    public void addTrigger(final int jobId, final TriggerTypeEnum triggerType, final int failRetryCount, final String executorShardingParam,
+                            String executorParam, Integer methodType) {
 
         // choose thread pool
         ThreadPoolExecutor triggerPool_ = fastTriggerPool;
@@ -82,7 +87,7 @@ public class JobTriggerPoolHelper {
             long start = System.currentTimeMillis();
             try {
                 // do trigger
-                JobTrigger.trigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam);
+                JobTrigger.trigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam, methodType);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
             } finally {
@@ -127,7 +132,7 @@ public class JobTriggerPoolHelper {
      *                              not null: cover job param
      */
     public static void trigger(int jobId, TriggerTypeEnum triggerType, int failRetryCount, String executorShardingParam, String executorParam) {
-        helper.addTrigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam);
+        helper.addTrigger(jobId, triggerType, failRetryCount, executorShardingParam, executorParam,1);
     }
 
 }

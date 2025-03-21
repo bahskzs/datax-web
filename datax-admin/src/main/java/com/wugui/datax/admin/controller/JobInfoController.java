@@ -174,6 +174,20 @@ public class JobInfoController extends BaseController{
         return ReturnT.SUCCESS;
     }
 
+
+    @PostMapping({"/trigger/batchWithParam"})
+    @ApiOperation("[项目定制]批量执行任务")
+    public ReturnT<String> startBatchWithParam(@RequestBody List<TriggerJobDto> triggerJobDtos) {
+        String executorParam = "";
+
+        for (TriggerJobDto dto : triggerJobDtos) {
+            JobTriggerPoolHelper.triggerWithParam(dto.getJobId(), TriggerTypeEnum.MANUAL, -1, (String)null, dto.getExecutorParam());
+        }
+
+        return ReturnT.SUCCESS;
+    }
+
+
     @PostMapping(value = "/trigger")
     @ApiOperation("触发任务")
     public ReturnT<String> triggerJob(@RequestBody TriggerJobDto dto) {

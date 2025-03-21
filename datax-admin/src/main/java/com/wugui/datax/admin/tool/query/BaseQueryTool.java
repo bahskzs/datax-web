@@ -432,7 +432,7 @@ public abstract class BaseQueryTool implements QueryToolInterface {
                 // 如果精度为-127,则不需要拼接
 
                 // scale = 0 字符串,日期等  > 0 数字 -127 数字且没有精度
-                if (scale > 0) {
+                if (scale > 0 && !metaData.getColumnTypeName(i).equals("TIMESTAMP")) {
                     // 数字
                     colType = colType + "," + scale;
                     dasColumn.setColumnTypeName(metaData.getColumnTypeName(i) + "(" + colType + ")");
@@ -449,12 +449,12 @@ public abstract class BaseQueryTool implements QueryToolInterface {
                         colType = String.valueOf(dataLength);
                         dasColumn.setColumnTypeName(metaData.getColumnTypeName(i) + "(" + colType + ")");
                     }
-                    if (metaData.getColumnTypeName(i) == "CLOB"
-                            || metaData.getColumnTypeName(i) == "BLOB"
-                            || metaData.getColumnTypeName(i) == "DATE"
-                            || metaData.getColumnTypeName(i) == "FLOAT"
-                            || metaData.getColumnTypeName(i) == "DOUBLE"
-                            || metaData.getColumnTypeName(i) == "INT"
+                    if (Objects.equals(metaData.getColumnTypeName(i), "CLOB")
+                            || Objects.equals(metaData.getColumnTypeName(i), "BLOB")
+                            || Objects.equals(metaData.getColumnTypeName(i), "DATE")
+                            || Objects.equals(metaData.getColumnTypeName(i), "FLOAT")
+                            || Objects.equals(metaData.getColumnTypeName(i), "DOUBLE")
+                            || Objects.equals(metaData.getColumnTypeName(i), "INT")
                     ) {
                         dasColumn.setColumnTypeName(metaData.getColumnTypeName(i));
                     }
@@ -975,13 +975,14 @@ public abstract class BaseQueryTool implements QueryToolInterface {
         try {
             stmt = connection.createStatement();
             for (String sql : sqlList) {
-                logger.info("executeCreateTableSqls --sql: " + sql);
+                logger.debug("executeCreateTableSqls --sql: " + sql);
+
                 stmt.executeUpdate(sql);
             }
 
         } catch (SQLException e) {
             logger.error("[executeCreateTableSql Exception] --> "
-                    + "the exception message is:" + e.getMessage());
+                    + "the exception message is:" + e.getMessage() );
             return false;
         } finally {
             JdbcUtils.close(stmt);
